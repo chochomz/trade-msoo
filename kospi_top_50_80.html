@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>KOSPI TOP 50/80 AI 퀀트 랭킹 & 실시간 시세</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .font-num {
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @keyframes flashUp {
+      0% { background-color: rgba(244, 63, 94, 0.45); color: #ffe4e6; }
+      100% { background-color: transparent; }
+    }
+    @keyframes flashDown {
+      0% { background-color: rgba(59, 130, 246, 0.45); color: #dbeafe; }
+      100% { background-color: transparent; }
+    }
+    .tick-flash-up {
+      animation: flashUp 0.75s ease-out;
+      border-radius: 4px;
+    }
+    .tick-flash-down {
+      animation: flashDown 0.75s ease-out;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased flex flex-col font-normal text-xs md:text-sm selection:bg-cyan-500 selection:text-white">
+
+  <!-- Top Sticky Navigation Header -->
+  <header class="sticky top-0 z-40 bg-slate-900/90 border-b border-slate-800/80 backdrop-blur-md px-3 py-2 sm:px-4 sm:py-2.5">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+      <!-- Title & 50/80 Universe Selector -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <h1 class="text-sm sm:text-base font-semibold text-slate-50 tracking-tight flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          KOSPI 랭킹
+        </h1>
+        
+        <!-- Universe Toggle (50위 / 80위) -->
+        <div class="inline-flex items-center p-0.5 rounded-lg bg-slate-800/90 border border-slate-700/70 text-[11px] font-medium">
+          <button id="btnUni50" onclick="setUniverse(50)" class="px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all">50위</button>
+          <button id="btnUni80" onclick="setUniverse(80)" class="px-2 py-0.5 rounded-md text-slate-400 hover:text-slate-200 transition-all">80위</button>
+        </div>
+      </div>
+
+      <!-- Dual Engine Status Button (공개 시세망 / KIS 직결) -->
+      <div class="flex items-center gap-2">
+        <button onclick="openDualEngineModal()" class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-800/80 border border-slate-700/80 hover:bg-slate-700/70 transition-colors text-[11px] text-slate-300">
+          <span id="headerEngineLamp" class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+          </span>
+          <span id="headerEngineText" class="font-medium text-slate-200">🌐 공개 시세망</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MTS Style Global Indices Horizontal Bar (Intraday Real-Time Path with Blank Future Space) -->
+    <div class="max-w-7xl mx-auto mt-2 pt-1 border-t border-slate-800/60">
+      <div id="globalIndexTickerBar" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 select-none">
+        
+        <!-- SVG Gradient Definitions -->
+        <svg class="hidden">
+          <defs>
+            <linearGradient id="gradUp" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#f43f5e" stop-opacity="0.05"/>
+            </linearGradient>
+            <linearGradient id="gradDown" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.05"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <!-- Dow Jones -->
+        <div onclick="openIndexBottomSheet('dji')" class="flex-shrink-0 w-32 sm:w-36 bg-slate-950/80 border border-slate-800/90 rounded-lg p-1.5 relative overflow-hidden cursor-pointer hover:border-slate-700 hover:scale-[1.02] transition-all">
+          <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-50" viewBox="0 0 100 32" preserveAspectRatio="none">
+            <line x1="0" y1="16" x2="100" y2="16" stroke="#334155" stroke-width="0.7" stroke-dasharray="2 2"></line>
+            <path id="fill-idx-dji" fill="url(#gradUp)" d="M 0 16 L 55 16 L 55 32 L 0 32 Z"></path>
+            <path id="line-idx-dji" fill="none" stroke="#fb7185" stroke-width="1.7" d="M 0 16 L 55 16"></path>
+            <circle id="dot-idx-dji" cx="55" cy="16" r="1.8" fill="#fb7185"></circle>
+          </svg>
+          <div class="relative z-10 flex items-center justify-between">
+            <span class="text-[10px] text-slate-400 font-medium">다우존스</span>
+            <span id="rate-idx-dji" class="text-[10px] font-semibold font-num text-rose-400">+0.10%</span>
+          </div>
+          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5">
+            <span id="price-idx-dji">51,232</span>
+          </div>
+        </div>
+
+        <!-- Nasdaq -->
+        <div onclick="openIndexBottomSheet('ixic')" class="flex-shrink-0 w-32 sm:w-36 bg-slate-950/80 border border-slate-800/90 rounded-lg p-1.5 relative overflow-hidden cursor-pointer hover:border-slate-700 hover:scale-[1.02] transition-all">
+          <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-50" viewBox="0 0 100 32" preserveAspectRatio="none">
+            <line x1="0" y1="16" x2="100" y2="16" stroke="#334155" stroke-width="0.7" stroke-dasharray="2 2"></line>
+            <path id="fill-idx-ixic" fill="url(#gradDown)" d="M 0 16 L 55 16 L 55 32 L 0 32 Z"></path>
+            <path id="line-idx-ixic" fill="none" stroke="#60a5fa" stroke-width="1.7" d="M 0 16 L 55 16"></path>
+            <circle id="dot-idx-ixic" cx="55" cy="16" r="1.8" fill="#60a5fa"></circle>
+          </svg>
+          <div class="relative z-10 flex items-center justify-between">
+            <span class="text-[10px] text-slate-400 font-medium">나스닥</span>
+            <span id="rate-idx-ixic" class="text-[10px] font-semibold font-num text-blue-400">-1.33%</span>
+          </div>
+          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5">
+            <span id="price-idx-ixic">27,173</span>
+          </div>
+        </div>
+
+        <!-- S&P 500 -->
+        <div onclick="openIndexBottomSheet('spx')" class="flex-shrink-0 w-32 sm:w-36 bg-slate-950/80 border border-slate-800/90 rounded-lg p-1.5 relative overflow-hidden cursor-pointer hover:border-slate-700 hover:scale-[1.02] transition-all">
+          <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-50" viewBox="0 0 100 32" preserveAspectRatio="none">
+            <line x1="0" y1="16" x2="100" y2="16" stroke="#334155" stroke-width="0.7" stroke-dasharray="2 2"></line>
+            <path id="fill-idx-spx" fill="url(#gradDown)" d="M 0 16 L 55 16 L 55 32 L 0 32 Z"></path>
+            <path id="line-idx-spx" fill="none" stroke="#60a5fa" stroke-width="1.7" d="M 0 16 L 55 16"></path>
+            <circle id="dot-idx-spx" cx="55" cy="16" r="1.8" fill="#60a5fa"></circle>
+          </svg>
+          <div class="relative z-10 flex items-center justify-between">
+            <span class="text-[10px] text-slate-400 font-medium">S&P 500</span>
+            <span id="rate-idx-spx" class="text-[10px] font-semibold font-num text-blue-400">-0.47%</span>
+          </div>
+          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5">
+            <span id="price-idx-spx">7,765.4</span>
+          </div>
+        </div>
+
+        <!-- USD/KRW Exchange Rate -->
+        <div onclick="openIndexBottomSheet('krw')" class="flex-shrink-0 w-32 sm:w-36 bg-slate-950/80 border border-slate-800/90 rounded-lg p-1.5 relative overflow-hidden cursor-pointer hover:border-slate-700 hover:scale-[1.02] transition-all">
+          <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-50" viewBox="0 0 100 32" preserveAspectRatio="none">
+            <line x1="0" y1="16" x2="100" y2="16" stroke="#334155" stroke-width="0.7" stroke-dasharray="2 2"></line>
+            <path id="fill-idx-krw" fill="url(#gradDown)" d="M 0 16 L 55 16 L 55 32 L 0 32 Z"></path>
+            <path id="line-idx-krw" fill="none" stroke="#60a5fa" stroke-width="1.7" d="M 0 16 L 55 16"></path>
+            <circle id="dot-idx-krw" cx="55" cy="16" r="1.8" fill="#60a5fa"></circle>
+          </svg>
+          <div class="relative z-10 flex items-center justify-between">
+            <span class="text-[10px] text-slate-400 font-medium">원/달러</span>
+            <span id="rate-idx-krw" class="text-[10px] font-semibold font-num text-blue-400">-0.10%</span>
+          </div>
+          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5">
+            <span id="price-idx-krw">1,342.6</span>
+          </div>
+        </div>
+
+        <!-- Nasdaq Futures -->
+        <div onclick="openIndexBottomSheet('nq')" class="flex-shrink-0 w-32 sm:w-36 bg-slate-950/80 border border-slate-800/90 rounded-lg p-1.5 relative overflow-hidden cursor-pointer hover:border-slate-700 hover:scale-[1.02] transition-all">
+          <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-50" viewBox="0 0 100 32" preserveAspectRatio="none">
+            <line x1="0" y1="16" x2="100" y2="16" stroke="#334155" stroke-width="0.7" stroke-dasharray="2 2"></line>
+            <path id="fill-idx-nq" fill="url(#gradUp)" d="M 0 16 L 55 16 L 55 32 L 0 32 Z"></path>
+            <path id="line-idx-nq" fill="none" stroke="#fb7185" stroke-width="1.7" d="M 0 16 L 55 16"></path>
+            <circle id="dot-idx-nq" cx="55" cy="16" r="1.8" fill="#fb7185"></circle>
+          </svg>
+          <div class="relative z-10 flex items-center justify-between">
+            <span class="text-[10px] text-slate-400 font-medium">나스닥 선물</span>
+            <span id="rate-idx-nq" class="text-[10px] font-semibold font-num text-rose-400">+0.53%</span>
+          </div>
+          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5">
+            <span id="price-idx-nq">31,133</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Body -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-4 py-3 space-y-4">
+
+    <!-- 6-Month Sector Streak Relay & Predicted Surge Sectors -->
+    <section>
+      <div class="flex items-center justify-between mb-1.5 px-0.5">
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs font-semibold text-slate-200">6개월 급등 릴레이</span>
+          <span class="text-[10px] text-slate-400">· 터치 시 해당섹터 TOP10</span>
+        </div>
+        <span class="text-[10px] text-slate-500">좌우 스크롤 ↔</span>
+      </div>
+
+      <div id="sectorStreakRelay" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 select-none">
+        <!-- Dynamically injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- Filter and Sort Bar: [시총 순위] is First and Default Active -->
+    <section class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+        <button id="btnSortRank" onclick="setSortMode('rank')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-cyan-500 text-white shadow-sm transition-all">
+          시총 순위
+        </button>
+        <button id="btnSortQuant" onclick="setSortMode('quant')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">
+          종합 추천 순위
+        </button>
+        <button id="btnSortRate" onclick="setSortMode('rate')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">
+          당일 급등순
+        </button>
+        <button id="btnSortSupply" onclick="setSortMode('supply')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">
+          메이저 수급순
+        </button>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <select id="sectorFilterSelect" onchange="setSectorFilter(this.value)" class="bg-slate-800/90 border border-slate-700/80 rounded-md px-2 py-1 text-[11px] text-slate-200 outline-none">
+          <option value="ALL">전체 섹터</option>
+          <option value="반도체">반도체/IT</option>
+          <option value="2차전지">2차전지</option>
+          <option value="바이오">바이오/제약</option>
+          <option value="자동차">자동차</option>
+          <option value="금융">금융/지주</option>
+          <option value="방산/중공업">방산/중공업</option>
+        </select>
+        <span id="stockCountBadge" class="text-[10px] text-slate-400 font-num">50개 종목</span>
+      </div>
+    </section>
+
+    <!-- Stock Ranking Cards Grid Container -->
+    <section id="stockListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
+      <!-- Dynamically Injected by JavaScript -->
+    </section>
+
+  </main>
+
+  <!-- Stock Details Bottom Sheet Modal -->
+  <div id="stockBottomSheet" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex flex-col justify-end transition-opacity">
+    <div class="max-w-2xl w-full mx-auto bg-slate-900 border-t border-slate-700 rounded-t-2xl shadow-2xl max-h-[92vh] flex flex-col overflow-hidden">
+      
+      <!-- Sheet Header -->
+      <div class="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span id="sheetRank" class="px-1.5 py-0.5 text-[10px] rounded bg-slate-800 text-cyan-400 font-semibold font-num">#1</span>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h3 id="sheetName" class="text-sm font-semibold text-white tracking-tight">삼성전자</h3>
+              <span id="sheetCode" class="text-[10px] text-slate-400 font-mono">005930</span>
+            </div>
+            <span id="sheetSector" class="text-[10px] text-slate-400 font-normal">반도체</span>
+          </div>
+        </div>
+
+        <!-- Price & Rate -->
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <div id="sheetPrice" class="text-sm font-semibold text-slate-100 font-num">81,400원</div>
+            <div id="sheetRate" class="text-[11px] font-semibold text-rose-400 font-num">+2.15%</div>
+          </div>
+          <button onclick="closeStockBottomSheet()" class="p-1 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sheet Scroll Content -->
+      <div class="flex-1 overflow-y-auto p-3.5 space-y-3.5 no-scrollbar">
+
+        <!-- Chart Controls (Minute Candles Dropdown, Period Tabs, and Volume Profile Toggle) -->
+        <div class="flex items-center justify-between flex-wrap gap-1.5">
+          <div class="flex items-center gap-1.5">
+            
+            <!-- Minute Candles Select Dropdown (증권통 MTS 스타일) -->
+            <div class="relative inline-flex items-center">
+              <select id="minuteSelectDropdown" onchange="onMinuteDropdownChange(this.value)" class="appearance-none bg-slate-800 text-slate-200 border border-slate-700/80 rounded px-2.5 py-1 pr-6 text-[10px] font-medium outline-none focus:border-cyan-500 transition-colors cursor-pointer">
+                <option value="" disabled selected>분봉 선택 ▼</option>
+                <option value="60M">1시간봉 (60분)</option>
+                <option value="30M">30분봉</option>
+                <option value="10M">10분봉</option>
+                <option value="5M">5분봉</option>
+                <option value="3M">3분봉</option>
+                <option value="1M">1분봉</option>
+              </select>
+              <div class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 text-[9px]">
+                ▼
+              </div>
+            </div>
+
+            <!-- Standard Period Tabs -->
+            <div class="flex items-center gap-1">
+              <button id="btnTf80" onclick="switchChartTf('80')" class="px-2 py-0.5 rounded text-[10px] font-medium bg-cyan-500 text-white transition-colors">일봉</button>
+              <button id="btnTfWeek" onclick="switchChartTf('W')" class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors">주봉</button>
+              <button id="btnTfMonth" onclick="switchChartTf('M')" class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors">월봉</button>
+            </div>
+          </div>
+
+          <!-- Volume Profile One-Touch Toggle Button -->
+          <button id="btnToggleVP" onclick="toggleVolumeProfile()" class="px-2.5 py-0.5 rounded-full text-[10px] font-medium border border-cyan-500/70 text-cyan-300 bg-cyan-950/40 hover:bg-cyan-900/60 transition-colors flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+            <span id="vpBtnText">매물대 ON</span>
+          </button>
+        </div>
+
+        <!-- Chart HUD Information Bar -->
+        <div id="chartHudBox" class="flex flex-wrap items-center justify-between text-[10px] text-slate-400 bg-slate-950/80 px-2 py-1 rounded border border-slate-800 font-num">
+          <div class="flex items-center gap-2">
+            <span>시 <span id="hudOpen" class="text-slate-200">-</span></span>
+            <span>고 <span id="hudHigh" class="text-slate-200">-</span></span>
+            <span>저 <span id="hudLow" class="text-slate-200">-</span></span>
+            <span>종 <span id="hudClose" class="text-slate-200">-</span></span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span>거래량 <span id="hudVol" class="text-slate-200">-</span></span>
+            <div class="flex items-center gap-1.5 text-[9px]">
+              <span class="text-amber-400">MA5</span>
+              <span class="text-rose-400">MA20</span>
+              <span class="text-emerald-400">MA60</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 80-Candle + 60-Bin Heatmap Volume Profile Canvas Container -->
+        <div class="relative w-full h-56 sm:h-64 bg-slate-950 rounded-lg border border-slate-800 overflow-hidden select-none">
+          <canvas id="candleChartCanvas" class="w-full h-full block cursor-crosshair"></canvas>
+          
+          <!-- Dynamic Floating Badge for Volume Profile / Crosshair Hover -->
+          <div id="vpFloatingBadge" class="absolute top-2 right-2 pointer-events-none hidden px-2 py-0.5 rounded bg-slate-900/90 border border-cyan-500/60 text-cyan-300 text-[10px] font-num shadow-lg">
+            매물평균: -
+          </div>
+        </div>
+
+        <!-- Key Quant Indicators Grid -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="bg-slate-950/60 p-2 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400">14일 RSI</span>
+            <div id="sheetRsi" class="text-xs font-semibold text-slate-200 font-num mt-0.5">38.4</div>
+          </div>
+          <div class="bg-slate-950/60 p-2 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400">20일선 이격도</span>
+            <div id="sheetDisparity" class="text-xs font-semibold text-slate-200 font-num mt-0.5">97.8%</div>
+          </div>
+          <div class="bg-slate-950/60 p-2 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400">수급 스코어</span>
+            <div id="sheetSupplyScore" class="text-xs font-semibold text-cyan-400 font-num mt-0.5">88점</div>
+          </div>
+        </div>
+
+        <!-- Major Investors (Foreign & Institutional) Breakdown -->
+        <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-medium text-slate-300">최근 5일 메이저 순매수 동향</span>
+            <span class="text-[10px] text-slate-400 font-num">단위: 억 원</span>
+          </div>
+          <div class="flex items-center justify-between text-[11px] font-num">
+            <div>외국인: <span id="sheetForeignFlow" class="font-semibold text-rose-400">+1,420억</span></div>
+            <div>기관계: <span id="sheetInstFlow" class="font-semibold text-rose-400">+2,150억</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Dual Engine Setup Modal -->
+  <div id="dualEngineModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-3">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-700 rounded-xl p-4 shadow-2xl space-y-3.5">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-white">시세 엔진 & 보안 설정</h3>
+        <button onclick="closeDualEngineModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <p class="text-[11px] text-slate-400 leading-relaxed">
+        샤오신패드와 같이 키 유출이 불안한 기기에서는 키 없이 <strong>[🌐 공개 시세망]</strong>으로 안전하게 관망하고, 아이폰 16에서는 <strong>[🟢 한투 KIS 직결]</strong>을 등록하여 사용할 수 있습니다.
+      </p>
+
+      <div class="space-y-2">
+        <div>
+          <label class="block text-[10px] text-slate-300 mb-0.5 font-medium">한국투자증권 AppKey</label>
+          <input id="inputAppKey" type="password" placeholder="발급받은 AppKey 입력 (선택)" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 outline-none focus:border-cyan-500 font-mono">
+        </div>
+        <div>
+          <label class="block text-[10px] text-slate-300 mb-0.5 font-medium">한국투자증권 AppSecret</label>
+          <input id="inputAppSecret" type="password" placeholder="발급받은 AppSecret 입력 (선택)" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 outline-none focus:border-cyan-500 font-mono">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-1">
+        <button onclick="resetEngineKeys()" class="text-[11px] text-rose-400 hover:underline">키 초기화 (공개망 복귀)</button>
+        <div class="flex items-center gap-2">
+          <button onclick="closeDualEngineModal()" class="px-3 py-1 rounded bg-slate-800 text-slate-300 text-xs">닫기</button>
+          <button onclick="saveEngineKeys()" class="px-3 py-1 rounded bg-cyan-500 text-white font-semibold text-xs shadow">저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sector TOP 10 Stocks Modal -->
+  <div id="sectorTop10Modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-3">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-700 rounded-xl p-4 shadow-2xl max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div>
+          <h3 id="sectorModalTitle" class="text-sm font-semibold text-white">섹터 TOP 10</h3>
+          <span id="sectorModalDesc" class="text-[10px] text-slate-400">6개월 누적 급등 릴레이</span>
+        </div>
+        <button onclick="closeSectorTop10Modal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <div id="sectorModalList" class="flex-1 overflow-y-auto py-2 space-y-1.5 no-scrollbar text-xs">
+        <!-- Dynamically injected -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Client JavaScript Logic -->
+  <script>
+  function formatCommaNumber(val, decimals = 0) {
+    if (val === undefined || val === null || isNaN(val)) return '0';
+    return Number(val).toLocaleString('ko-KR', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    });
+  }
+
+  function formatKrw(val) {
+    return formatCommaNumber(val, 0) + '원';
+  }
+
+  function formatRate(val) {
+    const num = Number(val);
+    const sign = num > 0 ? '+' : '';
+    return sign + num.toFixed(2) + '%';
+  }
+
+  function getRateColor(val) {
+    const num = Number(val);
+    if (num > 0) return 'text-rose-400';
+    if (num < 0) return 'text-blue-400';
+    return 'text-slate-400';
+  }
+
+  /* Global Indices State: Intraday Session Progress Simulation (Max 36 time slots in a trading day) */
+  const MAX_INTRADAY_SLOTS = 36;
+  const LIVE_INDICES = {
+    dji: { 
+      name: "다우존스", 
+      base: 51232, 
+      price: 51232, 
+      rate: 0.10, 
+      isFloat: false, 
+      history: [51180, 51190, 51175, 51200, 51215, 51205, 51220, 51210, 51230, 51225, 51240, 51235, 51220, 51215, 51228, 51235, 51242, 51238, 51245, 51232] 
+    },
+    ixic: { 
+      name: "나스닥", 
+      base: 27173, 
+      price: 27173, 
+      rate: -1.33, 
+      isFloat: false, 
+      history: [27540, 27500, 27460, 27420, 27380, 27350, 27310, 27280, 27260, 27240, 27210, 27190, 27210, 27220, 27195, 27180, 27190, 27175, 27168, 27173] 
+    },
+    spx: { 
+      name: "S&P 500", 
+      base: 7765.4, 
+      price: 7765.4, 
+      rate: -0.47, 
+      isFloat: true, 
+      history: [7802.1, 7798.5, 7792.0, 7788.4, 7783.1, 7779.0, 7775.2, 7772.0, 7769.5, 7767.8, 7765.0, 7768.2, 7770.1, 7766.5, 7764.2, 7766.0, 7767.1, 7764.8, 7763.9, 7765.4] 
+    },
+    krw: { 
+      name: "원/달러", 
+      base: 1342.6, 
+      price: 1342.6, 
+      rate: -0.10, 
+      isFloat: true, 
+      history: [1344.2, 1344.0, 1343.8, 1343.7, 1343.5, 1343.3, 1343.1, 1343.0, 1342.9, 1342.8, 1342.7, 1342.8, 1342.9, 1342.7, 1342.6, 1342.5, 1342.6, 1342.7, 1342.5, 1342.6] 
+    },
+    nq: { 
+      name: "나스닥 선물", 
+      base: 31133, 
+      price: 31133, 
+      rate: 0.53, 
+      isFloat: false, 
+      history: [30970, 30990, 31010, 31030, 31050, 31040, 31065, 31080, 31095, 31110, 31100, 31115, 31125, 31120, 31135, 31140, 31130, 31145, 31140, 31133] 
+    }
+  };
+
+  const SECTOR_STREAK_LIST = [
+    { name: "조선/해운", return6M: 42.6, topStock: "HD한국조선해양", count: 12 },
+    { name: "방산/항공우주", return6M: 38.9, topStock: "한화에어로스페이스", count: 10 },
+    { name: "전력/전선인프라", return6M: 35.1, topStock: "LS ELECTRIC", count: 9 },
+    { name: "금융/밸류업", return6M: 28.4, topStock: "KB금융", count: 14 },
+    { name: "바이오/CDMO", return6M: 24.8, topStock: "삼성바이오로직스", count: 11 },
+    { name: "2차전지/소재", return6M: -8.5, topStock: "LG에너지솔루션", count: 13 },
+    { name: "AI반도체/HBM", return6M: 52.4, topStock: "SK하이닉스", count: 15, isPredicted: true, pType: "gold" },
+    { name: "K-방산수주", return6M: 48.7, topStock: "현대로템", count: 8, isPredicted: true, pType: "lime" }
+  ];
+
+  /* 80 Top KOSPI Stocks Complete Dataset */
+  const KOSPI_80_DATA = [
+    { rank: 1, name: "삼성전자", code: "005930", price: 81400, rate: 2.15, sector: "반도체", quantScore: 88, rsi: 38.4, disparity: 97.8, supplyScore: 88, foreignFlow: 1420, instFlow: 2150 },
+    { rank: 2, name: "SK하이닉스", code: "000660", price: 231500, rate: 3.42, sector: "반도체", quantScore: 92, rsi: 44.1, disparity: 99.2, supplyScore: 94, foreignFlow: 980, instFlow: 1240 },
+    { rank: 3, name: "LG에너지솔루션", code: "373220", price: 385000, rate: -0.65, sector: "2차전지", quantScore: 71, rsi: 41.2, disparity: 95.3, supplyScore: 68, foreignFlow: -120, instFlow: 310 },
+    { rank: 4, name: "삼성바이오로직스", code: "207940", price: 982000, rate: 1.13, sector: "바이오", quantScore: 86, rsi: 52.6, disparity: 101.4, supplyScore: 82, foreignFlow: 450, instFlow: 620 },
+    { rank: 5, name: "현대차", code: "005380", price: 258000, rate: 0.78, sector: "자동차", quantScore: 83, rsi: 48.9, disparity: 98.6, supplyScore: 79, foreignFlow: 310, instFlow: 540 },
+    { rank: 6, name: "삼성전자우", code: "005935", price: 64200, rate: 1.58, sector: "반도체", quantScore: 80, rsi: 39.8, disparity: 98.1, supplyScore: 76, foreignFlow: 210, instFlow: 180 },
+    { rank: 7, name: "기아", code: "000270", price: 118400, rate: 0.94, sector: "자동차", quantScore: 81, rsi: 47.3, disparity: 99.0, supplyScore: 78, foreignFlow: 240, instFlow: 380 },
+    { rank: 8, name: "셀트리온", code: "068270", price: 196400, rate: 1.87, sector: "바이오", quantScore: 85, rsi: 51.1, disparity: 100.8, supplyScore: 84, foreignFlow: 390, instFlow: 470 },
+    { rank: 9, name: "KB금융", code: "105560", price: 89400, rate: 1.25, sector: "금융", quantScore: 89, rsi: 54.2, disparity: 102.1, supplyScore: 87, foreignFlow: 510, instFlow: 720 },
+    { rank: 10, name: "신한지주", code: "055550", price: 54800, rate: 0.92, sector: "금융", quantScore: 84, rsi: 52.0, disparity: 101.5, supplyScore: 81, foreignFlow: 280, instFlow: 430 },
+    { rank: 11, name: "POSCO홀딩스", code: "005490", price: 365000, rate: -0.82, sector: "철강", quantScore: 74, rsi: 37.6, disparity: 94.9, supplyScore: 70, foreignFlow: -80, instFlow: 190 },
+    { rank: 12, name: "NAVER", code: "035420", price: 174200, rate: 2.11, sector: "플랫폼", quantScore: 82, rsi: 49.8, disparity: 100.2, supplyScore: 79, foreignFlow: 340, instFlow: 260 },
+    { rank: 13, name: "삼성SDI", code: "006400", price: 342000, rate: -1.16, sector: "2차전지", quantScore: 69, rsi: 36.2, disparity: 93.8, supplyScore: 65, foreignFlow: -150, instFlow: 80 },
+    { rank: 14, name: "현대모비스", code: "012330", price: 234500, rate: 0.64, sector: "자동차", quantScore: 77, rsi: 46.5, disparity: 98.4, supplyScore: 75, foreignFlow: 110, instFlow: 190 },
+    { rank: 15, name: "하나금융지주", code: "086790", price: 62700, rate: 1.13, sector: "금융", quantScore: 85, rsi: 53.7, disparity: 101.9, supplyScore: 83, foreignFlow: 310, instFlow: 410 },
+    { rank: 16, name: "삼성물산", code: "028260", price: 148200, rate: 0.47, sector: "지주", quantScore: 79, rsi: 48.1, disparity: 99.1, supplyScore: 77, foreignFlow: 130, instFlow: 220 },
+    { rank: 17, name: "카카오", code: "035720", price: 41200, rate: 1.48, sector: "플랫폼", quantScore: 73, rsi: 43.6, disparity: 97.4, supplyScore: 71, foreignFlow: 90, instFlow: 140 },
+    { rank: 18, name: "한화에어로스페이스", code: "012450", price: 332000, rate: 4.24, sector: "방산/중공업", quantScore: 94, rsi: 62.4, disparity: 105.8, supplyScore: 96, foreignFlow: 840, instFlow: 970 },
+    { rank: 19, name: "메리츠금융지주", code: "138040", price: 92100, rate: 0.88, sector: "금융", quantScore: 87, rsi: 55.4, disparity: 102.5, supplyScore: 85, foreignFlow: 290, instFlow: 360 },
+    { rank: 20, name: "LG화학", code: "051910", price: 318000, rate: -0.78, sector: "화학", quantScore: 72, rsi: 38.9, disparity: 95.2, supplyScore: 68, foreignFlow: -90, instFlow: 130 },
+    { rank: 21, name: "HD현대중공업", code: "329180", price: 198000, rate: 3.12, sector: "방산/중공업", quantScore: 91, rsi: 59.8, disparity: 104.2, supplyScore: 90, foreignFlow: 420, instFlow: 610 },
+    { rank: 22, name: "크래프톤", code: "259960", price: 326000, rate: 2.35, sector: "게임", quantScore: 84, rsi: 54.1, disparity: 102.0, supplyScore: 82, foreignFlow: 260, instFlow: 330 },
+    { rank: 23, name: "삼성생명", code: "032830", price: 98500, rate: 0.51, sector: "금융", quantScore: 78, rsi: 47.9, disparity: 99.4, supplyScore: 76, foreignFlow: 80, instFlow: 140 },
+    { rank: 24, name: "LG전자", code: "066570", price: 101200, rate: 1.10, sector: "전자", quantScore: 79, rsi: 45.8, disparity: 98.7, supplyScore: 77, foreignFlow: 150, instFlow: 210 },
+    { rank: 25, name: "포스코퓨처엠", code: "003670", price: 214000, rate: -1.38, sector: "2차전지", quantScore: 68, rsi: 35.8, disparity: 93.4, supplyScore: 64, foreignFlow: -110, instFlow: 60 },
+    { rank: 26, name: "고려아연", code: "010130", price: 684000, rate: 1.64, sector: "비철금속", quantScore: 82, rsi: 50.4, disparity: 100.9, supplyScore: 80, foreignFlow: 190, instFlow: 240 },
+    { rank: 27, name: "한국전력", code: "015760", price: 21850, rate: 0.69, sector: "유틸리티", quantScore: 76, rsi: 46.2, disparity: 98.9, supplyScore: 74, foreignFlow: 70, instFlow: 130 },
+    { rank: 28, name: "KT&G", code: "033780", price: 108500, rate: 0.46, sector: "소비재", quantScore: 83, rsi: 51.3, disparity: 100.5, supplyScore: 81, foreignFlow: 210, instFlow: 290 },
+    { rank: 29, name: "삼성화재", code: "000810", price: 374000, rate: 0.81, sector: "금융", quantScore: 85, rsi: 52.8, disparity: 101.3, supplyScore: 83, foreignFlow: 180, instFlow: 260 },
+    { rank: 30, name: "SK이노베이션", code: "096770", price: 118200, rate: -0.51, sector: "정유", quantScore: 71, rsi: 39.4, disparity: 96.1, supplyScore: 69, foreignFlow: -40, instFlow: 90 },
+    { rank: 31, name: "HD한국조선해양", code: "009540", price: 184500, rate: 2.79, sector: "방산/중공업", quantScore: 92, rsi: 58.7, disparity: 103.8, supplyScore: 91, foreignFlow: 380, instFlow: 510 },
+    { rank: 32, name: "기업은행", code: "024110", price: 14750, rate: 0.68, sector: "금융", quantScore: 82, rsi: 50.1, disparity: 100.4, supplyScore: 80, foreignFlow: 140, instFlow: 190 },
+    { rank: 33, name: "SK텔레콤", code: "017670", price: 56200, rate: 0.36, sector: "통신", quantScore: 80, rsi: 48.7, disparity: 99.8, supplyScore: 78, foreignFlow: 110, instFlow: 160 },
+    { rank: 34, name: "두산에너빌리티", code: "034020", price: 20450, rate: 2.51, sector: "원전/기계", quantScore: 87, rsi: 56.4, disparity: 102.8, supplyScore: 86, foreignFlow: 310, instFlow: 440 },
+    { rank: 35, name: "우리금융지주", code: "316140", price: 15850, rate: 0.96, sector: "금융", quantScore: 84, rsi: 51.9, disparity: 101.1, supplyScore: 82, foreignFlow: 190, instFlow: 270 },
+    { rank: 36, name: "카카오뱅크", code: "323410", price: 21950, rate: 1.15, sector: "인터넷은행", quantScore: 75, rsi: 44.8, disparity: 98.2, supplyScore: 73, foreignFlow: 60, instFlow: 110 },
+    { rank: 37, name: "한온시스템", code: "018880", price: 4210, rate: -0.24, sector: "자동차부품", quantScore: 68, rsi: 37.1, disparity: 94.6, supplyScore: 65, foreignFlow: -30, instFlow: 40 },
+    { rank: 38, name: "현대로템", code: "064350", price: 56800, rate: 3.84, sector: "방산/중공업", quantScore: 93, rsi: 61.5, disparity: 105.1, supplyScore: 95, foreignFlow: 460, instFlow: 580 },
+    { rank: 39, name: "하이브", code: "352820", price: 178000, rate: 1.71, sector: "엔터", quantScore: 79, rsi: 48.3, disparity: 99.5, supplyScore: 78, foreignFlow: 140, instFlow: 190 },
+    { rank: 40, name: "KT", code: "030200", price: 41800, rate: 0.48, sector: "통신", quantScore: 81, rsi: 49.6, disparity: 100.1, supplyScore: 79, foreignFlow: 90, instFlow: 150 },
+    { rank: 41, name: "LG", code: "003550", price: 81200, rate: 0.37, sector: "지주", quantScore: 78, rsi: 46.9, disparity: 98.8, supplyScore: 76, foreignFlow: 70, instFlow: 120 },
+    { rank: 42, name: "에코프로머티", code: "450080", price: 74500, rate: -1.72, sector: "2차전지", quantScore: 67, rsi: 34.2, disparity: 92.5, supplyScore: 63, foreignFlow: -80, instFlow: 30 },
+    { rank: 43, name: "대한항공", code: "003490", price: 23600, rate: 0.85, sector: "항공", quantScore: 77, rsi: 47.4, disparity: 99.3, supplyScore: 75, foreignFlow: 80, instFlow: 110 },
+    { rank: 44, name: "S-Oil", code: "010950", price: 67400, rate: -0.44, sector: "정유", quantScore: 73, rsi: 41.6, disparity: 97.2, supplyScore: 71, foreignFlow: -20, instFlow: 70 },
+    { rank: 45, name: "한국항공우주", code: "047810", price: 54600, rate: 2.44, sector: "방산/중공업", quantScore: 89, rsi: 57.2, disparity: 103.1, supplyScore: 88, foreignFlow: 270, instFlow: 360 },
+    { rank: 46, name: "삼성에스디에스", code: "018260", price: 147800, rate: 1.09, sector: "IT서비스", quantScore: 80, rsi: 49.1, disparity: 99.9, supplyScore: 78, foreignFlow: 120, instFlow: 170 },
+    { rank: 47, name: "한화오션", code: "042660", price: 34200, rate: 2.86, sector: "방산/중공업", quantScore: 90, rsi: 58.1, disparity: 103.5, supplyScore: 89, foreignFlow: 290, instFlow: 390 },
+    { rank: 48, name: "미래에셋증권", code: "006800", price: 8740, rate: 0.81, sector: "증권", quantScore: 82, rsi: 50.8, disparity: 100.7, supplyScore: 80, foreignFlow: 110, instFlow: 160 },
+    { rank: 49, name: "맥쿼리인프라", code: "088980", price: 12150, rate: 0.16, sector: "인프라", quantScore: 80, rsi: 48.5, disparity: 99.7, supplyScore: 77, foreignFlow: 50, instFlow: 90 },
+    { rank: 50, name: "현대글로비스", code: "086280", price: 124800, rate: 1.22, sector: "물류", quantScore: 83, rsi: 51.5, disparity: 100.9, supplyScore: 81, foreignFlow: 160, instFlow: 230 },
+    { rank: 51, name: "한화시스템", code: "272210", price: 19450, rate: 2.91, sector: "방산/중공업", quantScore: 89, rsi: 57.8, disparity: 103.2, supplyScore: 88, foreignFlow: 180, instFlow: 240 },
+    { rank: 52, name: "LS ELECTRIC", code: "010120", price: 154000, rate: 3.36, sector: "전력인프라", quantScore: 92, rsi: 59.4, disparity: 104.5, supplyScore: 93, foreignFlow: 310, instFlow: 420 },
+    { rank: 53, name: "HD현대일렉트릭", code: "267260", price: 312000, rate: 3.65, sector: "전력인프라", quantScore: 93, rsi: 60.8, disparity: 105.2, supplyScore: 94, foreignFlow: 370, instFlow: 490 },
+    { rank: 54, name: "알테오젠", code: "196170", price: 378000, rate: 4.13, sector: "바이오", quantScore: 94, rsi: 63.1, disparity: 106.4, supplyScore: 95, foreignFlow: 490, instFlow: 620 },
+    { rank: 55, name: "삼양식품", code: "003230", price: 542000, rate: 2.65, sector: "식품", quantScore: 88, rsi: 56.2, disparity: 102.7, supplyScore: 87, foreignFlow: 210, instFlow: 290 },
+    { rank: 56, name: "LIG넥스원", code: "079550", price: 218000, rate: 3.81, sector: "방산/중공업", quantScore: 93, rsi: 61.2, disparity: 104.9, supplyScore: 94, foreignFlow: 340, instFlow: 430 },
+    { rank: 57, name: "DB손해보험", code: "005830", price: 112400, rate: 0.99, sector: "금융", quantScore: 85, rsi: 52.3, disparity: 101.4, supplyScore: 83, foreignFlow: 150, instFlow: 210 },
+    { rank: 58, name: "HMM", code: "011200", price: 18250, rate: 1.39, sector: "해운", quantScore: 80, rsi: 49.3, disparity: 99.8, supplyScore: 78, foreignFlow: 120, instFlow: 160 },
+    { rank: 59, name: "CJ제일제당", code: "097950", price: 341000, rate: 0.59, sector: "식품", quantScore: 78, rsi: 47.1, disparity: 99.0, supplyScore: 76, foreignFlow: 80, instFlow: 120 },
+    { rank: 60, name: "엔씨소프트", code: "036570", price: 214500, rate: 1.42, sector: "게임", quantScore: 76, rsi: 45.9, disparity: 98.3, supplyScore: 74, foreignFlow: 90, instFlow: 130 },
+    { rank: 61, name: "현대제철", code: "004020", price: 28400, rate: -0.35, sector: "철강", quantScore: 72, rsi: 39.1, disparity: 95.7, supplyScore: 69, foreignFlow: -30, instFlow: 60 },
+    { rank: 62, name: "금양", code: "001570", price: 48900, rate: -2.40, sector: "2차전지", quantScore: 65, rsi: 33.1, disparity: 91.2, supplyScore: 61, foreignFlow: -90, instFlow: 20 },
+    { rank: 63, name: "코스맥스", code: "192820", price: 138500, rate: 1.84, sector: "화장품", quantScore: 82, rsi: 51.0, disparity: 100.6, supplyScore: 81, foreignFlow: 130, instFlow: 170 },
+    { rank: 64, name: "아모레퍼시픽", code: "090430", price: 142000, rate: 1.28, sector: "화장품", quantScore: 80, rsi: 49.7, disparity: 99.9, supplyScore: 79, foreignFlow: 110, instFlow: 150 },
+    { rank: 65, name: "LG유플러스", code: "032640", price: 9840, rate: 0.20, sector: "통신", quantScore: 77, rsi: 46.8, disparity: 98.9, supplyScore: 75, foreignFlow: 40, instFlow: 70 },
+    { rank: 66, name: "두산밥캣", code: "241560", price: 44200, rate: 1.49, sector: "기계", quantScore: 81, rsi: 50.2, disparity: 100.3, supplyScore: 80, foreignFlow: 120, instFlow: 160 },
+    { rank: 67, name: "한미반도체", code: "042700", price: 124000, rate: 3.77, sector: "반도체", quantScore: 92, rsi: 60.1, disparity: 104.8, supplyScore: 93, foreignFlow: 320, instFlow: 410 },
+    { rank: 68, name: "이수페타시스", code: "007660", price: 46200, rate: 3.47, sector: "IT부품", quantScore: 91, rsi: 59.2, disparity: 104.1, supplyScore: 91, foreignFlow: 240, instFlow: 310 },
+    { rank: 69, name: "포스코인터내셔널", code: "047050", price: 58900, rate: 1.55, sector: "상사/에너지", quantScore: 83, rsi: 51.8, disparity: 101.0, supplyScore: 82, foreignFlow: 150, instFlow: 200 },
+    { rank: 70, name: "팬오션", code: "028670", price: 4120, rate: 0.73, sector: "해운", quantScore: 76, rsi: 46.0, disparity: 98.5, supplyScore: 74, foreignFlow: 50, instFlow: 80 },
+    { rank: 71, name: "씨에스윈드", code: "112610", price: 56400, rate: 1.99, sector: "신재생", quantScore: 81, rsi: 51.4, disparity: 100.7, supplyScore: 80, foreignFlow: 110, instFlow: 160 },
+    { rank: 72, name: "키움증권", code: "039490", price: 128500, rate: 0.94, sector: "금융", quantScore: 83, rsi: 52.1, disparity: 101.2, supplyScore: 82, foreignFlow: 130, instFlow: 170 },
+    { rank: 73, name: "현대건설", code: "000720", price: 31400, rate: 0.64, sector: "건설", quantScore: 75, rsi: 45.2, disparity: 98.1, supplyScore: 73, foreignFlow: 60, instFlow: 90 },
+    { rank: 74, name: "유한양행", code: "000100", price: 139000, rate: 2.81, sector: "바이오", quantScore: 90, rsi: 58.4, disparity: 103.7, supplyScore: 89, foreignFlow: 260, instFlow: 340 },
+    { rank: 75, name: "넷마블", code: "251270", price: 58200, rate: 1.22, sector: "게임", quantScore: 78, rsi: 48.0, disparity: 99.4, supplyScore: 77, foreignFlow: 80, instFlow: 120 },
+    { rank: 76, name: "GS", code: "078930", price: 47800, rate: 0.42, sector: "지주", quantScore: 77, rsi: 46.7, disparity: 98.8, supplyScore: 75, foreignFlow: 50, instFlow: 80 },
+    { rank: 77, name: "GS리테일", code: "007070", price: 21900, rate: 0.23, sector: "유통", quantScore: 75, rsi: 45.1, disparity: 98.0, supplyScore: 73, foreignFlow: 30, instFlow: 50 },
+    { rank: 78, name: "현대오토에버", code: "307950", price: 162000, rate: 1.57, sector: "IT서비스", quantScore: 82, rsi: 51.3, disparity: 100.8, supplyScore: 81, foreignFlow: 120, instFlow: 160 },
+    { rank: 79, name: "두산", code: "000150", price: 194000, rate: 2.65, sector: "지주", quantScore: 88, rsi: 56.9, disparity: 103.0, supplyScore: 87, foreignFlow: 190, instFlow: 250 },
+    { rank: 80, name: "에스원", code: "012750", price: 62400, rate: 0.16, sector: "보안서비스", quantScore: 76, rsi: 46.3, disparity: 98.6, supplyScore: 74, foreignFlow: 40, instFlow: 60 }
+  ];
+
+  /* Active State Variables */
+  let currentUniverseMax = 50;
+  let currentSortMode = 'rank';
+  let currentSectorFilter = 'ALL';
+  let selectedStock = null;
+  let chartTf = '80'; // '60M', '30M', '10M', '5M', '3M', '1M', '80', 'W', 'M'
+  let showVolumeProfile = true;
+  let candleData80 = [];
+  let crosshairPos = null;
+
+  function renderSectorStreakRelay() {
+    const bar = document.getElementById('sectorStreakRelay');
+    if (!bar) return;
+
+    bar.innerHTML = SECTOR_STREAK_LIST.map((item) => {
+      if (item.isPredicted) {
+        const isGold = item.pType === 'gold';
+        const cardBg = isGold ? 'bg-gradient-to-r from-amber-950/80 via-yellow-900/60 to-slate-900 border-amber-500/70 text-amber-200' : 'bg-gradient-to-r from-lime-950/80 via-emerald-900/60 to-slate-900 border-lime-400/80 text-lime-200';
+        const badgeBg = isGold ? 'bg-amber-400 text-slate-950' : 'bg-lime-400 text-slate-950';
+
+        return `
+          <div onclick="openSectorTop10Modal('${item.name}', ${item.return6M})" class="flex-shrink-0 w-36 sm:w-40 p-2 rounded-lg border ${cardBg} shadow-md cursor-pointer hover:scale-[1.02] transition-transform">
+            <div class="flex items-center justify-between">
+              <span class="text-[9px] px-1 py-0.2 rounded font-semibold uppercase ${badgeBg}">급등예상</span>
+              <span class="text-[10px] font-semibold font-num text-rose-400">+${item.return6M}%</span>
+            </div>
+            <div class="font-semibold text-xs text-white mt-1 truncate">${item.name}</div>
+            <div class="text-[10px] text-slate-300 flex items-center justify-between mt-0.5">
+              <span class="truncate">${item.topStock}</span>
+              <span class="font-num text-[9px] opacity-80">${item.count}종목</span>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div onclick="openSectorTop10Modal('${item.name}', ${item.return6M})" class="flex-shrink-0 w-32 sm:w-36 p-2 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-slate-700 cursor-pointer hover:scale-[1.02] transition-transform">
+          <div class="flex items-center justify-between text-[10px]">
+            <span class="text-slate-400 font-medium">6개월</span>
+            <span class="font-semibold font-num ${item.return6M >= 0 ? 'text-rose-400' : 'text-blue-400'}">${item.return6M >= 0 ? '+' : ''}${item.return6M}%</span>
+          </div>
+          <div class="font-semibold text-xs text-slate-100 mt-1 truncate">${item.name}</div>
+          <div class="text-[10px] text-slate-400 flex items-center justify-between mt-0.5">
+            <span class="truncate">${item.topStock}</span>
+            <span class="font-num text-[9px] text-slate-500">${item.count}종목</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  /* Rendering Stock Cards according to filter & sort */
+  function renderStockRankings() {
+    const container = document.getElementById('stockListContainer');
+    if (!container) return;
+
+    let list = KOSPI_80_DATA.filter(st => st.rank <= currentUniverseMax);
+
+    if (currentSectorFilter !== 'ALL') {
+      list = list.filter(st => st.sector.includes(currentSectorFilter));
+    }
+
+    if (currentSortMode === 'rank') {
+      list.sort((a, b) => a.rank - b.rank);
+    } else if (currentSortMode === 'quant') {
+      list.sort((a, b) => b.quantScore - a.quantScore);
+    } else if (currentSortMode === 'rate') {
+      list.sort((a, b) => b.rate - a.rate);
+    } else if (currentSortMode === 'supply') {
+      list.sort((a, b) => (b.foreignFlow + b.instFlow) - (a.foreignFlow + a.instFlow));
+    }
+
+    document.getElementById('stockCountBadge').textContent = `${list.length}개 종목`;
+
+    container.innerHTML = list.map((st) => {
+      const isTop3Quant = st.quantScore >= 90;
+      return `
+        <div onclick="openStockBottomSheet('${st.code}')" class="bg-slate-900/80 border border-slate-800/80 rounded-xl p-3 hover:border-slate-700 hover:bg-slate-900 transition-all cursor-pointer relative overflow-hidden">
+          
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-md bg-slate-800 text-slate-300 flex items-center justify-center text-[10px] font-semibold font-num">
+                ${st.rank}
+              </span>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <h4 class="text-xs sm:text-sm font-semibold text-slate-100">${st.name}</h4>
+                  <span class="text-[9px] text-slate-400 font-mono">${st.code}</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-normal">${st.sector}</span>
+              </div>
+            </div>
+
+            <!-- Price & Rate -->
+            <div class="text-right">
+              <div id="stock-price-${st.code}" class="text-xs sm:text-sm font-semibold text-slate-100 font-num">
+                ${formatKrw(st.price)}
+              </div>
+              <div id="stock-rate-${st.code}" class="text-[11px] font-semibold font-num ${getRateColor(st.rate)}">
+                ${formatRate(st.rate)}
+              </div>
+            </div>
+          </div>
+
+          <!-- Indicators Bar -->
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-400">
+            <div class="flex items-center gap-1">
+              <span class="text-slate-400">퀀트</span>
+              <span class="font-semibold font-num ${isTop3Quant ? 'text-amber-400' : 'text-cyan-400'}">${st.quantScore}점</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-slate-400">RSI</span>
+              <span class="font-medium font-num text-slate-200">${formatCommaNumber(st.rsi, 1)}</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-slate-400">외+기</span>
+              <span class="font-medium font-num ${st.foreignFlow + st.instFlow >= 0 ? 'text-rose-400' : 'text-blue-400'}">
+                ${formatCommaNumber(st.foreignFlow + st.instFlow, 0)}억
+              </span>
+            </div>
+          </div>
+
+        </div>
+      `;
+    }).join('');
+  }
+
+  function setUniverse(max) {
+    currentUniverseMax = max;
+    const btn50 = document.getElementById('btnUni50');
+    const btn80 = document.getElementById('btnUni80');
+
+    if (max === 50) {
+      btn50.className = "px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all";
+      btn80.className = "px-2 py-0.5 rounded-md text-slate-400 hover:text-slate-200 transition-all";
+    } else {
+      btn80.className = "px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all";
+      btn50.className = "px-2 py-0.5 rounded-md text-slate-400 hover:text-slate-200 transition-all";
+    }
+    renderStockRankings();
+  }
+
+  function setSortMode(mode) {
+    currentSortMode = mode;
+    const btns = {
+      rank: document.getElementById('btnSortRank'),
+      quant: document.getElementById('btnSortQuant'),
+      rate: document.getElementById('btnSortRate'),
+      supply: document.getElementById('btnSortSupply')
+    };
+
+    Object.keys(btns).forEach(k => {
+      if (k === mode) {
+        btns[k].className = "px-2.5 py-1 rounded-md text-[11px] font-medium bg-cyan-500 text-white shadow-sm transition-all";
+      } else {
+        btns[k].className = "px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all";
+      }
+    });
+
+    renderStockRankings();
+  }
+
+  function setSectorFilter(sec) {
+    currentSectorFilter = sec;
+    renderStockRankings();
+  }
+
+  function openStockBottomSheet(code) {
+    const stock = KOSPI_80_DATA.find(s => s.code === code);
+    if (!stock) return;
+    selectedStock = stock;
+
+    document.getElementById('sheetRank').textContent = `#${stock.rank}`;
+    document.getElementById('sheetName').textContent = stock.name;
+    document.getElementById('sheetCode').textContent = stock.code;
+    document.getElementById('sheetSector').textContent = stock.sector;
+    document.getElementById('sheetPrice').textContent = formatKrw(stock.price);
+    document.getElementById('sheetRate').textContent = formatRate(stock.rate);
+    document.getElementById('sheetRate').className = `text-[11px] font-semibold font-num ${getRateColor(stock.rate)}`;
+
+    document.getElementById('sheetRsi').textContent = formatCommaNumber(stock.rsi, 1);
+    document.getElementById('sheetDisparity').textContent = formatCommaNumber(stock.disparity, 1) + '%';
+    document.getElementById('sheetSupplyScore').textContent = formatCommaNumber(stock.supplyScore, 0) + '점';
+    document.getElementById('sheetForeignFlow').textContent = (stock.foreignFlow >= 0 ? '+' : '') + formatCommaNumber(stock.foreignFlow, 0) + '억';
+    document.getElementById('sheetInstFlow').textContent = (stock.instFlow >= 0 ? '+' : '') + formatCommaNumber(stock.instFlow, 0) + '억';
+
+    syncTfControlUI();
+    generate80CandleData(stock.price, chartTf);
+    draw80CandleCanvas();
+
+    document.getElementById('stockBottomSheet').classList.remove('hidden');
+  }
+
+  function openIndexBottomSheet(key) {
+    const idx = LIVE_INDICES[key];
+    if (!idx) return;
+
+    selectedStock = {
+      rank: "INDEX",
+      name: idx.name,
+      code: key.toUpperCase(),
+      sector: "글로벌 매크로 지표",
+      price: idx.price,
+      rate: idx.rate,
+      rsi: 52.4,
+      disparity: 100.8,
+      supplyScore: 88,
+      foreignFlow: 0,
+      instFlow: 0,
+      isFloat: idx.isFloat
+    };
+
+    document.getElementById('sheetRank').textContent = `INDEX`;
+    document.getElementById('sheetName').textContent = idx.name;
+    document.getElementById('sheetCode').textContent = key.toUpperCase();
+    document.getElementById('sheetSector').textContent = "글로벌 매크로 지표";
+    document.getElementById('sheetPrice').textContent = formatCommaNumber(idx.price, idx.isFloat ? 1 : 0);
+    document.getElementById('sheetRate').textContent = formatRate(idx.rate);
+    document.getElementById('sheetRate').className = `text-[11px] font-semibold font-num ${getRateColor(idx.rate)}`;
+
+    document.getElementById('sheetRsi').textContent = '52.4';
+    document.getElementById('sheetDisparity').textContent = '100.8%';
+    document.getElementById('sheetSupplyScore').textContent = '88점';
+    document.getElementById('sheetForeignFlow').textContent = '글로벌 연동';
+    document.getElementById('sheetInstFlow').textContent = '실시간 반영';
+
+    switchChartTf('5M');
+    document.getElementById('stockBottomSheet').classList.remove('hidden');
+  }
+
+  function closeStockBottomSheet() {
+    document.getElementById('stockBottomSheet').classList.add('hidden');
+    selectedStock = null;
+    crosshairPos = null;
+  }
+
+  function onMinuteDropdownChange(val) {
+    if (!val) return;
+    switchChartTf(val);
+  }
+
+  function syncTfControlUI() {
+    const select = document.getElementById('minuteSelectDropdown');
+    const tfMap = {
+      '80': 'btnTf80',
+      'W': 'btnTfWeek',
+      'M': 'btnTfMonth'
+    };
+
+    const isMinute = ['60M', '30M', '10M', '5M', '3M', '1M'].includes(chartTf);
+
+    if (isMinute) {
+      if (select) {
+        select.value = chartTf;
+        select.className = "appearance-none bg-cyan-950/70 text-cyan-300 border border-cyan-500 rounded px-2.5 py-1 pr-6 text-[10px] font-semibold outline-none transition-colors cursor-pointer";
+      }
+      Object.values(tfMap).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = "px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors";
+      });
+    } else {
+      if (select) {
+        select.selectedIndex = 0;
+        select.className = "appearance-none bg-slate-800 text-slate-300 border border-slate-700/80 rounded px-2.5 py-1 pr-6 text-[10px] font-medium outline-none focus:border-cyan-500 transition-colors cursor-pointer";
+      }
+      Object.keys(tfMap).forEach(key => {
+        const el = document.getElementById(tfMap[key]);
+        if (!el) return;
+        if (key === chartTf) {
+          el.className = "px-2 py-0.5 rounded text-[10px] font-medium bg-cyan-500 text-white transition-colors";
+        } else {
+          el.className = "px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors";
+        }
+      });
+    }
+  }
+
+  function switchChartTf(tf) {
+    chartTf = tf;
+    syncTfControlUI();
+
+    if (selectedStock) {
+      generate80CandleData(selectedStock.price, chartTf);
+      draw80CandleCanvas();
+    }
+  }
+
+  function toggleVolumeProfile() {
+    showVolumeProfile = !showVolumeProfile;
+    const btnText = document.getElementById('vpBtnText');
+    const btn = document.getElementById('btnToggleVP');
+    if (showVolumeProfile) {
+      btnText.textContent = "매물대 ON";
+      btn.className = "px-2.5 py-0.5 rounded-full text-[10px] font-medium border border-cyan-500/70 text-cyan-300 bg-cyan-950/40 hover:bg-cyan-900/60 transition-colors flex items-center gap-1";
+    } else {
+      btnText.textContent = "매물대 OFF";
+      btn.className = "px-2.5 py-0.5 rounded-full text-[10px] font-medium border border-slate-700 text-slate-400 bg-slate-800/80 hover:bg-slate-700 transition-colors flex items-center gap-1";
+    }
+    draw80CandleCanvas();
+  }
+
+  function generate80CandleData(currentPrice, tf = chartTf) {
+    const candles = [];
+    let p = currentPrice;
+    const count = 80;
+    const now = new Date();
+
+    const minuteStepMap = {
+      '1M': { mins: 1, volRatio: 0.0025 },
+      '3M': { mins: 3, volRatio: 0.0040 },
+      '5M': { mins: 5, volRatio: 0.0055 },
+      '10M': { mins: 10, volRatio: 0.0075 },
+      '30M': { mins: 30, volRatio: 0.0110 },
+      '60M': { mins: 60, volRatio: 0.0150 }
+    };
+
+    for (let i = count - 1; i >= 0; i--) {
+      let volatilityRatio = 0.018;
+      let dateStr = '';
+
+      if (minuteStepMap[tf]) {
+        const step = minuteStepMap[tf];
+        volatilityRatio = step.volRatio;
+        const t = new Date(now.getTime() - i * step.mins * 60 * 1000);
+        const hh = String(t.getHours()).padStart(2, '0');
+        const mm = String(t.getMinutes()).padStart(2, '0');
+        dateStr = `${hh}:${mm}`;
+      } else if (tf === 'W') {
+        volatilityRatio = 0.038;
+        const d = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+        dateStr = `${d.getMonth() + 1}/${d.getDate()}주`;
+      } else if (tf === 'M') {
+        volatilityRatio = 0.065;
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        dateStr = `${d.getFullYear().toString().slice(2)}/${d.getMonth() + 1}월`;
+      } else {
+        // Daily (80일)
+        volatilityRatio = 0.018;
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        dateStr = `${d.getMonth() + 1}/${d.getDate()}`;
+      }
+
+      const volatility = p * volatilityRatio;
+      const change = (Math.random() - 0.49) * volatility;
+      const close = Math.round(p);
+      const open = Math.round(p - change);
+      const high = Math.round(Math.max(open, close) + Math.random() * (volatility * 0.7));
+      const low = Math.round(Math.min(open, close) - Math.random() * (volatility * 0.7));
+      
+      const baseVol = minuteStepMap[tf] ? 35000 : 180000;
+      const volume = Math.round(baseVol + Math.random() * (baseVol * 2.5));
+
+      candles.push({ open, high, low, close, volume, dateStr });
+      p = open;
+    }
+    candleData80 = candles.reverse();
+  }
+
+  function draw80CandleCanvas() {
+    const canvas = document.getElementById('candleChartCanvas');
+    if (!canvas || candleData80.length === 0) return;
+
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    const w = rect.width;
+    const h = rect.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const len = candleData80.length;
+    let minPrice = Infinity;
+    let maxPrice = -Infinity;
+    let maxVol = 0;
+
+    candleData80.forEach(c => {
+      if (c.low < minPrice) minPrice = c.low;
+      if (c.high > maxPrice) maxPrice = c.high;
+      if (c.volume > maxVol) maxVol = c.volume;
+    });
+
+    const pricePadding = (maxPrice - minPrice) * 0.08 || 100;
+    minPrice -= pricePadding;
+    maxPrice += pricePadding;
+    const priceRange = maxPrice - minPrice;
+
+    const candleChartH = h * 0.76;
+    const volChartH = h * 0.20;
+    const volBaseY = h - 6;
+
+    const getY = (price) => candleChartH - ((price - minPrice) / priceRange) * (candleChartH - 20) - 10;
+    const candleSlotW = w / len;
+    const candleW = Math.max(1.8, candleSlotW * 0.65);
+
+    // 1. Calculate & Draw 60-Bin Gradient Heatmap Volume Profile
+    let activeHoverBin = null;
+    if (showVolumeProfile) {
+      const binsCount = 60;
+      const binStep = priceRange / binsCount;
+      const volumeBins = new Array(binsCount).fill(0);
+
+      candleData80.forEach(c => {
+        const binIdx = Math.min(binsCount - 1, Math.max(0, Math.floor((c.close - minPrice) / binStep)));
+        volumeBins[binIdx] += c.volume;
+      });
+
+      const maxBinVol = Math.max(...volumeBins) || 1;
+      const totalVol = volumeBins.reduce((a, b) => a + b, 0) || 1;
+      const maxBinBarW = w * 0.44;
+
+      for (let b = 0; b < binsCount; b++) {
+        const binPrice = minPrice + (b + 0.5) * binStep;
+        const binY = getY(binPrice);
+        const barRatio = volumeBins[b] / maxBinVol;
+        const barW = barRatio * maxBinBarW;
+        const barH = (priceRange / binsCount) / priceRange * (candleChartH - 20);
+
+        const isHovered = crosshairPos && Math.abs(crosshairPos.y - binY) <= (barH + 2);
+        if (isHovered) {
+          activeHoverBin = {
+            price: Math.round(binPrice),
+            pct: ((volumeBins[b] / totalVol) * 100).toFixed(1)
+          };
+        }
+
+        // Color Interpolation: Low Density = Cold Blue (59, 130, 246) -> High Density = Intense Rose/Red (244, 63, 94)
+        const red = Math.round(59 + (244 - 59) * barRatio);
+        const green = Math.round(130 + (63 - 130) * barRatio);
+        const blue = Math.round(246 + (94 - 246) * barRatio);
+        
+        const baseAlpha = 0.12 + barRatio * 0.28;
+        const finalAlpha = isHovered ? Math.min(0.85, baseAlpha + 0.35) : baseAlpha;
+
+        const barGrad = ctx.createLinearGradient(w - barW, 0, w, 0);
+        barGrad.addColorStop(0, `rgba(${red}, ${green}, ${blue}, ${Math.max(0.04, finalAlpha * 0.3)})`);
+        barGrad.addColorStop(1, `rgba(${red}, ${green}, ${blue}, ${finalAlpha})`);
+
+        ctx.fillStyle = barGrad;
+        ctx.fillRect(w - barW, binY - barH / 2, barW, Math.max(1, barH - 0.5));
+      }
+    }
+
+    // 2. Draw Moving Averages (MA5, MA20, MA60)
+    function drawMA(period, color) {
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      let started = false;
+
+      for (let i = 0; i < len; i++) {
+        if (i < period - 1) continue;
+        let sum = 0;
+        for (let j = 0; j < period; j++) sum += candleData80[i - j].close;
+        const ma = sum / period;
+        const x = i * candleSlotW + candleSlotW / 2;
+        const y = getY(ma);
+
+        if (!started) {
+          ctx.moveTo(x, y);
+          started = true;
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.stroke();
+    }
+
+    drawMA(5, '#fbbf24');   // MA5 (Amber)
+    drawMA(20, '#fb7185');  // MA20 (Rose)
+    drawMA(60, '#34d399');  // MA60 (Emerald)
+
+    // 3. Draw Candles and Volume Bars
+    candleData80.forEach((c, idx) => {
+      const x = idx * candleSlotW + candleSlotW / 2;
+      const isUp = c.close >= c.open;
+      const candleColor = isUp ? '#fb7185' : '#60a5fa';
+
+      // Wick
+      ctx.strokeStyle = candleColor;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, getY(c.high));
+      ctx.lineTo(x, getY(c.low));
+      ctx.stroke();
+
+      // Body
+      const openY = getY(c.open);
+      const closeY = getY(c.close);
+      const bodyTop = Math.min(openY, closeY);
+      const bodyH = Math.max(1.5, Math.abs(closeY - openY));
+
+      ctx.fillStyle = candleColor;
+      ctx.fillRect(x - candleW / 2, bodyTop, candleW, bodyH);
+
+      // Volume Bar
+      const volBarH = (c.volume / maxVol) * volChartH;
+      ctx.fillStyle = isUp ? 'rgba(251, 113, 133, 0.4)' : 'rgba(96, 165, 250, 0.4)';
+      ctx.fillRect(x - candleW / 2, volBaseY - volBarH, candleW, volBarH);
+    });
+
+    // 4. Mark 20-Candle Highest Peak Price in Tiny Text
+    const recent20Start = Math.max(0, len - 20);
+    let peak20Val = -Infinity;
+    let peak20Idx = recent20Start;
+
+    for (let k = recent20Start; k < len; k++) {
+      if (candleData80[k].high > peak20Val) {
+        peak20Val = candleData80[k].high;
+        peak20Idx = k;
+      }
+    }
+
+    if (peak20Val > 0) {
+      const peakX = peak20Idx * candleSlotW + candleSlotW / 2;
+      const peakY = getY(peak20Val) - 6;
+
+      ctx.font = '8px Inter, sans-serif';
+      ctx.fillStyle = '#f59e0b';
+      ctx.textAlign = 'center';
+      ctx.fillText(`▼ ${formatCommaNumber(peak20Val, 0)}`, peakX, peakY);
+    }
+
+    // 5. Crosshair (Horizontal & Vertical Tracking Lines)
+    if (crosshairPos) {
+      const { x, y } = crosshairPos;
+
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([3, 3]);
+
+      // Vertical line
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
+
+      // Horizontal line
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Price Tag on Right
+      const crossPrice = minPrice + ((candleChartH - y - 10) / (candleChartH - 20)) * priceRange;
+      ctx.fillStyle = '#0e7490';
+      ctx.fillRect(w - 55, y - 8, 55, 16);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '9px Inter, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(formatCommaNumber(crossPrice, 0), w - 4, y + 3.5);
+
+      // Date Tag on Bottom
+      const hoverCandleIdx = Math.min(len - 1, Math.max(0, Math.floor(x / candleSlotW)));
+      const hoverCandle = candleData80[hoverCandleIdx];
+      if (hoverCandle) {
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x - 22, h - 14, 44, 14);
+        ctx.fillStyle = '#94a3b8';
+        ctx.textAlign = 'center';
+        ctx.fillText(hoverCandle.dateStr, x, h - 4);
+
+        // Update HUD Box
+        document.getElementById('hudOpen').textContent = formatCommaNumber(hoverCandle.open, 0);
+        document.getElementById('hudHigh').textContent = formatCommaNumber(hoverCandle.high, 0);
+        document.getElementById('hudLow').textContent = formatCommaNumber(hoverCandle.low, 0);
+        document.getElementById('hudClose').textContent = formatCommaNumber(hoverCandle.close, 0);
+        document.getElementById('hudVol').textContent = formatCommaNumber(hoverCandle.volume, 0);
+      }
+    }
+
+    // 6. Floating Badge for Volume Profile
+    const vpBadge = document.getElementById('vpFloatingBadge');
+    if (activeHoverBin && vpBadge) {
+      vpBadge.textContent = `매물평균: ${formatCommaNumber(activeHoverBin.price, 0)}원 (${activeHoverBin.pct}%)`;
+      vpBadge.classList.remove('hidden');
+    } else if (vpBadge) {
+      vpBadge.classList.add('hidden');
+    }
+  }
+
+  function setupCanvasInteraction() {
+    const canvas = document.getElementById('candleChartCanvas');
+    if (!canvas) return;
+
+    function handlePointerMove(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      crosshairPos = {
+        x: Math.max(0, Math.min(rect.width, clientX - rect.left)),
+        y: Math.max(0, Math.min(rect.height, clientY - rect.top))
+      };
+      draw80CandleCanvas();
+    }
+
+    function handlePointerLeave() {
+      crosshairPos = null;
+      draw80CandleCanvas();
+    }
+
+    canvas.addEventListener('mousemove', handlePointerMove);
+    canvas.addEventListener('touchmove', handlePointerMove, { passive: true });
+    canvas.addEventListener('mouseleave', handlePointerLeave);
+    canvas.addEventListener('touchend', handlePointerLeave);
+  }
+
+  function generateIntradaySvgPath(history, maxSlots = MAX_INTRADAY_SLOTS) {
+    if (!history || history.length < 2) {
+      return { 
+        line: "M 0 16 L 30 16", 
+        fill: "M 0 16 L 30 16 L 30 32 L 0 32 Z",
+        lastX: 30,
+        lastY: 16
+      };
+    }
+    const minVal = Math.min(...history);
+    const maxVal = Math.max(...history);
+    const range = (maxVal - minVal) || 1;
+
+    const pointsCount = Math.min(history.length, maxSlots);
+    const points = [];
+
+    for (let i = 0; i < pointsCount; i++) {
+      const x = (i / (maxSlots - 1)) * 100;
+      const y = 27 - ((history[i] - minVal) / range) * 22;
+      points.push({ x, y });
+    }
+
+    let lineD = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const midX = ((prev.x + curr.x) / 2).toFixed(1);
+      lineD += ` C ${midX} ${prev.y.toFixed(1)}, ${midX} ${curr.y.toFixed(1)}, ${curr.x.toFixed(1)} ${curr.y.toFixed(1)}`;
+    }
+
+    const lastPoint = points[points.length - 1];
+    const fillD = `${lineD} L ${lastPoint.x.toFixed(1)} 32 L 0 32 Z`;
+
+    return { 
+      line: lineD, 
+      fill: fillD, 
+      lastX: lastPoint.x, 
+      lastY: lastPoint.y 
+    };
+  }
+
+  function updateIndexChartSvg(k, item) {
+    const lineEl = document.getElementById(`line-idx-${k}`);
+    const fillEl = document.getElementById(`fill-idx-${k}`);
+    const dotEl = document.getElementById(`dot-idx-${k}`);
+    if (!lineEl || !fillEl) return;
+
+    const { line, fill, lastX, lastY } = generateIntradaySvgPath(item.history, MAX_INTRADAY_SLOTS);
+    lineEl.setAttribute('d', line);
+    fillEl.setAttribute('d', fill);
+
+    if (dotEl) {
+      dotEl.setAttribute('cx', lastX.toFixed(1));
+      dotEl.setAttribute('cy', lastY.toFixed(1));
+      dotEl.setAttribute('fill', item.rate >= 0 ? '#fb7185' : '#60a5fa');
+    }
+
+    if (item.rate >= 0) {
+      lineEl.setAttribute('stroke', '#fb7185');
+      fillEl.setAttribute('fill', 'url(#gradUp)');
+    } else {
+      lineEl.setAttribute('stroke', '#60a5fa');
+      fillEl.setAttribute('fill', 'url(#gradDown)');
+    }
+  }
+
+  function triggerElementFlash(el, isUp) {
+    if (!el) return;
+    el.classList.remove('tick-flash-up', 'tick-flash-down');
+    void el.offsetWidth;
+    el.classList.add(isUp ? 'tick-flash-up' : 'tick-flash-down');
+  }
+
+  function startLiveTickStreams() {
+    // 1. Global Indices Live Ticks (Every 1.6s)
+    setInterval(() => {
+      const keys = Object.keys(LIVE_INDICES);
+      const k = keys[Math.floor(Math.random() * keys.length)];
+      const item = LIVE_INDICES[k];
+
+      let delta = (Math.random() - 0.49);
+      if (k === 'krw') delta *= 0.4;
+      else if (k === 'spx') delta *= 1.8;
+      else if (k === 'dji' || k === 'nq') delta *= 8.0;
+      else delta *= 7.0;
+
+      const isUp = delta >= 0;
+      item.price = item.isFloat ? +(item.price + delta).toFixed(1) : Math.round(item.price + delta);
+      const changePct = ((item.price - item.base) / item.base) * 100;
+      item.rate = +(item.rate + (changePct * 0.1)).toFixed(2);
+
+      if (item.history.length < MAX_INTRADAY_SLOTS) {
+        if (Math.random() > 0.4) {
+          item.history.push(item.price);
+        } else {
+          item.history[item.history.length - 1] = item.price;
+        }
+      } else {
+        item.history.push(item.price);
+        item.history.shift();
+      }
+
+      const priceEl = document.getElementById(`price-idx-${k}`);
+      const rateEl = document.getElementById(`rate-idx-${k}`);
+      if (priceEl && rateEl) {
+        priceEl.textContent = formatCommaNumber(item.price, item.isFloat ? 1 : 0);
+        rateEl.textContent = formatRate(item.rate);
+        rateEl.className = `text-[10px] font-semibold font-num ${item.rate >= 0 ? 'text-rose-400' : 'text-blue-400'}`;
+        triggerElementFlash(priceEl, isUp);
+      }
+      updateIndexChartSvg(k, item);
+
+      if (selectedStock && selectedStock.code === k.toUpperCase()) {
+        const sPrice = document.getElementById('sheetPrice');
+        const sRate = document.getElementById('sheetRate');
+        if (sPrice && sRate) {
+          sPrice.textContent = formatCommaNumber(item.price, item.isFloat ? 1 : 0);
+          sRate.textContent = formatRate(item.rate);
+          sRate.className = `text-[11px] font-semibold font-num ${getRateColor(item.rate)}`;
+          triggerElementFlash(sPrice, isUp);
+        }
+        if (candleData80.length > 0) {
+          const lastCandle = candleData80[candleData80.length - 1];
+          lastCandle.close = Math.round(item.price);
+          lastCandle.high = Math.max(lastCandle.high, Math.round(item.price));
+          lastCandle.low = Math.min(lastCandle.low, Math.round(item.price));
+          draw80CandleCanvas();
+        }
+      }
+    }, 1600);
+
+    // 2. KOSPI Stocks Live Ticks (Every 1.8s)
+    setInterval(() => {
+      const activeUniverse = KOSPI_80_DATA.filter(st => st.rank <= currentUniverseMax);
+      const target = activeUniverse[Math.floor(Math.random() * activeUniverse.length)];
+      if (!target) return;
+
+      let tick = 50;
+      if (target.price > 500000) tick = 1000;
+      else if (target.price > 200000) tick = 500;
+      else if (target.price > 50000) tick = 100;
+      else if (target.price > 20000) tick = 50;
+      else tick = 10;
+
+      const direction = (Math.random() > 0.48) ? 1 : -1;
+      const isUp = direction > 0;
+      target.price += (tick * direction);
+      target.rate = +(target.rate + (direction * 0.04)).toFixed(2);
+
+      const priceEl = document.getElementById(`stock-price-${target.code}`);
+      const rateEl = document.getElementById(`stock-rate-${target.code}`);
+      if (priceEl && rateEl) {
+        priceEl.textContent = formatKrw(target.price);
+        rateEl.textContent = formatRate(target.rate);
+        rateEl.className = `text-[11px] font-semibold font-num ${getRateColor(target.rate)}`;
+        triggerElementFlash(priceEl, isUp);
+      }
+
+      if (selectedStock && selectedStock.code === target.code) {
+        const sPrice = document.getElementById('sheetPrice');
+        const sRate = document.getElementById('sheetRate');
+        if (sPrice && sRate) {
+          sPrice.textContent = formatKrw(target.price);
+          sRate.textContent = formatRate(target.rate);
+          sRate.className = `text-[11px] font-semibold font-num ${getRateColor(target.rate)}`;
+          triggerElementFlash(sPrice, isUp);
+        }
+        if (candleData80.length > 0) {
+          const lastCandle = candleData80[candleData80.length - 1];
+          lastCandle.close = target.price;
+          lastCandle.high = Math.max(lastCandle.high, target.price);
+          lastCandle.low = Math.min(lastCandle.low, target.price);
+          draw80CandleCanvas();
+        }
+      }
+    }, 1800);
+  }
+
+  function openDualEngineModal() {
+    const k = localStorage.getItem('kis_app_key') || '';
+    const s = localStorage.getItem('kis_app_secret') || '';
+    document.getElementById('inputAppKey').value = k;
+    document.getElementById('inputAppSecret').value = s;
+    document.getElementById('dualEngineModal').classList.remove('hidden');
+  }
+
+  function closeDualEngineModal() {
+    document.getElementById('dualEngineModal').classList.add('hidden');
+  }
+
+  function saveEngineKeys() {
+    const k = document.getElementById('inputAppKey').value.trim();
+    const s = document.getElementById('inputAppSecret').value.trim();
+    if (k && s) {
+      localStorage.setItem('kis_app_key', k);
+      localStorage.setItem('kis_app_secret', s);
+      applyEngineMode(true);
+    } else {
+      localStorage.removeItem('kis_app_key');
+      localStorage.removeItem('kis_app_secret');
+      applyEngineMode(false);
+    }
+    closeDualEngineModal();
+  }
+
+  function resetEngineKeys() {
+    localStorage.removeItem('kis_app_key');
+    localStorage.removeItem('kis_app_secret');
+    document.getElementById('inputAppKey').value = '';
+    document.getElementById('inputAppSecret').value = '';
+    applyEngineMode(false);
+    closeDualEngineModal();
+  }
+
+  function applyEngineMode(isKis) {
+    const lamp = document.getElementById('headerEngineLamp');
+    const txt = document.getElementById('headerEngineText');
+    if (isKis) {
+      lamp.innerHTML = `<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>`;
+      txt.textContent = "🟢 KIS 직결";
+      txt.className = "font-medium text-emerald-300";
+    } else {
+      lamp.innerHTML = `<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>`;
+      txt.textContent = "🌐 공개 시세망";
+      txt.className = "font-medium text-slate-200";
+    }
+  }
+
+  function openSectorTop10Modal(secName, returnRate) {
+    document.getElementById('sectorModalTitle').textContent = `${secName} 섹터 TOP 10`;
+    document.getElementById('sectorModalDesc').textContent = `6개월 누적 수익률: ${returnRate >= 0 ? '+' : ''}${returnRate}%`;
+
+    const sectorStocks = KOSPI_80_DATA.filter(s => s.sector.includes(secName.slice(0, 2)) || secName.includes(s.sector.slice(0, 2))).slice(0, 10);
+    const fallbackList = sectorStocks.length >= 3 ? sectorStocks : KOSPI_80_DATA.slice(0, 10);
+
+    const listEl = document.getElementById('sectorModalList');
+    listEl.innerHTML = fallbackList.map((st, i) => `
+      <div onclick="closeSectorTop10Modal(); openStockBottomSheet('${st.code}');" class="flex items-center justify-between p-2 rounded-lg bg-slate-950/70 border border-slate-800 hover:border-slate-700 cursor-pointer">
+        <div class="flex items-center gap-2">
+          <span class="w-5 h-5 rounded bg-slate-800 text-slate-400 flex items-center justify-center text-[10px] font-num">${i + 1}</span>
+          <span class="font-semibold text-slate-100">${st.name}</span>
+          <span class="text-[10px] text-slate-400 font-mono">${st.code}</span>
+        </div>
+        <div class="text-right">
+          <div class="font-semibold font-num text-slate-200">${formatKrw(st.price)}</div>
+          <div class="text-[10px] font-semibold font-num ${getRateColor(st.rate)}">${formatRate(st.rate)}</div>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('sectorTop10Modal').classList.remove('hidden');
+  }
+
+  function closeSectorTop10Modal() {
+    document.getElementById('sectorTop10Modal').classList.add('hidden');
+  }
+
+  window.addEventListener('resize', () => {
+    if (selectedStock) draw80CandleCanvas();
+  });
+
+  window.onload = function () {
+    renderSectorStreakRelay();
+    renderStockRankings();
+    setupCanvasInteraction();
+    startLiveTickStreams();
+
+    Object.keys(LIVE_INDICES).forEach(k => {
+      updateIndexChartSvg(k, LIVE_INDICES[k]);
+    });
+
+    const hasKey = !!(localStorage.getItem('kis_app_key') && localStorage.getItem('kis_app_secret'));
+    applyEngineMode(hasKey);
+  };
+  </script>
+</body>
+</html>
