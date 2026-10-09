@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>KOSPI TOP 50/80 AI 퀀트 랭킹 & 실시간 시세</title>
+  <title>KOSPI TOP 50/80 & KOSDAQ 30 AI 퀀트 대시보드</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts Inter -->
@@ -51,17 +51,19 @@
   <!-- Top Sticky Navigation Header (Pure Black Theme) -->
   <header class="sticky top-0 z-40 bg-black/95 border-b border-zinc-800/90 backdrop-blur-md px-3 py-2 sm:px-4 sm:py-2.5">
     <div class="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2">
-      <!-- Title & 50/80 Universe Selector -->
+      <!-- Title & 50/80/Kosdaq Universe Selector -->
       <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0 min-w-0">
-        <h1 class="text-xs sm:text-base font-semibold text-white tracking-tight flex items-center gap-1 sm:gap-1.5 whitespace-nowrap">
+        <h1 id="marketTitleText" class="text-xs sm:text-base font-semibold text-white tracking-tight flex items-center gap-1 sm:gap-1.5 whitespace-nowrap">
           <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse flex-shrink-0"></span>
           KOSPI 랭킹
         </h1>
         
-        <!-- Universe Toggle (50위 / 80위) -->
+        <!-- Universe Toggle (50위 / 80위 / 코스닥 30위) -->
         <div class="inline-flex items-center p-0.5 rounded-lg bg-zinc-900 border border-zinc-800 text-[10px] sm:text-[11px] font-medium whitespace-nowrap flex-shrink-0">
           <button id="btnUni50" onclick="setUniverse(50)" class="px-1.5 sm:px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all">50위</button>
           <button id="btnUni80" onclick="setUniverse(80)" class="px-1.5 sm:px-2 py-0.5 rounded-md text-zinc-400 hover:text-zinc-200 transition-all">80위</button>
+          <span class="w-[1px] h-3 bg-zinc-700/80 mx-0.5"></span>
+          <button id="btnUniKosdaq" onclick="setUniverse('kosdaq30')" class="px-1.5 sm:px-2 py-0.5 rounded-md text-zinc-400 hover:text-cyan-400 transition-all">코스닥 30위</button>
         </div>
       </div>
 
@@ -265,7 +267,7 @@
   <!-- Main Application Body -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-4 py-3 space-y-3.5 bg-black">
 
-    <!-- 6-Month Sector Streak Relay (No extra label box) -->
+    <!-- 6-Month Sector Streak Relay -->
     <section>
       <div class="flex items-center justify-between mb-1.5 px-0.5 whitespace-nowrap">
         <div class="flex items-center gap-1.5 min-w-0">
@@ -280,31 +282,12 @@
       </div>
     </section>
 
-    <!-- Filter and Sort Bar (Including [당일 하락순]) -->
+    <!-- Filter and Sort Bar (Without KOSPI Rank Dropdown) -->
     <section class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 border-b border-zinc-800 pb-2.5">
       <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 whitespace-nowrap">
-        
-        <!-- 시총 순위 드롭다운 메뉴 (KOSPI 시총순위 / 코스닥 시총 30위) -->
-        <div class="relative inline-block text-left flex-shrink-0" id="rankDropdownContainer">
-          <button id="btnRankDropdown" onclick="toggleRankDropdown(event)" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-cyan-500 text-white shadow-sm flex items-center gap-1 transition-all whitespace-nowrap">
-            <span id="rankDropdownLabel">시총 순위</span>
-            <svg class="w-3 h-3 transition-transform text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          
-          <div id="rankDropdownMenu" class="hidden absolute left-0 mt-1 w-36 rounded-lg bg-zinc-950 border border-zinc-800 shadow-2xl py-1 z-30 text-xs">
-            <button onclick="selectRankMode('rank', 'KOSPI 순위')" class="w-full text-left px-3 py-1.5 text-[11px] text-zinc-300 hover:bg-zinc-800 hover:text-cyan-400 flex items-center justify-between transition-colors">
-              <span>KOSPI 순위</span>
-              <span class="text-[9px] text-zinc-500 font-num">50/80위</span>
-            </button>
-            <button onclick="selectRankMode('kosdaq', '코스닥 시총 30위')" class="w-full text-left px-3 py-1.5 text-[11px] text-zinc-300 hover:bg-zinc-800 hover:text-cyan-400 flex items-center justify-between transition-colors">
-              <span>코스닥 시총 30위</span>
-              <span class="text-[9px] text-zinc-500 font-num">30종목</span>
-            </button>
-          </div>
-        </div>
-
+        <button id="btnSortRank" onclick="setSortMode('rank')" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-cyan-500 text-white shadow-sm transition-all whitespace-nowrap flex-shrink-0">
+          시총순
+        </button>
         <button id="btnSortQuant" onclick="setSortMode('quant')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 transition-all whitespace-nowrap flex-shrink-0">
           종합 퀀트
         </button>
@@ -326,7 +309,7 @@
       </div>
 
       <div class="flex items-center justify-between sm:justify-end gap-2 whitespace-nowrap flex-shrink-0">
-        <select id="sectorFilterSelect" onchange="setSectorFilter(this.value)" class="bg-zinc-900 border border-zinc-800 rounded-md px-2 py-1 text-[11px] text-zinc-200 outline-none whitespace-nowrap">
+        <select id="sectorFilterSelect" onchange="setSectorFilter(this.value)" class="bg-zinc-900 border border-zinc-800 rounded-md px-2 py-1 text-[11px] text-zinc-200 outline-none whitespace-nowrap cursor-pointer hover:border-zinc-700">
           <option value="ALL">전체 섹터</option>
           <option value="반도체">반도체/IT</option>
           <option value="2차전지">2차전지</option>
@@ -340,18 +323,18 @@
     </section>
 
     <!-- Stock Ranking Cards Grid Container -->
-    <section id="stockListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
+    <section id="stockListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5 pb-10">
       <!-- Injected by JavaScript -->
     </section>
 
   </main>
 
-  <!-- Stock Details Bottom Sheet / Floating Modal (Cross 2D Resizable & Free Draggable) -->
+  <!-- Stock Details Bottom Sheet / Floating Modal -->
   <div id="stockBottomSheet" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex flex-col justify-end sm:justify-center items-center p-0 sm:p-2 transition-opacity select-none">
     <div id="sheetModalCard" style="height: 86vh; width: 100%; max-width: 680px;" class="bg-black border border-zinc-800 rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-75 relative">
       
       <!-- Top-Left Corner Diagonal Cross Resize Handle -->
-      <div id="sheetCornerResizeTL" title="대각선(크로스)으로 가로·세로 동시 크기 조절" class="absolute top-1 left-1 w-6 h-6 cursor-nwse-resize touch-none flex items-center justify-center text-zinc-500 hover:text-cyan-400 z-30 transition-colors">
+      <div id="sheetCornerResizeTL" title="대각선 크기 조절" class="absolute top-1 left-1 w-6 h-6 cursor-nwse-resize touch-none flex items-center justify-center text-zinc-500 hover:text-cyan-400 z-30 transition-colors">
         <svg class="w-3.5 h-3.5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5"></path>
         </svg>
@@ -362,7 +345,7 @@
         <div class="w-12 h-1.5 rounded-full bg-zinc-700 hover:bg-cyan-400 transition-colors"></div>
       </div>
 
-      <!-- Sheet Header (Touch & Drag Title Bar to Move Window Freely) -->
+      <!-- Sheet Header -->
       <div id="sheetHeader" class="px-3 sm:px-4 py-2 border-b border-zinc-800 flex items-center justify-between gap-1.5 whitespace-nowrap cursor-grab active:cursor-grabbing touch-none select-none bg-black hover:bg-zinc-900 transition-colors">
         <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 pointer-events-none pl-3 sm:pl-2">
           <span id="sheetRank" class="px-1.5 py-0.5 text-[10px] rounded bg-zinc-900 border border-zinc-800 text-cyan-400 font-semibold font-num flex-shrink-0">#1</span>
@@ -370,20 +353,18 @@
             <div class="flex items-center gap-1 sm:gap-1.5 min-w-0">
               <h3 id="sheetName" class="text-xs sm:text-sm font-semibold text-white tracking-tight truncate whitespace-nowrap">삼성전자</h3>
               <span id="sheetCode" class="text-[9px] sm:text-[10px] text-zinc-400 font-mono flex-shrink-0">005930</span>
-              <span class="hidden xs:inline-block text-[8px] sm:text-[9px] px-1 sm:px-1.5 py-0.2 rounded bg-cyan-950/70 text-cyan-300 border border-cyan-800/60 font-medium">⤡ 크로스 조절</span>
             </div>
             <span id="sheetSector" class="text-[9px] sm:text-[10px] text-zinc-400 font-normal truncate block whitespace-nowrap">반도체</span>
           </div>
         </div>
 
-        <!-- Price & Action Controls (Cross Mini / Normal / Full Toggle & Close) -->
         <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           <div class="text-right whitespace-nowrap pointer-events-none mr-1">
             <div id="sheetPrice" class="text-xs sm:text-sm font-semibold text-zinc-100 font-num">81,400원</div>
             <div id="sheetRate" class="text-[10px] sm:text-[11px] font-semibold text-rose-400 font-num">+2.15%</div>
           </div>
-          <button id="btnSheetSizeToggle" onclick="toggleSheetHeightStep(event)" title="크로스 크기 모드 (미니창 ↔ 기본 ↔ 전체화면)" class="p-1 rounded-md text-zinc-400 hover:text-cyan-300 hover:bg-zinc-900 transition-colors flex-shrink-0">
-            <svg id="iconSheetSize" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button id="btnSheetSizeToggle" onclick="toggleSheetHeightStep(event)" title="크기 모드 전환" class="p-1 rounded-md text-zinc-400 hover:text-cyan-300 hover:bg-zinc-900 transition-colors flex-shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
             </svg>
           </button>
@@ -396,10 +377,9 @@
       <!-- Sheet Scroll Content -->
       <div id="sheetContentBody" class="flex-1 overflow-y-auto p-2.5 sm:p-3.5 space-y-2.5 sm:space-y-3 no-scrollbar flex flex-col bg-black">
         
-        <!-- Chart Controls (Minute Dropdown with 1 arrow, Periods, Volume Profile & Supply Toggle) -->
+        <!-- Chart Controls -->
         <div class="flex items-center justify-between flex-wrap gap-1.5 flex-shrink-0">
           <div class="flex items-center gap-1.5 flex-wrap">
-            <!-- Minute Candles Select Dropdown (화살표 1개 단일화) -->
             <div class="relative inline-flex items-center">
               <select id="minuteSelectDropdown" onchange="onMinuteDropdownChange(this.value)" style="-webkit-appearance:none;-moz-appearance:none;appearance:none;" class="bg-zinc-900 text-zinc-200 border border-zinc-800 rounded px-2 py-1 pr-5 text-[10px] font-medium outline-none focus:border-cyan-500 transition-colors cursor-pointer whitespace-nowrap">
                 <option value="" disabled selected>분봉 선택</option>
@@ -417,7 +397,6 @@
               </div>
             </div>
 
-            <!-- Standard Period Tabs -->
             <div class="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
               <button id="btnTf80" onclick="switchChartTf('80')" class="px-2 py-0.5 rounded text-[10px] font-medium bg-cyan-500 text-white transition-colors">일봉</button>
               <button id="btnTfWeek" onclick="switchChartTf('W')" class="px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 transition-colors">주봉</button>
@@ -425,7 +404,6 @@
             </div>
           </div>
 
-          <!-- Volume Profile <-> Investor Supply Trend Dynamic Toggle Button -->
           <button id="btnToggleVP" onclick="toggleVolumeProfile()" class="px-2.5 py-0.5 rounded-full text-[10px] font-medium border border-cyan-500/70 text-cyan-300 bg-cyan-950/40 hover:bg-cyan-900/60 transition-colors flex items-center gap-1.5 flex-shrink-0 whitespace-nowrap">
             <span id="vpBtnDot" class="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0"></span>
             <span id="vpBtnText" class="whitespace-nowrap">📊 매물대</span>
@@ -450,10 +428,9 @@
           </div>
         </div>
 
-        <!-- Toolbar (스크롤/이동 안내 문구 제거 + 아이폰 화면 탈출 방지 콤팩트 툴바) -->
+        <!-- Toolbar -->
         <div class="w-full flex items-center justify-end overflow-x-auto no-scrollbar py-0.5 text-[9px] text-zinc-400 select-none flex-shrink-0">
           <div class="flex items-center gap-1 sm:gap-1.5 bg-zinc-950 border border-zinc-800 rounded px-1.5 py-0.5 flex-shrink-0 max-w-full">
-            <!-- 차트 배경색 (검정/흰색) 슬라이드 스위치 -->
             <div class="flex items-center gap-1 cursor-pointer select-none flex-shrink-0" onclick="toggleChartBgTheme()" title="차트 배경색 전환">
               <span class="text-zinc-400 text-[8px]">배경:</span>
               <div id="chartThemeSwitchTrack" class="relative inline-flex h-3.5 w-7 items-center rounded-full bg-zinc-800 border border-zinc-700 transition-colors duration-200 flex-shrink-0">
@@ -461,19 +438,13 @@
               </div>
               <span id="chartThemeSwitchText" class="text-zinc-300 text-[8px] font-medium min-w-[16px]">검정</span>
             </div>
-
             <span class="text-zinc-800 flex-shrink-0">|</span>
-
-            <!-- 모바일/PC 원터치 줌 버튼 -->
             <div class="flex items-center gap-1 text-[8px] text-zinc-400 flex-shrink-0">
               <span>줌:</span>
               <button onclick="zoomChart(-15)" title="확대" class="w-4 h-4 rounded bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-cyan-400 flex items-center justify-center font-bold text-[10px] transition-colors">＋</button>
               <button onclick="zoomChart(15)" title="축소" class="w-4 h-4 rounded bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-zinc-300 flex items-center justify-center font-bold text-[10px] transition-colors">－</button>
             </div>
-
             <span class="text-zinc-800 flex-shrink-0">|</span>
-
-            <!-- 캔들 수 지정 -->
             <div class="flex items-center gap-0.5 text-[8px] flex-shrink-0">
               <span class="text-zinc-500">캔들:</span>
               <button id="btnDensity60" onclick="setCandleDensity(60)" class="px-1 py-0.2 rounded text-[8px] text-zinc-400 hover:text-zinc-200 transition-colors">60</button>
@@ -481,23 +452,20 @@
               <button id="btnDensity120" onclick="setCandleDensity(120)" class="px-1 py-0.2 rounded text-[8px] bg-cyan-500 text-white font-semibold transition-colors">120</button>
               <button id="btnDensity160" onclick="setCandleDensity(160)" class="px-1 py-0.2 rounded text-[8px] text-zinc-400 hover:text-zinc-200 transition-colors">160</button>
             </div>
-
             <span class="text-zinc-800 flex-shrink-0">|</span>
             <button onclick="resetChartScroll()" class="text-zinc-400 hover:text-cyan-300 transition-colors text-[9px] flex-shrink-0 whitespace-nowrap">최근 ⟳</button>
           </div>
         </div>
 
-        <!-- 수직으로 더 넓어진 캔들 차트 컨테이너 (h-[360px] sm:h-[460px]) -->
+        <!-- Candle Chart Canvas Container -->
         <div id="chartCanvasContainer" class="relative w-full h-[360px] sm:h-[460px] flex-shrink-0 bg-black rounded-lg border border-zinc-800 overflow-hidden select-none transition-colors duration-200">
           <canvas id="candleChartCanvas" style="touch-action: none;" class="w-full h-full block cursor-crosshair"></canvas>
-          
-          <!-- Dynamic Floating Badge for Volume Profile / Supply Trend / Crosshair Hover -->
           <div id="vpFloatingBadge" class="absolute top-2 right-2 pointer-events-none hidden px-2 py-0.5 rounded bg-zinc-950/95 border border-cyan-500/60 text-cyan-300 text-[10px] font-num shadow-lg whitespace-nowrap">
             매물평균: -
           </div>
         </div>
 
-        <!-- Key Quant Indicators Grid -->
+        <!-- Key Quant Indicators -->
         <div class="grid grid-cols-3 gap-2 flex-shrink-0">
           <div class="bg-zinc-950 p-2 rounded-lg border border-zinc-800 text-center sm:text-left">
             <span class="text-[10px] text-zinc-400 whitespace-nowrap block truncate">14일 RSI</span>
@@ -513,7 +481,7 @@
           </div>
         </div>
 
-        <!-- Fundamental & Financial Health (PER, PBR, ROE, Debt Ratio) -->
+        <!-- Fundamental & Financial Health -->
         <div class="bg-zinc-950 p-2.5 rounded-lg border border-zinc-800 space-y-2 flex-shrink-0">
           <div class="flex items-center justify-between whitespace-nowrap">
             <div class="flex items-center gap-1.5 min-w-0">
@@ -543,7 +511,7 @@
           </div>
         </div>
 
-        <!-- Major Investors Breakdown -->
+        <!-- Major Investors Flow -->
         <div class="bg-zinc-950 p-2.5 rounded-lg border border-zinc-800 flex-shrink-0">
           <div class="flex items-center justify-between mb-1.5 whitespace-nowrap">
             <span class="text-[11px] font-medium text-zinc-300 truncate">최근 5일 메이저 순매수 동향</span>
@@ -557,9 +525,9 @@
 
       </div>
 
-      <!-- Bottom-Right Diagonal Cross Resize Grip -->
-      <div id="sheetCornerResizeBR" title="대각선(크로스)으로 가로·세로 동시 크기 조절" class="w-full py-1 bg-black border-t border-zinc-800 flex items-center justify-between px-3 cursor-nwse-resize touch-none select-none text-[9px] text-zinc-500 hover:text-cyan-300 transition-colors">
-        <span class="flex items-center gap-1 font-mono">⤡ 모서리를 대각선(크로스)으로 밀거나 당겨 크기 조절</span>
+      <!-- Bottom-Right Resize Grip -->
+      <div id="sheetCornerResizeBR" title="대각선 크기 조절" class="w-full py-1 bg-black border-t border-zinc-800 flex items-center justify-between px-3 cursor-nwse-resize touch-none select-none text-[9px] text-zinc-500 hover:text-cyan-300 transition-colors">
+        <span class="flex items-center gap-1 font-mono">⤡ 모서리를 밀거나 당겨 크기 조절</span>
         <svg class="w-3.5 h-3.5 text-cyan-400/80 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 20H14M20 20V14M20 20L10 10"></path>
         </svg>
@@ -578,15 +546,15 @@
 
       <div class="space-y-2">
         <div class="text-xs font-semibold text-emerald-400 pb-1 border-b border-zinc-900">
-          한투 Key 입력
+          한투 API 인증키 입력
         </div>
         <div>
           <label class="block text-[10px] text-zinc-300 mb-0.5 font-medium whitespace-nowrap">한국투자증권 AppKey</label>
-          <input id="inputAppKey" type="password" placeholder="발급받은 AppKey 입력 (선택)" class="w-full bg-black border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none focus:border-cyan-500 font-mono">
+          <input id="inputAppKey" type="password" placeholder="발급받은 AppKey 입력" class="w-full bg-black border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none focus:border-cyan-500 font-mono">
         </div>
         <div>
           <label class="block text-[10px] text-zinc-300 mb-0.5 font-medium whitespace-nowrap">한국투자증권 AppSecret</label>
-          <input id="inputAppSecret" type="password" placeholder="발급받은 AppSecret 입력 (선택)" class="w-full bg-black border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none focus:border-cyan-500 font-mono">
+          <input id="inputAppSecret" type="password" placeholder="발급받은 AppSecret 입력" class="w-full bg-black border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none focus:border-cyan-500 font-mono">
         </div>
       </div>
 
@@ -616,7 +584,6 @@
     </div>
   </div>
 
-  <!-- Client JavaScript Logic -->
   <script>
   function formatCommaNumber(val, decimals = 0) {
     if (val === undefined || val === null || isNaN(val)) return '0';
@@ -643,18 +610,21 @@
     return 'text-zinc-400';
   }
 
+  function triggerElementFlash(el, isUp) {
+    if (!el) return;
+    el.classList.remove('tick-flash-up', 'tick-flash-down');
+    void el.offsetWidth;
+    el.classList.add(isUp ? 'tick-flash-up' : 'tick-flash-down');
+  }
+
   /* ==========================================================
-     [한국투자증권(KIS Open API) 실시간 연동 통신 엔진]
-     OAuth 2.0 접근토큰 발급 + 주식현재가 시세(/inquire-price) TR 호출
-     웹 브라우저 CORS 회피를 위한 다중 프록시 자동 라우팅 탑재
+     [한국투자증권(KIS Open API) 연동 엔진]
      ========================================================== */
   const KIS_CONFIG = {
-    // 한국투자증권 실전투자 REST 서버 엔드포인트
     kisRealHost: "https://openapi.koreainvestment.com:9443",
     tokenPath: "/oauth2/tokenP",
     pricePath: "/uapi/domestic-stock/v1/quotations/inquire-price",
-    trId: "FHKST01010100", // 주식현재가 시세 TR ID
-    // 브라우저 직접 호출 차단(CORS) 방지 프록시 풀
+    trId: "FHKST01010100",
     corsGateways: [
       "https://corsproxy.io/?url=",
       "https://api.allorigins.win/raw?url="
@@ -667,21 +637,14 @@
   let kisPollingTimer = null;
   let kisGatewayIdx = 0;
 
-  // 브라우저 환경에서 CORS 헤더를 보정하여 한투 API와 통신하는 헬퍼 함수
   async function fetchThroughKisProxy(targetUrl, options = {}) {
     const baseGateway = KIS_CONFIG.corsGateways[kisGatewayIdx % KIS_CONFIG.corsGateways.length];
     const proxiedUrl = baseGateway + encodeURIComponent(targetUrl);
     
     try {
-      const res = await fetch(proxiedUrl, {
-        ...options,
-        headers: {
-          ...options.headers
-        }
-      });
+      const res = await fetch(proxiedUrl, options);
       return res;
     } catch (err) {
-      // 첫 번째 프록시 지연 시 예비 게이트웨이로 자동 전환
       kisGatewayIdx++;
       const fallbackGateway = KIS_CONFIG.corsGateways[kisGatewayIdx % KIS_CONFIG.corsGateways.length];
       const fallbackUrl = fallbackGateway + encodeURIComponent(targetUrl);
@@ -689,11 +652,8 @@
     }
   }
 
-  // 1. 한국투자증권 OAuth 접근토큰(Access Token) 발급 함수
   async function issueKisAccessToken(appKey, appSecret) {
     if (!appKey || !appSecret) return null;
-
-    // 기존 발급 토큰 유효시간(보통 24시간) 검증
     const nowTime = Date.now();
     const cachedToken = localStorage.getItem('kis_cached_token');
     const cachedExpiry = parseInt(localStorage.getItem('kis_token_expiry') || '0', 10);
@@ -714,28 +674,20 @@
 
       const response = await fetchThroughKisProxy(targetUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: bodyPayload
       });
 
-      if (!response.ok) {
-        throw new Error(`한투 토큰 발급 응답 오류 (HTTP ${response.status})`);
-      }
-
+      if (!response.ok) throw new Error(`한투 토큰 발급 응답 오류`);
+      
       const resData = await response.json();
       if (resData && resData.access_token) {
         kisAccessToken = resData.access_token;
         const expiresInSec = resData.expires_in || 86400;
         kisTokenExpiredAt = Date.now() + (expiresInSec * 1000);
-        
         localStorage.setItem('kis_cached_token', kisAccessToken);
         localStorage.setItem('kis_token_expiry', kisTokenExpiredAt.toString());
-        console.log("✅ [KIS] 한국투자증권 접근토큰 정상 발급 완료");
         return kisAccessToken;
-      } else {
-        throw new Error(resData.error_description || "토큰 발급 실패: 응답 본문 확인 요망");
       }
     } catch (e) {
       console.warn("⚠️ [KIS 토큰 발급 주의]:", e.message);
@@ -743,10 +695,8 @@
     }
   }
 
-  // 2. 단일 종목 실시간 현재가/등락률 조회 (TR: FHKST01010100)
   async function fetchKisStockPrice(stockCode, appKey) {
     if (!kisAccessToken || !appKey) return null;
-
     try {
       const queryParam = `?FID_COND_MRKT_DIV_CODE=J&FID_INPUT_ISCD=${stockCode}`;
       const targetUrl = KIS_CONFIG.kisRealHost + KIS_CONFIG.pricePath + queryParam;
@@ -766,19 +716,13 @@
       if (!response.ok) return null;
       const data = await response.json();
       
-      // output: stck_prpr(현재가), prdy_ctrt(전일대비율), prdy_vrss(전일대비)
       if (data && data.output && data.output.stck_prpr) {
-        const livePrice = parseInt(data.output.stck_prpr, 10);
-        const liveRate = parseFloat(data.output.prdy_ctrt || '0');
-        const liveDiff = parseInt(data.output.prdy_vrss || '0', 10);
-        const acmlVol = parseInt(data.output.acml_vol || '0', 10);
-
         return {
           code: stockCode,
-          price: livePrice,
-          rate: liveRate,
-          diff: liveDiff,
-          volume: acmlVol
+          price: parseInt(data.output.stck_prpr, 10),
+          rate: parseFloat(data.output.prdy_ctrt || '0'),
+          diff: parseInt(data.output.prdy_vrss || '0', 10),
+          volume: parseInt(data.output.acml_vol || '0', 10)
         };
       }
       return null;
@@ -787,7 +731,6 @@
     }
   }
 
-  // 3. 한투 API 실서버 데이터 반영 및 화면 업데이트
   async function syncKisRealtimeBatch() {
     if (isKisFetching || currentEngineMode !== 'kis') return;
     const appKey = localStorage.getItem('kis_app_key');
@@ -796,7 +739,6 @@
 
     isKisFetching = true;
 
-    // 토큰 획득/갱신
     if (!kisAccessToken || Date.now() >= kisTokenExpiredAt) {
       const token = await issueKisAccessToken(appKey, appSecret);
       if (!token) {
@@ -805,7 +747,6 @@
       }
     }
 
-    // 현재 열려있는 팝업 종목이 있다면 최우선적으로 단독 갱신
     if (selectedStock && selectedStock.code && !selectedStock.code.includes('INDEX')) {
       const singleData = await fetchKisStockPrice(selectedStock.code, appKey);
       if (singleData && singleData.price > 0) {
@@ -813,8 +754,9 @@
       }
     }
 
-    // 활성화된 유니버스 상위 종목 순차 실시간 조회 (초당 3~4건 과도한 한투 호출 제한 완화)
-    const activeUniverse = KOSPI_80_DATA.filter(st => st.rank <= currentUniverseMax).slice(0, 15);
+    const activeSourceData = (currentMarket === 'kospi' ? KOSPI_80_DATA : KOSDAQ_TOP_DATA);
+    const activeUniverse = activeSourceData.filter(st => st.rank <= currentUniverseMax).slice(0, 15);
+                           
     for (let i = 0; i < activeUniverse.length; i++) {
       if (currentEngineMode !== 'kis') break;
       const target = activeUniverse[i];
@@ -822,14 +764,11 @@
       if (result && result.price > 0) {
         applyStockTickUpdate(target.code, result.price, result.rate);
       }
-      // 호출 속도 버퍼 250ms
       await new Promise(r => setTimeout(r, 250));
     }
-
     isKisFetching = false;
   }
 
-  // 실시간 체결가 화면 및 캔버스 반영 공통 함수
   function applyStockTickUpdate(stockCode, newPrice, newRate) {
     const target = KOSPI_80_DATA.find(s => s.code === stockCode) || KOSDAQ_TOP_DATA.find(s => s.code === stockCode);
     if (!target) return;
@@ -838,7 +777,6 @@
     target.price = newPrice;
     target.rate = newRate;
 
-    // 리스트 카드 UI 갱신
     const priceEl = document.getElementById(`stock-price-${target.code}`);
     const rateEl = document.getElementById(`stock-rate-${target.code}`);
     if (priceEl && rateEl) {
@@ -848,7 +786,6 @@
       triggerElementFlash(priceEl, isUp);
     }
 
-    // 팝업 상세창이 열려있는 경우 바텀시트 및 캔버스 즉시 동기화
     if (selectedStock && selectedStock.code === target.code) {
       const sPrice = document.getElementById('sheetPrice');
       const sRate = document.getElementById('sheetRate');
@@ -871,84 +808,16 @@
   /* Global Indices State */
   const TOTAL_DAY_SLOTS = 48;
   const LIVE_INDICES = {
-    kospi: {
-      name: "코스피 지수",
-      base: 2666.80,
-      price: 2684.20,
-      diff: 17.40,
-      rate: 0.65,
-      isFloat: true,
-      decimals: 2,
-      isDomestic: true,
-      history: [2668.5, 2670.2, 2669.1, 2672.4, 2674.8, 2673.5, 2676.0, 2675.2, 2678.9, 2680.1, 2679.4, 2682.3, 2681.0, 2683.5, 2682.8, 2684.0, 2685.2, 2683.9, 2685.8, 2684.2, 2684.8, 2685.5, 2684.0, 2683.7, 2684.5, 2685.0, 2683.8, 2684.2]
-    },
-    kosdaq: {
-      name: "코스닥 지수",
-      base: 785.75,
-      price: 782.45,
-      diff: -3.30,
-      rate: -0.42,
-      isFloat: true,
-      decimals: 2,
-      isDomestic: true,
-      history: [786.2, 785.8, 784.9, 785.1, 784.2, 783.5, 783.8, 782.9, 783.1, 782.5, 781.9, 782.2, 782.8, 782.1, 781.8, 782.3, 782.0, 782.7, 782.2, 782.45, 782.3, 782.1, 782.5, 782.4, 782.2, 782.6, 782.3, 782.45]
-    },
-    kp200f: {
-      name: "코스피 선물",
-      base: 359.90,
-      price: 362.50,
-      diff: 2.60,
-      rate: 0.72,
-      isFloat: true,
-      decimals: 2,
-      isDomestic: true,
-      history: [359.8, 360.2, 360.0, 360.5, 361.0, 360.8, 361.4, 361.2, 361.9, 362.2, 361.8, 362.6, 362.1, 362.8, 362.4, 362.7, 362.9, 362.3, 362.7, 362.5, 362.6, 362.8, 362.4, 362.3, 362.55, 362.7, 362.4, 362.50]
-    },
-    dji: { 
-      name: "다우존스", 
-      base: 51232, 
-      price: 51232, 
-      rate: 0.10, 
-      isFloat: false, 
-      history: [51180, 51190, 51175, 51200, 51215, 51205, 51220, 51210, 51230, 51225, 51240, 51235, 51220, 51215, 51228, 51235, 51242, 51238, 51245, 51232, 51236, 51240, 51235, 51230, 51234, 51238, 51230, 51232] 
-    },
-    ixic: { 
-      name: "나스닥", 
-      base: 27173, 
-      price: 27173, 
-      rate: -1.33, 
-      isFloat: false, 
-      history: [27540, 27500, 27460, 27420, 27380, 27350, 27310, 27280, 27260, 27240, 27210, 27190, 27210, 27220, 27195, 27180, 27190, 27175, 27168, 27173, 27170, 27165, 27172, 27178, 27170, 27169, 27171, 27173] 
-    },
-    spx: { 
-      name: "S&P 500", 
-      base: 7765.4, 
-      price: 7765.4, 
-      rate: -0.47, 
-      isFloat: true, 
-      decimals: 1, 
-      history: [7790, 7785, 7780, 7775, 7770, 7768, 7762, 7758, 7755, 7760, 7758, 7762, 7765, 7762, 7768, 7764, 7760, 7763, 7765, 7764, 7766, 7763, 7765.4] 
-    },
-    krw: { 
-      name: "원/달러", 
-      base: 1342.6, 
-      price: 1342.6, 
-      rate: -0.10, 
-      isFloat: true, 
-      decimals: 1, 
-      history: [1344.0, 1343.8, 1343.5, 1343.2, 1343.0, 1342.8, 1342.5, 1342.7, 1342.9, 1342.6, 1342.8, 1342.5, 1342.4, 1342.6, 1342.7, 1342.5, 1342.6] 
-    },
-    nq: { 
-      name: "나스닥 선물", 
-      base: 31133, 
-      price: 31133, 
-      rate: 0.53, 
-      isFloat: false, 
-      history: [31050, 31070, 31060, 31090, 31110, 31100, 31120, 31115, 31135, 31130, 31145, 31140, 31133] 
-    }
+    kospi: { name: "코스피 지수", base: 2666.80, price: 2684.20, diff: 17.40, rate: 0.65, isFloat: true, decimals: 2, isDomestic: true, history: [2668.5, 2670.2, 2669.1, 2672.4, 2674.8, 2673.5, 2676.0, 2675.2, 2678.9, 2680.1, 2679.4, 2682.3, 2681.0, 2683.5, 2682.8, 2684.0, 2685.2, 2683.9, 2685.8, 2684.2, 2684.8, 2685.5, 2684.0, 2683.7, 2684.5, 2685.0, 2683.8, 2684.2] },
+    kosdaq: { name: "코스닥 지수", base: 785.75, price: 782.45, diff: -3.30, rate: -0.42, isFloat: true, decimals: 2, isDomestic: true, history: [786.2, 785.8, 784.9, 785.1, 784.2, 783.5, 783.8, 782.9, 783.1, 782.5, 781.9, 782.2, 782.8, 782.1, 781.8, 782.3, 782.0, 782.7, 782.2, 782.45, 782.3, 782.1, 782.5, 782.4, 782.2, 782.6, 782.3, 782.45] },
+    kp200f: { name: "코스피 선물", base: 359.90, price: 362.50, diff: 2.60, rate: 0.72, isFloat: true, decimals: 2, isDomestic: true, history: [359.8, 360.2, 360.0, 360.5, 361.0, 360.8, 361.4, 361.2, 361.9, 362.2, 361.8, 362.6, 362.1, 362.8, 362.4, 362.7, 362.9, 362.3, 362.7, 362.5, 362.6, 362.8, 362.4, 362.3, 362.55, 362.7, 362.4, 362.50] },
+    dji: { name: "다우존스", base: 51232, price: 51232, rate: 0.10, isFloat: false, history: [51180, 51190, 51175, 51200, 51215, 51205, 51220, 51210, 51230, 51225, 51240, 51235, 51220, 51215, 51228, 51235, 51242, 51238, 51245, 51232, 51236, 51240, 51235, 51230, 51234, 51238, 51230, 51232] },
+    ixic: { name: "나스닥", base: 27173, price: 27173, rate: -1.33, isFloat: false, history: [27540, 27500, 27460, 27420, 27380, 27350, 27310, 27280, 27260, 27240, 27210, 27190, 27210, 27220, 27195, 27180, 27190, 27175, 27168, 27173, 27170, 27165, 27172, 27178, 27170, 27169, 27171, 27173] },
+    spx: { name: "S&P 500", base: 7765.4, price: 7765.4, rate: -0.47, isFloat: true, decimals: 1, history: [7790, 7785, 7780, 7775, 7770, 7768, 7762, 7758, 7755, 7760, 7758, 7762, 7765, 7762, 7768, 7764, 7760, 7763, 7765, 7764, 7766, 7763, 7765.4] },
+    krw: { name: "원/달러", base: 1342.6, price: 1342.6, rate: -0.10, isFloat: true, decimals: 1, history: [1344.0, 1343.8, 1343.5, 1343.2, 1343.0, 1342.8, 1342.5, 1342.7, 1342.9, 1342.6, 1342.8, 1342.5, 1342.4, 1342.6, 1342.7, 1342.5, 1342.6] },
+    nq: { name: "나스닥 선물", base: 31133, price: 31133, rate: 0.53, isFloat: false, history: [31050, 31070, 31060, 31090, 31110, 31100, 31120, 31115, 31135, 31130, 31145, 31140, 31133] }
   };
 
-  /* 6개월 주도 섹터 릴레이 데이터 */
   const SECTOR_STREAK_LIST = [
     { period: "24.05~24.07", name: "음식료/K푸드", return6M: 54.1, topStock: "삼양식품", count: 5 },
     { period: "24.07~24.09", name: "방산/K방산", return6M: 42.8, topStock: "한화에어로", count: 7 },
@@ -958,7 +827,7 @@
     { period: "25.03~25.05", name: "로봇/AI반도체", return6M: 52.0, topStock: "레인보우로보", count: 8, isPredicted: true, pType: 'lime' }
   ];
 
-  /* KOSDAQ Top Stocks Dataset (코스닥 시가총액 1위~30위 실거래가 정밀 데이터) */
+  /* KOSDAQ Top 30 Stocks Dataset */
   const KOSDAQ_TOP_DATA = [
     { rank: 1, name: "알테오젠", code: "196170", price: 382000, rate: 4.13, sector: "바이오", quantScore: 95, rsi: 62.4, disparity: 105.1, supplyScore: 94, foreignFlow: 520, instFlow: 680, per: 82.4, pbr: 14.2, roe: 22.4, debtRatio: 28.6, trendState: "코스닥대장", trendScore: 98, valScore: 78, market: "KOSDAQ" },
     { rank: 2, name: "에코프로비엠", code: "247540", price: 168400, rate: 1.45, sector: "2차전지", quantScore: 78, rsi: 44.5, disparity: 98.2, supplyScore: 77, foreignFlow: 120, instFlow: 240, per: 45.2, pbr: 4.15, roe: 8.4, debtRatio: 72.1, trendState: "바닥다지기", trendScore: 76, valScore: 72, market: "KOSDAQ" },
@@ -992,7 +861,7 @@
     { rank: 30, name: "루닛", code: "328130", price: 46200, rate: 2.21, sector: "의료AI", quantScore: 87, rsi: 54.8, disparity: 102.4, supplyScore: 86, foreignFlow: 240, instFlow: 310, per: 88.0, pbr: 7.80, roe: 5.1, debtRatio: 22.4, trendState: "글로벌AI진단확장", trendScore: 88, valScore: 74, market: "KOSDAQ" }
   ];
 
-  /* 80 Top KOSPI Stocks Dataset - 한국거래소(KRX) 공식 시총 1위~80위 실주가 정밀 검증 데이터 */
+  /* KOSPI Top 80 Stocks Dataset */
   const KOSPI_80_DATA = [
     { rank: 1, name: "삼성전자", code: "005930", price: 58900, rate: 0.85, sector: "반도체", quantScore: 89, rsi: 42.4, disparity: 97.8, supplyScore: 88, foreignFlow: 1420, instFlow: 2150, per: 11.2, pbr: 1.08, roe: 10.2, debtRatio: 26.4, trendState: "골든크로스", trendScore: 86, valScore: 88 },
     { rank: 2, name: "SK하이닉스", code: "000660", price: 186500, rate: 2.75, sector: "반도체", quantScore: 94, rsi: 56.1, disparity: 101.2, supplyScore: 94, foreignFlow: 980, instFlow: 1240, per: 8.9, pbr: 1.75, roe: 24.6, debtRatio: 42.1, trendState: "강력정배열", trendScore: 96, valScore: 90 },
@@ -1089,7 +958,6 @@
   let crosshairPos = null;
   let currentEngineMode = 'public';
 
-  /* Chart Dimensions & Zoom State */
   const TOTAL_CANDLE_HISTORY = 240;
   let VISIBLE_CANDLE_COUNT = 120;
   const MIN_CANDLE_COUNT = 24;
@@ -1104,7 +972,6 @@
   let pinchStartCandleCount = 120;
   let chartBgTheme = 'dark';
 
-  /* 2D Cross Resizing & Window Move State */
   let isCrossResizing = false;
   let isMovingWindow = false;
   let crossResizeOrigin = '';
@@ -1431,21 +1298,21 @@
       if (b) b.className = "px-1.5 sm:px-2 py-0.5 rounded-md text-zinc-400 hover:text-zinc-200 transition-all";
     });
 
-    if (type === 'kospi50' || type === 50) {
+    if (type === 50) {
       currentMarket = 'kospi';
       currentUniverseMax = 50;
       if (btn50) btn50.className = "px-1.5 sm:px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all";
-      if (titleText) titleText.textContent = "KOSPI 랭킹";
-    } else if (type === 'kospi80' || type === 80) {
+      if (titleText) titleText.innerHTML = `<span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse flex-shrink-0"></span>KOSPI 랭킹`;
+    } else if (type === 80) {
       currentMarket = 'kospi';
       currentUniverseMax = 80;
       if (btn80) btn80.className = "px-1.5 sm:px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all";
-      if (titleText) titleText.textContent = "KOSPI 랭킹";
-    } else if (type === 'kosdaq30' || type === 'kosdaq' || type === 30) {
+      if (titleText) titleText.innerHTML = `<span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse flex-shrink-0"></span>KOSPI 랭킹`;
+    } else if (type === 'kosdaq30') {
       currentMarket = 'kosdaq';
       currentUniverseMax = 30;
       if (btnKd) btnKd.className = "px-1.5 sm:px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all";
-      if (titleText) titleText.textContent = "KOSDAQ 랭킹";
+      if (titleText) titleText.innerHTML = `<span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse flex-shrink-0"></span>KOSDAQ 랭킹`;
     }
     renderStockRankings();
   }
@@ -1519,7 +1386,6 @@
       const isKosdaq = st.market === 'KOSDAQ';
       return `
         <div onclick="openStockBottomSheet('${st.code}')" class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 sm:p-3 hover:border-zinc-700 transition-all cursor-pointer relative overflow-hidden">
-          
           <div class="flex items-center justify-between gap-2 whitespace-nowrap">
             <div class="flex items-center gap-2 min-w-0">
               <span class="w-6 h-6 rounded-md ${isKosdaq ? 'bg-cyan-950 text-cyan-400 border border-cyan-800' : 'bg-zinc-900 border border-zinc-800 text-zinc-300'} flex items-center justify-center text-[10px] font-semibold font-num flex-shrink-0">
@@ -1574,37 +1440,8 @@
     }).join('');
   }
 
-  function toggleRankDropdown(e) {
-    if (e) e.stopPropagation();
-    const menu = document.getElementById('rankDropdownMenu');
-    if (menu) menu.classList.toggle('hidden');
-  }
-
-  function selectRankMode(mode, label) {
-    currentSortMode = mode;
-    const labelEl = document.getElementById('rankDropdownLabel');
-    if (labelEl) labelEl.textContent = label;
-    const menu = document.getElementById('rankDropdownMenu');
-    if (menu) menu.classList.add('hidden');
-    
-    // 버튼 스타일 활성화 동기화
-    highlightRankDropdown(true);
-    renderStockRankings();
-  }
-
-  function highlightRankDropdown(isActive) {
-    const btn = document.getElementById('btnRankDropdown');
-    if (!btn) return;
-    if (isActive) {
-      btn.className = "px-2.5 py-1 rounded-md text-[11px] font-semibold bg-cyan-500 text-white shadow-sm flex items-center gap-1 transition-all whitespace-nowrap";
-    } else {
-      btn.className = "px-2.5 py-1 rounded-md text-[11px] font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 flex items-center gap-1 transition-all whitespace-nowrap";
-    }
-  }
-
   function setSortMode(mode) {
     currentSortMode = mode;
-
     const btns = {
       rank: document.getElementById('btnSortRank'),
       quant: document.getElementById('btnSortQuant'),
@@ -1661,7 +1498,6 @@
         vpText.textContent = "📊 매물대";
       }
     }
-
     draw80CandleCanvas();
   }
 
@@ -1682,55 +1518,17 @@
         minDropdown.value = '';
       }
     }
-
-    const tfs = ['1M', '3M', '5M', '10M', '30M', '60M', '80', 'W', 'M'];
-    tfs.forEach(tf => {
-      const btn = document.getElementById(`ktf-${tf}`);
-      if (!btn) return;
-      if (tf === chartTf) {
-        btn.className = "px-2.5 py-0.5 rounded font-semibold bg-rose-600 text-white shadow-sm transition-colors whitespace-nowrap";
-      } else {
-        btn.className = "px-2 py-0.5 rounded font-medium text-zinc-400 hover:text-zinc-200 transition-colors whitespace-nowrap";
-      }
-    });
   }
 
   function switchChartTf(tf) {
     chartTf = tf;
     syncTfControlUI();
-
     if (selectedStock) {
       generate80CandleData(selectedStock.price, chartTf);
       draw80CandleCanvas();
     }
   }
 
-  function toggleKwIndicator(type) {
-    if (type === 'vp') {
-      kwShowVP = !kwShowVP;
-    } else if (type === 'supply') {
-      kwShowSupply = !kwShowSupply;
-    }
-
-    const btnVP = document.getElementById('btnKwVP');
-    const btnSupply = document.getElementById('btnKwSupply');
-
-    if (btnVP) {
-      btnVP.className = kwShowVP 
-        ? "px-2 py-0.5 rounded text-[10px] font-medium bg-cyan-950/80 border border-cyan-500/70 text-cyan-300 transition-all whitespace-nowrap"
-        : "px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-all whitespace-nowrap";
-    }
-
-    if (btnSupply) {
-      btnSupply.className = kwShowSupply 
-        ? "px-2 py-0.5 rounded text-[10px] font-medium bg-violet-950/80 border border-violet-500/70 text-violet-300 transition-all whitespace-nowrap"
-        : "px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-all whitespace-nowrap";
-    }
-
-    draw80CandleCanvas();
-  }
-
-  /* 캔들 데이터 생성 (연도·날짜·시간 일치 보정) */
   function generate80CandleData(currentPrice, tf = chartTf) {
     const count = TOTAL_CANDLE_HISTORY;
     const now = new Date();
@@ -1783,11 +1581,7 @@
         const yy = cur.getFullYear().toString().slice(2);
         const m = String(cur.getMonth() + 1).padStart(2, '0');
         const d = String(cur.getDate()).padStart(2, '0');
-        dateEntries.unshift({
-          dateStr: `'${yy}.${m}.${d}`,
-          fullDateStr: `20${yy}.${m}.${d}`,
-          dateObj: new Date(cur)
-        });
+        dateEntries.unshift({ dateStr: `'${yy}.${m}.${d}`, fullDateStr: `20${yy}.${m}.${d}`, dateObj: new Date(cur) });
         cur.setDate(cur.getDate() - 7);
       }
     } else if (tf === 'M') {
@@ -1797,11 +1591,7 @@
         const dObj = new Date(y, m, 1);
         const yStr = dObj.getFullYear().toString().slice(2);
         const mStr = String(dObj.getMonth() + 1).padStart(2, '0');
-        dateEntries.unshift({
-          dateStr: `'${yStr}.${mStr}`,
-          fullDateStr: `20${yStr}년 ${mStr}월`,
-          dateObj: dObj
-        });
+        dateEntries.unshift({ dateStr: `'${yStr}.${mStr}`, fullDateStr: `20${yStr}년 ${mStr}월`, dateObj: dObj });
         m--;
       }
     } else {
@@ -1813,11 +1603,7 @@
         const yy = cur.getFullYear().toString().slice(2);
         const mm = String(cur.getMonth() + 1).padStart(2, '0');
         const dd = String(cur.getDate()).padStart(2, '0');
-        dateEntries.unshift({
-          dateStr: `'${yy}.${mm}/${dd}`,
-          fullDateStr: `20${yy}.${mm}.${dd}`,
-          dateObj: new Date(cur)
-        });
+        dateEntries.unshift({ dateStr: `'${yy}.${mm}/${dd}`, fullDateStr: `20${yy}.${mm}.${dd}`, dateObj: new Date(cur) });
         cur.setDate(cur.getDate() - 1);
       }
     }
@@ -1868,7 +1654,6 @@
     chartScrollOffset = 0;
   }
 
-  /* 캔버스 차트 그리기 */
   function draw80CandleCanvas() {
     const canvas = document.getElementById('candleChartCanvas');
     if (!canvas || candleData80.length === 0) return;
@@ -1911,10 +1696,7 @@
     const volChartH = Math.max(16, (h - volChartTop) - 16);
     const volBaseY = h - 16;
 
-    let minPrice = Infinity;
-    let maxPrice = -Infinity;
-    let maxVol = 0;
-
+    let minPrice = Infinity, maxPrice = -Infinity, maxVol = 0;
     visibleCandles.forEach(c => {
       if (c.low < minPrice) minPrice = c.low;
       if (c.high > maxPrice) maxPrice = c.high;
@@ -1933,7 +1715,6 @@
     const candleSlotW = chartDrawWidth / len;
     const candleW = Math.max(0.9, candleSlotW * 0.40);
 
-    // 수평 가격 그리드선
     ctx.save();
     ctx.strokeStyle = isWhite ? 'rgba(203, 213, 225, 0.65)' : 'rgba(39, 39, 42, 0.55)';
     ctx.lineWidth = 0.7;
@@ -1953,7 +1734,6 @@
       ctx.fillText(formatCommaNumber(gridPrice, 0), w - 4, gridY + 3);
     }
 
-    // 키움증권 영웅문 표준: 우측 가격 Y축 세로 경계선
     ctx.strokeStyle = isWhite ? 'rgba(203, 213, 225, 0.9)' : 'rgba(39, 39, 42, 0.9)';
     ctx.setLineDash([]);
     ctx.beginPath();
@@ -1962,20 +1742,17 @@
     ctx.stroke();
     ctx.restore();
 
-    // 하단 X축 연도·날짜·시간 동기화 라벨
     const targetLabelCount = Math.max(3, Math.min(6, Math.floor(chartDrawWidth / 72)));
     const stepInterval = Math.max(1, Math.floor(len / targetLabelCount));
 
     visibleCandles.forEach((c, idx) => {
       const x = idx * candleSlotW + candleSlotW / 2;
       const isTick = (idx % stepInterval === 0) || (idx === len - 1);
-
       if (isTick) {
         ctx.save();
         ctx.strokeStyle = isWhite ? 'rgba(203, 213, 225, 0.8)' : 'rgba(39, 39, 42, 0.7)';
         ctx.lineWidth = 0.8;
         ctx.setLineDash([2, 2]);
-
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, dividerY - 2);
@@ -1983,7 +1760,6 @@
         ctx.lineTo(x, h - 14);
         ctx.stroke();
         ctx.setLineDash([]);
-
         ctx.fillStyle = isWhite ? '#475569' : '#a1a1aa';
         ctx.font = '8px Inter, sans-serif';
         ctx.textAlign = (idx === len - 1) ? 'right' : (idx === 0 ? 'left' : 'center');
@@ -1992,9 +1768,6 @@
         ctx.restore();
       }
     });
-
-    let activeHoverBin = null;
-    let activeHoverSupply = null;
 
     if (kwShowVP) {
       const binsCount = 60;
@@ -2007,7 +1780,6 @@
       });
 
       const maxBinVol = Math.max(...volumeBins) || 1;
-      const totalVol = volumeBins.reduce((a, b) => a + b, 0) || 1;
       const maxBinBarW = chartDrawWidth * 0.42;
 
       for (let b = 0; b < binsCount; b++) {
@@ -2018,17 +1790,9 @@
         const barH = (priceRange / binsCount) / priceRange * (candleChartH - 22);
 
         const isHovered = crosshairPos && Math.abs(crosshairPos.y - binY) <= (barH + 2);
-        if (isHovered) {
-          activeHoverBin = {
-            price: Math.round(binPrice),
-            pct: ((volumeBins[b] / totalVol) * 100).toFixed(1)
-          };
-        }
-
         const red = Math.round(59 + (244 - 59) * barRatio);
         const green = Math.round(130 + (63 - 130) * barRatio);
         const blue = Math.round(246 + (94 - 246) * barRatio);
-        
         const baseAlpha = isWhite ? (0.16 + barRatio * 0.32) : (0.14 + barRatio * 0.32);
         const finalAlpha = isHovered ? Math.min(0.85, baseAlpha + 0.35) : baseAlpha;
 
@@ -2042,7 +1806,6 @@
     }
 
     if (kwShowSupply) {
-      // 투자자별 수급 트렌드 (실선 렌더링)
       let sMin = Infinity, sMax = -Infinity;
       visibleCandles.forEach(c => {
         sMin = Math.min(sMin, c.foreignAcc, c.instAcc, c.retailAcc);
@@ -2057,15 +1820,12 @@
         ctx.lineWidth = lineWidth;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.setLineDash([]);
-
         ctx.beginPath();
         for (let i = 0; i < len; i++) {
           const x = i * candleSlotW + candleSlotW / 2;
           const y = getSupplyY(visibleCandles[i][key]);
-          if (i === 0) {
-            ctx.moveTo(x, y);
-          } else {
+          if (i === 0) ctx.moveTo(x, y);
+          else {
             const prevX = (i - 1) * candleSlotW + candleSlotW / 2;
             const prevY = getSupplyY(visibleCandles[i - 1][key]);
             const midX = (prevX + x) / 2;
@@ -2073,14 +1833,10 @@
           }
         }
         ctx.stroke();
-
-        const lastCandle = visibleCandles[len - 1];
         const lastX = (len - 1) * candleSlotW + candleSlotW / 2;
-        const lastY = getSupplyY(lastCandle[key]);
+        const lastY = getSupplyY(visibleCandles[len - 1][key]);
         ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(lastX, lastY, 2.8, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(lastX, lastY, 2.8, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
       }
 
@@ -2089,15 +1845,12 @@
       drawSolidSupplyCurve('retailAcc', isWhite ? '#0284c7' : '#38bdf8', 1.8);
     }
 
-    // 이동평균선 (MA5, MA20, MA60)
     function drawMA(period, color) {
       ctx.save();
       ctx.beginPath();
       ctx.strokeStyle = color;
       ctx.lineWidth = 1.0;
-      ctx.setLineDash([]);
       let started = false;
-
       for (let i = 0; i < len; i++) {
         if (i < period - 1) continue;
         let sum = 0;
@@ -2105,13 +1858,8 @@
         const ma = sum / period;
         const x = i * candleSlotW + candleSlotW / 2;
         const y = getY(ma);
-
-        if (!started) {
-          ctx.moveTo(x, y);
-          started = true;
-        } else {
-          ctx.lineTo(x, y);
-        }
+        if (!started) { ctx.moveTo(x, y); started = true; }
+        else ctx.lineTo(x, y);
       }
       ctx.stroke();
       ctx.restore();
@@ -2121,7 +1869,6 @@
     drawMA(20, isWhite ? '#e11d48' : '#fb7185');
     drawMA(60, isWhite ? '#059669' : '#34d399');
 
-    // 캔들 및 거래량 봉 렌더링
     visibleCandles.forEach((c, idx) => {
       const x = idx * candleSlotW + candleSlotW / 2;
       const isUp = c.close >= c.open;
@@ -2143,36 +1890,25 @@
       ctx.fillRect(x - candleW / 2, bodyTop, candleW, bodyH);
 
       const volBarH = (c.volume / (maxVol || 1)) * Math.max(10, volChartH);
-      ctx.fillStyle = isUp 
-        ? (isWhite ? 'rgba(225, 29, 72, 0.45)' : 'rgba(251, 113, 133, 0.4)') 
-        : (isWhite ? 'rgba(37, 99, 235, 0.45)' : 'rgba(96, 165, 250, 0.4)');
+      ctx.fillStyle = isUp ? (isWhite ? 'rgba(225, 29, 72, 0.45)' : 'rgba(251, 113, 133, 0.4)') : (isWhite ? 'rgba(37, 99, 235, 0.45)' : 'rgba(96, 165, 250, 0.4)');
       ctx.fillRect(x - candleW / 2, volBaseY - volBarH, candleW, volBarH);
     });
 
-    // 키움증권 영웅문 표준: 우측 가격축 현재가 박스 (Current Price Box)
     const latestCandle = visibleCandles[len - 1];
     if (latestCandle) {
       const curY = getY(latestCandle.close);
       const isCurUp = latestCandle.close >= latestCandle.open;
       const curColor = isCurUp ? '#e11d48' : '#2563eb';
-
       ctx.save();
-      // 현재가 수평 점선
       ctx.strokeStyle = curColor;
       ctx.lineWidth = 0.8;
       ctx.setLineDash([2, 2]);
-      ctx.beginPath();
-      ctx.moveTo(0, curY);
-      ctx.lineTo(chartDrawWidth, curY);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, curY); ctx.lineTo(chartDrawWidth, curY); ctx.stroke();
       ctx.setLineDash([]);
-
-      // 우측 축 채움 뱃지
-      ctx.fillStyle = curColor;
       const badgeH = 15;
       const badgeW = priceAxisWidth - 2;
+      ctx.fillStyle = curColor;
       ctx.fillRect(chartDrawWidth + 1, curY - badgeH / 2, badgeW, badgeH);
-
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 9px Inter, sans-serif';
       ctx.textAlign = 'center';
@@ -2180,46 +1916,26 @@
       ctx.restore();
     }
 
-    // 구분선
     ctx.save();
     ctx.strokeStyle = isDraggingDivider ? '#06b6d4' : (isWhite ? '#cbd5e1' : '#27272a');
     ctx.lineWidth = isDraggingDivider ? 2 : 1.2;
-    ctx.beginPath();
-    ctx.moveTo(0, dividerY);
-    ctx.lineTo(chartDrawWidth, dividerY);
-    ctx.stroke();
-
-    const gripW = 36;
-    const gripH = 3.5;
-    const gripX = chartDrawWidth / 2 - gripW / 2;
-    const gripY = dividerY - gripH / 2;
+    ctx.beginPath(); ctx.moveTo(0, dividerY); ctx.lineTo(chartDrawWidth, dividerY); ctx.stroke();
+    const gripW = 36, gripH = 3.5;
+    const gripX = chartDrawWidth / 2 - gripW / 2, gripY = dividerY - gripH / 2;
     ctx.fillStyle = isDraggingDivider ? '#22d3ee' : (isWhite ? '#94a3b8' : '#52525b');
     ctx.beginPath();
-    if (ctx.roundRect) {
-      ctx.roundRect(gripX, gripY, gripW, gripH, 2);
-    } else {
-      ctx.rect(gripX, gripY, gripW, gripH);
-    }
+    if (ctx.roundRect) ctx.roundRect(gripX, gripY, gripW, gripH, 2);
+    else ctx.rect(gripX, gripY, gripW, gripH);
     ctx.fill();
     ctx.restore();
 
-    // 십자선 (Crosshair)
     if (crosshairPos && crosshairPos.x <= chartDrawWidth) {
       const { x, y } = crosshairPos;
-
       ctx.strokeStyle = isWhite ? 'rgba(2, 132, 199, 0.75)' : 'rgba(6, 182, 212, 0.6)';
       ctx.lineWidth = 0.8;
       ctx.setLineDash([3, 3]);
-
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, h);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(chartDrawWidth, y);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(chartDrawWidth, y); ctx.stroke();
       ctx.setLineDash([]);
 
       if (y < dividerY) {
@@ -2270,9 +1986,7 @@
 
     function getTouchDist(e) {
       if (!e.touches || e.touches.length < 2) return 0;
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      return Math.hypot(dx, dy);
+      return Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
     }
 
     function handlePointerDown(e) {
@@ -2282,10 +1996,8 @@
         isPanningChart = false;
         return;
       }
-
       const { x, y, h } = getCoords(e);
       const dividerY = h * priceChartRatio;
-
       if (Math.abs(y - dividerY) <= 12) {
         isDraggingDivider = true;
         canvas.style.cursor = 'row-resize';
@@ -2302,18 +2014,15 @@
       if (e.touches && e.touches.length === 2 && pinchStartDist > 0) {
         const curDist = getTouchDist(e);
         const ratio = pinchStartDist / curDist;
-        const newCount = Math.round(pinchStartCandleCount * ratio);
-        VISIBLE_CANDLE_COUNT = Math.max(MIN_CANDLE_COUNT, Math.min(MAX_CANDLE_COUNT, newCount));
+        VISIBLE_CANDLE_COUNT = Math.max(MIN_CANDLE_COUNT, Math.min(MAX_CANDLE_COUNT, Math.round(pinchStartCandleCount * ratio)));
         draw80CandleCanvas();
         return;
       }
-
       const { x, y, h, w } = getCoords(e);
       const dividerY = h * priceChartRatio;
 
       if (isDraggingDivider) {
-        const newRatio = Math.max(0.45, Math.min(0.75, y / h));
-        priceChartRatio = newRatio;
+        priceChartRatio = Math.max(0.45, Math.min(0.75, y / h));
         draw80CandleCanvas();
         return;
       }
@@ -2329,20 +2038,13 @@
         return;
       }
 
-      if (Math.abs(y - dividerY) <= 12) {
-        canvas.style.cursor = 'row-resize';
-      } else {
-        canvas.style.cursor = 'crosshair';
-      }
-
+      canvas.style.cursor = Math.abs(y - dividerY) <= 12 ? 'row-resize' : 'crosshair';
       crosshairPos = { x, y };
       draw80CandleCanvas();
     }
 
     function handlePointerUp(e) {
-      if (e && e.touches && e.touches.length < 2) {
-        pinchStartDist = 0;
-      }
+      if (e && e.touches && e.touches.length < 2) pinchStartDist = 0;
       isDraggingDivider = false;
       isPanningChart = false;
       canvas.style.cursor = 'crosshair';
@@ -2350,18 +2052,14 @@
     }
 
     function handlePointerLeave() {
-      pinchStartDist = 0;
-      isDraggingDivider = false;
-      isPanningChart = false;
-      crosshairPos = null;
+      pinchStartDist = 0; isDraggingDivider = false; isPanningChart = false; crosshairPos = null;
       draw80CandleCanvas();
     }
 
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
       if (e.ctrlKey || e.metaKey || e.altKey) {
-        const zoomDelta = e.deltaY > 0 ? 10 : -10;
-        zoomChart(zoomDelta);
+        zoomChart(e.deltaY > 0 ? 10 : -10);
       } else {
         const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
         const step = Math.sign(delta) * 4;
@@ -2375,75 +2073,40 @@
     canvas.addEventListener('mousemove', handlePointerMove);
     window.addEventListener('mouseup', handlePointerUp);
     canvas.addEventListener('mouseleave', handlePointerLeave);
-
     canvas.addEventListener('touchstart', handlePointerDown, { passive: false });
     canvas.addEventListener('touchmove', handlePointerMove, { passive: false });
     window.addEventListener('touchend', handlePointerUp);
     canvas.addEventListener('touchcancel', handlePointerUp);
-
-    window.addEventListener('keydown', (e) => {
-      if (document.getElementById('stockBottomSheet').classList.contains('hidden')) return;
-      const maxOffset = Math.max(0, candleData80.length - VISIBLE_CANDLE_COUNT);
-      if (e.key === 'ArrowLeft') {
-        chartScrollOffset = Math.min(maxOffset, chartScrollOffset + 3);
-        draw80CandleCanvas();
-      } else if (e.key === 'ArrowRight') {
-        chartScrollOffset = Math.max(0, chartScrollOffset - 3);
-        draw80CandleCanvas();
-      } else if (e.key === '+' || e.key === '=') {
-        zoomChart(-15);
-      } else if (e.key === '-' || e.key === '_') {
-        zoomChart(15);
-      }
-    });
   }
 
-  /* 글로벌/국내 지표 실선 SVG 업데이트 */
   function generateIntradaySvgPath(item, totalSlots = TOTAL_DAY_SLOTS) {
     const history = item.history;
     if (!history || history.length < 2) {
-      return { 
-        line: "M 0 16 L 30 16", 
-        fill: "M 0 16 L 30 16 L 30 32 L 0 32 Z",
-        lastX: 30, lastY: 16, baseY: 16, maxX: 30, maxY: 16, minX: 0, minY: 16
-      };
+      return { line: "M 0 16 L 30 16", fill: "M 0 16 L 30 16 L 30 32 L 0 32 Z", lastX: 30, lastY: 16, baseY: 16, maxX: 30, maxY: 16, minX: 0, minY: 16 };
     }
 
     const minVal = Math.min(...history, item.base * 0.996);
     const maxVal = Math.max(...history, item.base * 1.004);
     const range = (maxVal - minVal) || 1;
 
-    let maxIdx = 0, minIdx = 0;
-    let maxObserved = -Infinity, minObserved = Infinity;
-
+    let maxIdx = 0, minIdx = 0, maxObserved = -Infinity, minObserved = Infinity;
     const points = history.map((val, i) => {
       if (val > maxObserved) { maxObserved = val; maxIdx = i; }
       if (val < minObserved) { minObserved = val; minIdx = i; }
-      const x = (i / (totalSlots - 1)) * 100;
-      const y = 27 - ((val - minVal) / range) * 22;
-      return { x, y };
+      return { x: (i / (totalSlots - 1)) * 100, y: 27 - ((val - minVal) / range) * 22 };
     });
 
     let lineD = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
     for (let i = 1; i < points.length; i++) {
-      const prev = points[i - 1];
-      const curr = points[i];
-      const midX = ((prev.x + curr.x) / 2).toFixed(1);
-      lineD += ` C ${midX} ${prev.y.toFixed(1)}, ${midX} ${curr.y.toFixed(1)}, ${curr.x.toFixed(1)} ${curr.y.toFixed(1)}`;
+      const midX = ((points[i - 1].x + points[i].x) / 2).toFixed(1);
+      lineD += ` C ${midX} ${points[i - 1].y.toFixed(1)}, ${midX} ${points[i].y.toFixed(1)}, ${points[i].x.toFixed(1)} ${points[i].y.toFixed(1)}`;
     }
 
-    const lastPoint = points[points.length - 1];
-    const fillD = `${lineD} L ${lastPoint.x.toFixed(1)} 32 L 0 32 Z`;
-    const baseY = 27 - ((item.base - minVal) / range) * 22;
-
+    const last = points[points.length - 1];
     return { 
-      line: lineD, fill: fillD, 
-      lastX: lastPoint.x, lastY: lastPoint.y,
-      baseY: Math.max(4, Math.min(28, baseY)),
-      maxX: points[maxIdx]?.x || lastPoint.x,
-      maxY: points[maxIdx]?.y || 8,
-      minX: points[minIdx]?.x || 0,
-      minY: points[minIdx]?.y || 24
+      line: lineD, fill: `${lineD} L ${last.x.toFixed(1)} 32 L 0 32 Z`, 
+      lastX: last.x, lastY: last.y, baseY: Math.max(4, Math.min(28, 27 - ((item.base - minVal) / range) * 22)),
+      maxX: points[maxIdx]?.x || last.x, maxY: points[maxIdx]?.y || 8, minX: points[minIdx]?.x || 0, minY: points[minIdx]?.y || 24
     };
   }
 
@@ -2455,183 +2118,67 @@
 
     const { line, fill, lastX, lastY, baseY, maxX, maxY, minX, minY } = generateIntradaySvgPath(item, TOTAL_DAY_SLOTS);
     lineEl.setAttribute('d', line);
-    lineEl.setAttribute('stroke-width', '1.1');
     fillEl.setAttribute('d', fill);
-
     if (dotEl) {
-      dotEl.setAttribute('cx', lastX.toFixed(1));
-      dotEl.setAttribute('cy', lastY.toFixed(1));
+      dotEl.setAttribute('cx', lastX.toFixed(1)); dotEl.setAttribute('cy', lastY.toFixed(1));
       dotEl.setAttribute('fill', item.rate >= 0 ? '#fb7185' : '#60a5fa');
     }
 
-    const baseEl = document.getElementById(`base-idx-${k}`);
-    if (baseEl) {
-      baseEl.setAttribute('y1', baseY.toFixed(1));
-      baseEl.setAttribute('y2', baseY.toFixed(1));
-    }
-    const maxDotEl = document.getElementById(`maxdot-idx-${k}`);
-    if (maxDotEl) {
-      maxDotEl.setAttribute('cx', maxX.toFixed(1));
-      maxDotEl.setAttribute('cy', maxY.toFixed(1));
-    }
-    const minDotEl = document.getElementById(`mindot-idx-${k}`);
-    if (minDotEl) {
-      minDotEl.setAttribute('cx', minX.toFixed(1));
-      minDotEl.setAttribute('cy', minY.toFixed(1));
-    }
+    if (document.getElementById(`base-idx-${k}`)) document.getElementById(`base-idx-${k}`).setAttribute('y1', baseY.toFixed(1));
+    if (document.getElementById(`base-idx-${k}`)) document.getElementById(`base-idx-${k}`).setAttribute('y2', baseY.toFixed(1));
+    if (document.getElementById(`maxdot-idx-${k}`)) { document.getElementById(`maxdot-idx-${k}`).setAttribute('cx', maxX.toFixed(1)); document.getElementById(`maxdot-idx-${k}`).setAttribute('cy', maxY.toFixed(1)); }
+    if (document.getElementById(`mindot-idx-${k}`)) { document.getElementById(`mindot-idx-${k}`).setAttribute('cx', minX.toFixed(1)); document.getElementById(`mindot-idx-${k}`).setAttribute('cy', minY.toFixed(1)); }
 
-    const isDomestic = item.isDomestic;
     if (item.rate >= 0) {
       lineEl.setAttribute('stroke', '#fb7185');
-      fillEl.setAttribute('fill', isDomestic ? 'url(#gradKrxUp)' : 'url(#gradUp)');
+      fillEl.setAttribute('fill', item.isDomestic ? 'url(#gradKrxUp)' : 'url(#gradUp)');
     } else {
       lineEl.setAttribute('stroke', '#60a5fa');
-      fillEl.setAttribute('fill', isDomestic ? 'url(#gradKrxDown)' : 'url(#gradDown)');
+      fillEl.setAttribute('fill', item.isDomestic ? 'url(#gradKrxDown)' : 'url(#gradDown)');
     }
   }
 
-  function triggerElementFlash(el, isUp) {
-    if (!el) return;
-    el.classList.remove('tick-flash-up', 'tick-flash-down');
-    void el.offsetWidth;
-    el.classList.add(isUp ? 'tick-flash-up' : 'tick-flash-down');
-  }
-
-  /* 실시간 틱 스트림 */
   function startLiveTickStreams() {
     setInterval(() => {
       const keys = Object.keys(LIVE_INDICES);
       const k = keys[Math.floor(Math.random() * keys.length)];
       const item = LIVE_INDICES[k];
-
       let delta = (Math.random() - 0.49);
-      if (k === 'kospi') delta *= 1.2;
-      else if (k === 'kosdaq') delta *= 0.6;
-      else if (k === 'kp200f') delta *= 0.25;
-      else if (k === 'krw') delta *= 0.4;
-      else if (k === 'spx') delta *= 1.8;
-      else if (k === 'dji' || k === 'nq') delta *= 8.0;
-      else delta *= 7.0;
+      if (k === 'kospi') delta *= 1.2; else if (k === 'kosdaq') delta *= 0.6; else if (k === 'kp200f') delta *= 0.25; else if (k === 'krw') delta *= 0.4; else if (k === 'spx') delta *= 1.8; else delta *= 8.0;
 
-      const isUp = delta >= 0;
       const dec = item.decimals !== undefined ? item.decimals : (item.isFloat ? 1 : 0);
       item.price = item.isFloat ? +(item.price + delta).toFixed(dec) : Math.round(item.price + delta);
-      const diffVal = +(item.price - item.base).toFixed(dec);
-      item.diff = diffVal;
-      const changePct = ((item.price - item.base) / item.base) * 100;
-      item.rate = +(changePct).toFixed(2);
-
+      item.diff = +(item.price - item.base).toFixed(dec);
+      item.rate = +(((item.price - item.base) / item.base) * 100).toFixed(2);
+      
       if (item.history.length < TOTAL_DAY_SLOTS) {
-        if (Math.random() > 0.6) {
-          item.history.push(item.price);
-        } else {
-          item.history[item.history.length - 1] = item.price;
-        }
-      } else {
-        item.history[item.history.length - 1] = item.price;
-      }
+        if (Math.random() > 0.6) item.history.push(item.price); else item.history[item.history.length - 1] = item.price;
+      } else item.history[item.history.length - 1] = item.price;
 
       const priceEl = document.getElementById(`price-idx-${k}`);
       const rateEl = document.getElementById(`rate-idx-${k}`);
       if (priceEl && rateEl) {
         priceEl.textContent = formatCommaNumber(item.price, dec);
-        if (item.isDomestic) {
-          const sign = item.diff >= 0 ? '+' : '';
-          rateEl.textContent = `${sign}${formatCommaNumber(item.diff, dec)} (${formatRate(item.rate)})`;
-        } else {
-          rateEl.textContent = formatRate(item.rate);
-        }
-
+        rateEl.textContent = item.isDomestic ? `${item.diff >= 0 ? '+' : ''}${formatCommaNumber(item.diff, dec)} (${formatRate(item.rate)})` : formatRate(item.rate);
         rateEl.className = `text-[10px] font-bold font-num ${item.rate >= 0 ? 'text-rose-400' : 'text-blue-400'}`;
-        triggerElementFlash(priceEl, isUp);
+        triggerElementFlash(priceEl, delta >= 0);
       }
       updateIndexChartSvg(k, item);
-
-      if (selectedStock && (selectedStock.code === k.toUpperCase() || selectedStock.code === k)) {
-        const sPrice = document.getElementById('sheetPrice');
-        const sRate = document.getElementById('sheetRate');
-        if (sPrice && sRate) {
-          sPrice.textContent = formatCommaNumber(item.price, dec);
-          sRate.textContent = formatRate(item.rate);
-          sRate.className = `text-[11px] font-semibold font-num ${getRateColor(item.rate)}`;
-          triggerElementFlash(sPrice, isUp);
-        }
-        if (candleData80.length > 0) {
-          const lastCandle = candleData80[candleData80.length - 1];
-          lastCandle.close = Math.round(item.price);
-          lastCandle.high = Math.max(lastCandle.high, Math.round(item.price));
-          lastCandle.low = Math.min(lastCandle.low, Math.round(item.price));
-          draw80CandleCanvas();
-        }
-      }
     }, 1600);
-
-    setInterval(() => {
-      const activeUniverse = KOSPI_80_DATA.filter(st => st.rank <= currentUniverseMax);
-      const target = activeUniverse[Math.floor(Math.random() * activeUniverse.length)];
-      if (!target) return;
-
-      let tick = 50;
-      if (target.price > 500000) tick = 1000;
-      else if (target.price > 200000) tick = 500;
-      else if (target.price > 50000) tick = 100;
-      else if (target.price > 20000) tick = 50;
-      else tick = 10;
-
-      const direction = (Math.random() > 0.48) ? 1 : -1;
-      const isUp = direction > 0;
-      target.price += (tick * direction);
-      target.rate = +(target.rate + (direction * 0.04)).toFixed(2);
-
-      const priceEl = document.getElementById(`stock-price-${target.code}`);
-      const rateEl = document.getElementById(`stock-rate-${target.code}`);
-      if (priceEl && rateEl) {
-        priceEl.textContent = formatKrw(target.price);
-        rateEl.textContent = formatRate(target.rate);
-        rateEl.className = `text-[11px] font-semibold font-num ${getRateColor(target.rate)}`;
-        triggerElementFlash(priceEl, isUp);
-      }
-
-      if (selectedStock && selectedStock.code === target.code) {
-        const sPrice = document.getElementById('sheetPrice');
-        const sRate = document.getElementById('sheetRate');
-        if (sPrice && sRate) {
-          sPrice.textContent = formatKrw(target.price);
-          sRate.textContent = formatRate(target.rate);
-          sRate.className = `text-[11px] font-semibold font-num ${getRateColor(target.rate)}`;
-          triggerElementFlash(sPrice, isUp);
-        }
-        if (candleData80.length > 0) {
-          const lastCandle = candleData80[candleData80.length - 1];
-          lastCandle.close = target.price;
-          lastCandle.high = Math.max(lastCandle.high, target.price);
-          lastCandle.low = Math.min(lastCandle.low, target.price);
-          draw80CandleCanvas();
-        }
-      }
-    }, 1800);
   }
 
   function openDualEngineModal() {
-    const k = localStorage.getItem('kis_app_key') || '';
-    const s = localStorage.getItem('kis_app_secret') || '';
-    document.getElementById('inputAppKey').value = k;
-    document.getElementById('inputAppSecret').value = s;
+    document.getElementById('inputAppKey').value = localStorage.getItem('kis_app_key') || '';
+    document.getElementById('inputAppSecret').value = localStorage.getItem('kis_app_secret') || '';
     document.getElementById('dualEngineModal').classList.remove('hidden');
   }
 
-  function closeDualEngineModal() {
-    document.getElementById('dualEngineModal').classList.add('hidden');
-  }
+  function closeDualEngineModal() { document.getElementById('dualEngineModal').classList.add('hidden'); }
 
   function toggleEngineMode() {
     const hasKey = !!(localStorage.getItem('kis_app_key') && localStorage.getItem('kis_app_secret'));
-    if (!hasKey) {
-      openDualEngineModal();
-      return;
-    }
-    const isCurrentlyKis = (currentEngineMode === 'kis');
-    applyEngineMode(!isCurrentlyKis);
+    if (!hasKey) { openDualEngineModal(); return; }
+    applyEngineMode(currentEngineMode !== 'kis');
   }
 
   function applyEngineMode(isKis) {
@@ -2649,7 +2196,6 @@
       if (lblKis) lblKis.className = "text-[10px] sm:text-[11px] font-bold text-emerald-400 transition-colors whitespace-nowrap";
       if (lblPub) lblPub.className = "text-[10px] sm:text-[11px] font-medium text-zinc-500 transition-colors whitespace-nowrap";
       
-      // KIS 실시간 통신 폴링 가동
       if (kisPollingTimer) clearInterval(kisPollingTimer);
       syncKisRealtimeBatch();
       kisPollingTimer = setInterval(syncKisRealtimeBatch, 5000);
@@ -2659,11 +2205,7 @@
       if (lblKis) lblKis.className = "text-[10px] sm:text-[11px] font-medium text-zinc-500 transition-colors whitespace-nowrap";
       if (lblPub) lblPub.className = "text-[10px] sm:text-[11px] font-bold text-blue-400 transition-colors whitespace-nowrap";
 
-      // KIS 타이머 해제
-      if (kisPollingTimer) {
-        clearInterval(kisPollingTimer);
-        kisPollingTimer = null;
-      }
+      if (kisPollingTimer) { clearInterval(kisPollingTimer); kisPollingTimer = null; }
     }
   }
 
@@ -2671,30 +2213,20 @@
     const k = (document.getElementById('inputAppKey')?.value || '').trim();
     const s = (document.getElementById('inputAppSecret')?.value || '').trim();
     if (k && s) {
-      localStorage.setItem('kis_app_key', k);
-      localStorage.setItem('kis_app_secret', s);
-      // 신규 키 등록 시 기존 토큰 캐시 초기화 후 재발급 준비
-      localStorage.removeItem('kis_cached_token');
-      localStorage.removeItem('kis_token_expiry');
-      kisAccessToken = null;
-      applyEngineMode(true);
+      localStorage.setItem('kis_app_key', k); localStorage.setItem('kis_app_secret', s);
+      localStorage.removeItem('kis_cached_token'); localStorage.removeItem('kis_token_expiry');
+      kisAccessToken = null; applyEngineMode(true);
     } else {
-      localStorage.removeItem('kis_app_key');
-      localStorage.removeItem('kis_app_secret');
-      applyEngineMode(false);
+      localStorage.removeItem('kis_app_key'); localStorage.removeItem('kis_app_secret'); applyEngineMode(false);
     }
     closeDualEngineModal();
   }
 
   function resetEngineKeys() {
-    localStorage.removeItem('kis_app_key');
-    localStorage.removeItem('kis_app_secret');
-    const inputK = document.getElementById('inputAppKey');
-    const inputS = document.getElementById('inputAppSecret');
-    if (inputK) inputK.value = '';
-    if (inputS) inputS.value = '';
-    applyEngineMode(false);
-    closeDualEngineModal();
+    localStorage.removeItem('kis_app_key'); localStorage.removeItem('kis_app_secret');
+    if (document.getElementById('inputAppKey')) document.getElementById('inputAppKey').value = '';
+    if (document.getElementById('inputAppSecret')) document.getElementById('inputAppSecret').value = '';
+    applyEngineMode(false); closeDualEngineModal();
   }
 
   function openSectorTop10Modal(secName, returnRate) {
@@ -2718,17 +2250,12 @@
         </div>
       </div>
     `).join('');
-
     document.getElementById('sectorTop10Modal').classList.remove('hidden');
   }
 
-  function closeSectorTop10Modal() {
-    document.getElementById('sectorTop10Modal').classList.add('hidden');
-  }
+  function closeSectorTop10Modal() { document.getElementById('sectorTop10Modal').classList.add('hidden'); }
 
-  window.addEventListener('resize', () => {
-    if (selectedStock) draw80CandleCanvas();
-  });
+  window.addEventListener('resize', () => { if (selectedStock) draw80CandleCanvas(); });
 
   window.onload = function () {
     renderSectorStreakRelay();
@@ -2737,9 +2264,7 @@
     setupSheetHeaderDrag();
     startLiveTickStreams();
 
-    Object.keys(LIVE_INDICES).forEach(k => {
-      updateIndexChartSvg(k, LIVE_INDICES[k]);
-    });
+    Object.keys(LIVE_INDICES).forEach(k => updateIndexChartSvg(k, LIVE_INDICES[k]));
 
     const isKisStored = !!(localStorage.getItem('kis_app_key') && localStorage.getItem('kis_app_secret'));
     const isEngineActive = isKisStored && (localStorage.getItem('kis_engine_active') === 'true');
