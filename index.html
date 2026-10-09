@@ -50,36 +50,36 @@
 
   <!-- Top Sticky Navigation Header -->
   <header class="sticky top-0 z-40 bg-slate-900/90 border-b border-slate-800/80 backdrop-blur-md px-3 py-2 sm:px-4 sm:py-2.5">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2">
       <!-- Title & 50/80 Universe Selector -->
-      <div class="flex items-center gap-2 sm:gap-3">
-        <h1 class="text-sm sm:text-base font-semibold text-slate-50 tracking-tight flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+      <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0 min-w-0">
+        <h1 class="text-xs sm:text-base font-semibold text-slate-50 tracking-tight flex items-center gap-1 sm:gap-1.5 whitespace-nowrap">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse flex-shrink-0"></span>
           KOSPI 랭킹
         </h1>
         
         <!-- Universe Toggle (50위 / 80위) -->
-        <div class="inline-flex items-center p-0.5 rounded-lg bg-slate-800/90 border border-slate-700/70 text-[11px] font-medium">
-          <button id="btnUni50" onclick="setUniverse(50)" class="px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all">50위</button>
-          <button id="btnUni80" onclick="setUniverse(80)" class="px-2 py-0.5 rounded-md text-slate-400 hover:text-slate-200 transition-all">80위</button>
+        <div class="inline-flex items-center p-0.5 rounded-lg bg-slate-800/90 border border-slate-700/70 text-[10px] sm:text-[11px] font-medium whitespace-nowrap flex-shrink-0">
+          <button id="btnUni50" onclick="setUniverse(50)" class="px-1.5 sm:px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all">50위</button>
+          <button id="btnUni80" onclick="setUniverse(80)" class="px-1.5 sm:px-2 py-0.5 rounded-md text-slate-400 hover:text-slate-200 transition-all">80위</button>
         </div>
       </div>
 
       <!-- Dual Engine Status Button (공개 시세망 / KIS 직결) -->
-      <div class="flex items-center gap-2">
-        <button onclick="openDualEngineModal()" class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-800/80 border border-slate-700/80 hover:bg-slate-700/70 transition-colors text-[11px] text-slate-300">
-          <span id="headerEngineLamp" class="relative flex h-2 w-2">
+      <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        <button onclick="openDualEngineModal()" class="flex items-center gap-1 sm:gap-1.5 px-2 py-1 rounded-md bg-slate-800/80 border border-slate-700/80 hover:bg-slate-700/70 transition-colors text-[10px] sm:text-[11px] text-slate-300 whitespace-nowrap">
+          <span id="headerEngineLamp" class="relative flex h-2 w-2 flex-shrink-0">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
           </span>
-          <span id="headerEngineText" class="font-medium text-slate-200">🌐 공개 시세망</span>
+          <span id="headerEngineText" class="font-medium text-slate-200 whitespace-nowrap">🌐 공개 시세망</span>
         </button>
       </div>
     </div>
 
     <!-- MTS Style Global Indices Horizontal Bar (Intraday Real-Time Path with Blank Future Space) -->
     <div class="max-w-7xl mx-auto mt-2 pt-1 border-t border-slate-800/60">
-      <div id="globalIndexTickerBar" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 select-none">
+      <div id="globalIndexTickerBar" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 select-none whitespace-nowrap">
         
         <!-- SVG Gradient Definitions -->
         <svg class="hidden">
@@ -103,11 +103,11 @@
             <path id="line-idx-dji" fill="none" stroke="#fb7185" stroke-width="1.7" d="M 0 16 L 55 16"></path>
             <circle id="dot-idx-dji" cx="55" cy="16" r="1.8" fill="#fb7185"></circle>
           </svg>
-          <div class="relative z-10 flex items-center justify-between">
+          <div class="relative z-10 flex items-center justify-between whitespace-nowrap">
             <span class="text-[10px] text-slate-400 font-medium">다우존스</span>
             <span id="rate-idx-dji" class="text-[10px] font-semibold font-num text-rose-400">+0.10%</span>
           </div>
-          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5">
+          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5 whitespace-nowrap">
             <span id="price-idx-dji">51,232</span>
           </div>
         </div>
@@ -120,11 +120,11 @@
             <path id="line-idx-ixic" fill="none" stroke="#60a5fa" stroke-width="1.7" d="M 0 16 L 55 16"></path>
             <circle id="dot-idx-ixic" cx="55" cy="16" r="1.8" fill="#60a5fa"></circle>
           </svg>
-          <div class="relative z-10 flex items-center justify-between">
+          <div class="relative z-10 flex items-center justify-between whitespace-nowrap">
             <span class="text-[10px] text-slate-400 font-medium">나스닥</span>
             <span id="rate-idx-ixic" class="text-[10px] font-semibold font-num text-blue-400">-1.33%</span>
           </div>
-          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5">
+          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5 whitespace-nowrap">
             <span id="price-idx-ixic">27,173</span>
           </div>
         </div>
@@ -137,11 +137,11 @@
             <path id="line-idx-spx" fill="none" stroke="#60a5fa" stroke-width="1.7" d="M 0 16 L 55 16"></path>
             <circle id="dot-idx-spx" cx="55" cy="16" r="1.8" fill="#60a5fa"></circle>
           </svg>
-          <div class="relative z-10 flex items-center justify-between">
+          <div class="relative z-10 flex items-center justify-between whitespace-nowrap">
             <span class="text-[10px] text-slate-400 font-medium">S&P 500</span>
             <span id="rate-idx-spx" class="text-[10px] font-semibold font-num text-blue-400">-0.47%</span>
           </div>
-          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5">
+          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5 whitespace-nowrap">
             <span id="price-idx-spx">7,765.4</span>
           </div>
         </div>
@@ -154,11 +154,11 @@
             <path id="line-idx-krw" fill="none" stroke="#60a5fa" stroke-width="1.7" d="M 0 16 L 55 16"></path>
             <circle id="dot-idx-krw" cx="55" cy="16" r="1.8" fill="#60a5fa"></circle>
           </svg>
-          <div class="relative z-10 flex items-center justify-between">
+          <div class="relative z-10 flex items-center justify-between whitespace-nowrap">
             <span class="text-[10px] text-slate-400 font-medium">원/달러</span>
             <span id="rate-idx-krw" class="text-[10px] font-semibold font-num text-blue-400">-0.10%</span>
           </div>
-          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5">
+          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5 whitespace-nowrap">
             <span id="price-idx-krw">1,342.6</span>
           </div>
         </div>
@@ -171,11 +171,11 @@
             <path id="line-idx-nq" fill="none" stroke="#fb7185" stroke-width="1.7" d="M 0 16 L 55 16"></path>
             <circle id="dot-idx-nq" cx="55" cy="16" r="1.8" fill="#fb7185"></circle>
           </svg>
-          <div class="relative z-10 flex items-center justify-between">
+          <div class="relative z-10 flex items-center justify-between whitespace-nowrap">
             <span class="text-[10px] text-slate-400 font-medium">나스닥 선물</span>
             <span id="rate-idx-nq" class="text-[10px] font-semibold font-num text-rose-400">+0.53%</span>
           </div>
-          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5">
+          <div class="relative z-10 text-[11px] font-semibold font-num text-slate-100 tracking-tight mt-0.5 whitespace-nowrap">
             <span id="price-idx-nq">31,133</span>
           </div>
         </div>
@@ -185,42 +185,48 @@
   </header>
 
   <!-- Main Application Body -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-4 py-3 space-y-4">
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-4 py-3 space-y-3.5">
 
     <!-- 6-Month Sector Streak Relay & Predicted Surge Sectors -->
     <section>
-      <div class="flex items-center justify-between mb-1.5 px-0.5">
-        <div class="flex items-center gap-1.5">
-          <span class="text-xs font-semibold text-slate-200">6개월 급등 릴레이</span>
-          <span class="text-[10px] text-slate-400">· 터치 시 해당섹터 TOP10</span>
+      <div class="flex items-center justify-between mb-1.5 px-0.5 whitespace-nowrap">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span class="text-xs font-semibold text-slate-200 whitespace-nowrap">6개월 급등 릴레이</span>
+          <span class="text-[10px] text-slate-400 truncate whitespace-nowrap">· 터치 시 TOP10</span>
         </div>
-        <span class="text-[10px] text-slate-500">좌우 스크롤 ↔</span>
+        <span class="text-[10px] text-slate-500 flex-shrink-0 whitespace-nowrap pl-2">좌우 스크롤 ↔</span>
       </div>
 
-      <div id="sectorStreakRelay" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 select-none">
+      <div id="sectorStreakRelay" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 select-none whitespace-nowrap">
         <!-- Dynamically injected via JavaScript -->
       </div>
     </section>
 
     <!-- Filter and Sort Bar: [시총 순위] is First and Default Active -->
-    <section class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
-      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-        <button id="btnSortRank" onclick="setSortMode('rank')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-cyan-500 text-white shadow-sm transition-all">
+    <section class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 whitespace-nowrap">
+        <button id="btnSortRank" onclick="setSortMode('rank')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-cyan-500 text-white shadow-sm transition-all whitespace-nowrap flex-shrink-0">
           시총 순위
         </button>
-        <button id="btnSortQuant" onclick="setSortMode('quant')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">
-          종합 추천 순위
+        <button id="btnSortQuant" onclick="setSortMode('quant')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all whitespace-nowrap flex-shrink-0">
+          종합 퀀트
         </button>
-        <button id="btnSortRate" onclick="setSortMode('rate')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">
+        <button id="btnSortTrend" onclick="setSortMode('trend')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all whitespace-nowrap flex-shrink-0">
+          추세추종순
+        </button>
+        <button id="btnSortValue" onclick="setSortMode('value')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all whitespace-nowrap flex-shrink-0">
+          가치(재무)순
+        </button>
+        <button id="btnSortRate" onclick="setSortMode('rate')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all whitespace-nowrap flex-shrink-0">
           당일 급등순
         </button>
-        <button id="btnSortSupply" onclick="setSortMode('supply')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">
+        <button id="btnSortSupply" onclick="setSortMode('supply')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all whitespace-nowrap flex-shrink-0">
           메이저 수급순
         </button>
       </div>
 
-      <div class="flex items-center gap-1.5">
-        <select id="sectorFilterSelect" onchange="setSectorFilter(this.value)" class="bg-slate-800/90 border border-slate-700/80 rounded-md px-2 py-1 text-[11px] text-slate-200 outline-none">
+      <div class="flex items-center justify-between sm:justify-end gap-2 whitespace-nowrap flex-shrink-0">
+        <select id="sectorFilterSelect" onchange="setSectorFilter(this.value)" class="bg-slate-800/90 border border-slate-700/80 rounded-md px-2 py-1 text-[11px] text-slate-200 outline-none whitespace-nowrap">
           <option value="ALL">전체 섹터</option>
           <option value="반도체">반도체/IT</option>
           <option value="2차전지">2차전지</option>
@@ -229,7 +235,7 @@
           <option value="금융">금융/지주</option>
           <option value="방산/중공업">방산/중공업</option>
         </select>
-        <span id="stockCountBadge" class="text-[10px] text-slate-400 font-num">50개 종목</span>
+        <span id="stockCountBadge" class="text-[10px] text-slate-400 font-num whitespace-nowrap flex-shrink-0">50개 종목</span>
       </div>
     </section>
 
@@ -245,25 +251,25 @@
     <div class="max-w-2xl w-full mx-auto bg-slate-900 border-t border-slate-700 rounded-t-2xl shadow-2xl max-h-[92vh] flex flex-col overflow-hidden">
       
       <!-- Sheet Header -->
-      <div class="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span id="sheetRank" class="px-1.5 py-0.5 text-[10px] rounded bg-slate-800 text-cyan-400 font-semibold font-num">#1</span>
-          <div>
-            <div class="flex items-center gap-1.5">
-              <h3 id="sheetName" class="text-sm font-semibold text-white tracking-tight">삼성전자</h3>
-              <span id="sheetCode" class="text-[10px] text-slate-400 font-mono">005930</span>
+      <div class="px-3.5 sm:px-4 py-2.5 border-b border-slate-800 flex items-center justify-between gap-2 whitespace-nowrap">
+        <div class="flex items-center gap-2 min-w-0">
+          <span id="sheetRank" class="px-1.5 py-0.5 text-[10px] rounded bg-slate-800 text-cyan-400 font-semibold font-num flex-shrink-0">#1</span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <h3 id="sheetName" class="text-sm font-semibold text-white tracking-tight truncate whitespace-nowrap">삼성전자</h3>
+              <span id="sheetCode" class="text-[10px] text-slate-400 font-mono flex-shrink-0">005930</span>
             </div>
-            <span id="sheetSector" class="text-[10px] text-slate-400 font-normal">반도체</span>
+            <span id="sheetSector" class="text-[10px] text-slate-400 font-normal truncate block whitespace-nowrap">반도체</span>
           </div>
         </div>
 
         <!-- Price & Rate -->
-        <div class="flex items-center gap-3">
-          <div class="text-right">
+        <div class="flex items-center gap-2.5 flex-shrink-0">
+          <div class="text-right whitespace-nowrap">
             <div id="sheetPrice" class="text-sm font-semibold text-slate-100 font-num">81,400원</div>
             <div id="sheetRate" class="text-[11px] font-semibold text-rose-400 font-num">+2.15%</div>
           </div>
-          <button onclick="closeStockBottomSheet()" class="p-1 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <button onclick="closeStockBottomSheet()" class="p-1 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition-colors flex-shrink-0">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
@@ -273,13 +279,13 @@
       <div class="flex-1 overflow-y-auto p-3.5 space-y-3.5 no-scrollbar">
 
         <!-- Chart Controls (Minute Candles Dropdown, Period Tabs, and Volume Profile Toggle) -->
-        <div class="flex items-center justify-between flex-wrap gap-1.5">
-          <div class="flex items-center gap-1.5">
+        <div class="flex items-center justify-between gap-1.5 overflow-x-auto no-scrollbar py-0.5 whitespace-nowrap">
+          <div class="flex items-center gap-1.5 flex-shrink-0">
             
-            <!-- Minute Candles Select Dropdown (증권통 MTS 스타일) -->
-            <div class="relative inline-flex items-center">
-              <select id="minuteSelectDropdown" onchange="onMinuteDropdownChange(this.value)" class="appearance-none bg-slate-800 text-slate-200 border border-slate-700/80 rounded px-2.5 py-1 pr-6 text-[10px] font-medium outline-none focus:border-cyan-500 transition-colors cursor-pointer">
-                <option value="" disabled selected>분봉 선택 ▼</option>
+            <!-- Minute Candles Select Dropdown (화살표 1개 단독 고정) -->
+            <div class="relative inline-flex items-center flex-shrink-0">
+              <select id="minuteSelectDropdown" onchange="onMinuteDropdownChange(this.value)" style="-webkit-appearance:none;-moz-appearance:none;appearance:none;" class="bg-slate-800 text-slate-200 border border-slate-700/80 rounded px-2 py-1 pr-5 text-[10px] font-medium outline-none focus:border-cyan-500 transition-colors cursor-pointer whitespace-nowrap">
+                <option value="" disabled selected>분봉 선택</option>
                 <option value="60M">1시간봉 (60분)</option>
                 <option value="30M">30분봉</option>
                 <option value="10M">10분봉</option>
@@ -287,13 +293,15 @@
                 <option value="3M">3분봉</option>
                 <option value="1M">1분봉</option>
               </select>
-              <div class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 text-[9px]">
-                ▼
+              <div class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 flex items-center">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                </svg>
               </div>
             </div>
 
             <!-- Standard Period Tabs -->
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
               <button id="btnTf80" onclick="switchChartTf('80')" class="px-2 py-0.5 rounded text-[10px] font-medium bg-cyan-500 text-white transition-colors">일봉</button>
               <button id="btnTfWeek" onclick="switchChartTf('W')" class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors">주봉</button>
               <button id="btnTfMonth" onclick="switchChartTf('M')" class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors">월봉</button>
@@ -301,23 +309,23 @@
           </div>
 
           <!-- Volume Profile One-Touch Toggle Button -->
-          <button id="btnToggleVP" onclick="toggleVolumeProfile()" class="px-2.5 py-0.5 rounded-full text-[10px] font-medium border border-cyan-500/70 text-cyan-300 bg-cyan-950/40 hover:bg-cyan-900/60 transition-colors flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-            <span id="vpBtnText">매물대 ON</span>
+          <button id="btnToggleVP" onclick="toggleVolumeProfile()" class="px-2 py-0.5 rounded-full text-[10px] font-medium border border-cyan-500/70 text-cyan-300 bg-cyan-950/40 hover:bg-cyan-900/60 transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0"></span>
+            <span id="vpBtnText" class="whitespace-nowrap">매물대 ON</span>
           </button>
         </div>
 
-        <!-- Chart HUD Information Bar -->
-        <div id="chartHudBox" class="flex flex-wrap items-center justify-between text-[10px] text-slate-400 bg-slate-950/80 px-2 py-1 rounded border border-slate-800 font-num">
-          <div class="flex items-center gap-2">
+        <!-- Chart HUD Information Bar (Single Line Guaranteed) -->
+        <div id="chartHudBox" class="flex items-center justify-between text-[10px] text-slate-400 bg-slate-950/80 px-2 py-1 rounded border border-slate-800 font-num overflow-x-auto no-scrollbar whitespace-nowrap gap-2">
+          <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 whitespace-nowrap">
             <span>시 <span id="hudOpen" class="text-slate-200">-</span></span>
             <span>고 <span id="hudHigh" class="text-slate-200">-</span></span>
             <span>저 <span id="hudLow" class="text-slate-200">-</span></span>
             <span>종 <span id="hudClose" class="text-slate-200">-</span></span>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
             <span>거래량 <span id="hudVol" class="text-slate-200">-</span></span>
-            <div class="flex items-center gap-1.5 text-[9px]">
+            <div class="flex items-center gap-1 text-[9px] whitespace-nowrap flex-shrink-0">
               <span class="text-amber-400">MA5</span>
               <span class="text-rose-400">MA20</span>
               <span class="text-emerald-400">MA60</span>
@@ -325,41 +333,101 @@
           </div>
         </div>
 
+        <!-- Touch/Drag Interaction Guide Bar -->
+        <div class="flex items-center justify-between text-[9px] text-slate-400 px-1 font-num whitespace-nowrap select-none">
+          <div class="flex items-center gap-1.5 text-cyan-300">
+            <span>↔ 좌우 드래그: 시간 스크롤</span>
+            <span class="text-slate-600">|</span>
+            <span>↕ 구분선: 높이 조절</span>
+          </div>
+          <!-- One-Touch Candle Density Selector with Chart Background Slide Switch -->
+          <div class="flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded px-1.5 py-0.5">
+            <!-- 차트 배경색 (검정/흰색) 슬라이드 스위치 -->
+            <div class="flex items-center gap-1 cursor-pointer select-none" onclick="toggleChartBgTheme()" title="차트 배경색 전환">
+              <span class="text-slate-400 text-[8px]">배경:</span>
+              <div id="chartThemeSwitchTrack" class="relative inline-flex h-3.5 w-7 items-center rounded-full bg-slate-800 border border-slate-700 transition-colors duration-200">
+                <span id="chartThemeSwitchKnob" class="inline-block h-2.5 w-2.5 transform rounded-full bg-slate-300 transition-transform duration-200 translate-x-0.5"></span>
+              </div>
+              <span id="chartThemeSwitchText" class="text-slate-300 text-[8px] font-medium min-w-[18px]">검정</span>
+            </div>
+
+            <span class="text-slate-700">|</span>
+
+            <!-- 캔들 수 지정 -->
+            <span class="text-slate-500 text-[8px]">캔들 수:</span>
+            <button id="btnDensity60" onclick="setCandleDensity(60)" class="px-1 py-0.2 rounded text-[8px] text-slate-400 hover:text-slate-200 transition-colors">60</button>
+            <button id="btnDensity90" onclick="setCandleDensity(90)" class="px-1 py-0.2 rounded text-[8px] bg-cyan-500 text-white font-semibold transition-colors">90</button>
+            <button id="btnDensity120" onclick="setCandleDensity(120)" class="px-1 py-0.2 rounded text-[8px] text-slate-400 hover:text-slate-200 transition-colors">120</button>
+            <span class="text-slate-600 mx-0.5">|</span>
+            <button onclick="resetChartScroll()" class="text-slate-400 hover:text-cyan-300 transition-colors text-[9px]">최근 시세 ⟳</button>
+          </div>
+        </div>
+
         <!-- 80-Candle + 60-Bin Heatmap Volume Profile Canvas Container -->
-        <div class="relative w-full h-56 sm:h-64 bg-slate-950 rounded-lg border border-slate-800 overflow-hidden select-none">
-          <canvas id="candleChartCanvas" class="w-full h-full block cursor-crosshair"></canvas>
+        <div id="chartCanvasContainer" class="relative w-full h-56 sm:h-64 bg-slate-950 rounded-lg border border-slate-800 overflow-hidden select-none transition-colors duration-200">
+          <canvas id="candleChartCanvas" style="touch-action: none;" class="w-full h-full block cursor-crosshair"></canvas>
           
           <!-- Dynamic Floating Badge for Volume Profile / Crosshair Hover -->
-          <div id="vpFloatingBadge" class="absolute top-2 right-2 pointer-events-none hidden px-2 py-0.5 rounded bg-slate-900/90 border border-cyan-500/60 text-cyan-300 text-[10px] font-num shadow-lg">
+          <div id="vpFloatingBadge" class="absolute top-2 right-2 pointer-events-none hidden px-2 py-0.5 rounded bg-slate-900/90 border border-cyan-500/60 text-cyan-300 text-[10px] font-num shadow-lg whitespace-nowrap">
             매물평균: -
           </div>
         </div>
 
         <!-- Key Quant Indicators Grid -->
         <div class="grid grid-cols-3 gap-2">
-          <div class="bg-slate-950/60 p-2 rounded-lg border border-slate-800">
-            <span class="text-[10px] text-slate-400">14일 RSI</span>
-            <div id="sheetRsi" class="text-xs font-semibold text-slate-200 font-num mt-0.5">38.4</div>
+          <div class="bg-slate-950/60 p-2 rounded-lg border border-slate-800 text-center sm:text-left">
+            <span class="text-[10px] text-slate-400 whitespace-nowrap block truncate">14일 RSI</span>
+            <div id="sheetRsi" class="text-xs font-semibold text-slate-200 font-num mt-0.5 whitespace-nowrap">38.4</div>
           </div>
-          <div class="bg-slate-950/60 p-2 rounded-lg border border-slate-800">
-            <span class="text-[10px] text-slate-400">20일선 이격도</span>
-            <div id="sheetDisparity" class="text-xs font-semibold text-slate-200 font-num mt-0.5">97.8%</div>
+          <div class="bg-slate-950/60 p-2 rounded-lg border border-slate-800 text-center sm:text-left">
+            <span class="text-[10px] text-slate-400 whitespace-nowrap block truncate">20일 이격도</span>
+            <div id="sheetDisparity" class="text-xs font-semibold text-slate-200 font-num mt-0.5 whitespace-nowrap">97.8%</div>
           </div>
-          <div class="bg-slate-950/60 p-2 rounded-lg border border-slate-800">
-            <span class="text-[10px] text-slate-400">수급 스코어</span>
-            <div id="sheetSupplyScore" class="text-xs font-semibold text-cyan-400 font-num mt-0.5">88점</div>
+          <div class="bg-slate-950/60 p-2 rounded-lg border border-slate-800 text-center sm:text-left">
+            <span class="text-[10px] text-slate-400 whitespace-nowrap block truncate">수급 스코어</span>
+            <div id="sheetSupplyScore" class="text-xs font-semibold text-cyan-400 font-num mt-0.5 whitespace-nowrap">88점</div>
+          </div>
+        </div>
+
+        <!-- NEW: Fundamental & Financial Health (PER, PBR, ROE, Debt Ratio) -->
+        <div class="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between whitespace-nowrap">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="text-[11px] font-semibold text-indigo-300">📊 가치투자 & 재무건전성 진단</span>
+              <span id="sheetTrendBadge" class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-400 border border-emerald-500/50 font-medium">정배열 추세</span>
+            </div>
+            <span id="sheetValueGrade" class="text-[10px] text-amber-400 font-semibold font-num">저평가 우량</span>
+          </div>
+
+          <div class="grid grid-cols-4 gap-1.5 text-center">
+            <div class="bg-slate-900/80 p-1.5 rounded border border-slate-800/80">
+              <div class="text-[9px] text-slate-400">PER</div>
+              <div id="sheetPer" class="text-[11px] font-semibold font-num text-slate-200 mt-0.5">12.4배</div>
+            </div>
+            <div class="bg-slate-900/80 p-1.5 rounded border border-slate-800/80">
+              <div class="text-[9px] text-slate-400">PBR</div>
+              <div id="sheetPbr" class="text-[11px] font-semibold font-num text-slate-200 mt-0.5">1.18배</div>
+            </div>
+            <div class="bg-slate-900/80 p-1.5 rounded border border-slate-800/80">
+              <div class="text-[9px] text-slate-400">ROE</div>
+              <div id="sheetRoe" class="text-[11px] font-semibold font-num text-rose-400 mt-0.5">14.2%</div>
+            </div>
+            <div class="bg-slate-900/80 p-1.5 rounded border border-slate-800/80">
+              <div class="text-[9px] text-slate-400">부채비율</div>
+              <div id="sheetDebtRatio" class="text-[11px] font-semibold font-num text-emerald-400 mt-0.5">38.5%</div>
+            </div>
           </div>
         </div>
 
         <!-- Major Investors (Foreign & Institutional) Breakdown -->
         <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
-          <div class="flex items-center justify-between mb-1.5">
-            <span class="text-[11px] font-medium text-slate-300">최근 5일 메이저 순매수 동향</span>
-            <span class="text-[10px] text-slate-400 font-num">단위: 억 원</span>
+          <div class="flex items-center justify-between mb-1.5 whitespace-nowrap">
+            <span class="text-[11px] font-medium text-slate-300 truncate">최근 5일 메이저 순매수 동향</span>
+            <span class="text-[10px] text-slate-400 font-num flex-shrink-0 pl-1">단위: 억 원</span>
           </div>
-          <div class="flex items-center justify-between text-[11px] font-num">
-            <div>외국인: <span id="sheetForeignFlow" class="font-semibold text-rose-400">+1,420억</span></div>
-            <div>기관계: <span id="sheetInstFlow" class="font-semibold text-rose-400">+2,150억</span></div>
+          <div class="flex items-center justify-between text-[11px] font-num whitespace-nowrap">
+            <div class="truncate">외국인: <span id="sheetForeignFlow" class="font-semibold text-rose-400 whitespace-nowrap">+1,420억</span></div>
+            <div class="truncate text-right pl-2">기관계: <span id="sheetInstFlow" class="font-semibold text-rose-400 whitespace-nowrap">+2,150억</span></div>
           </div>
         </div>
 
@@ -370,7 +438,7 @@
   <!-- Dual Engine Setup Modal -->
   <div id="dualEngineModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-3">
     <div class="max-w-md w-full bg-slate-900 border border-slate-700 rounded-xl p-4 shadow-2xl space-y-3.5">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between whitespace-nowrap">
         <h3 class="text-sm font-semibold text-white">시세 엔진 & 보안 설정</h3>
         <button onclick="closeDualEngineModal()" class="text-slate-400 hover:text-white">✕</button>
       </div>
@@ -381,20 +449,20 @@
 
       <div class="space-y-2">
         <div>
-          <label class="block text-[10px] text-slate-300 mb-0.5 font-medium">한국투자증권 AppKey</label>
+          <label class="block text-[10px] text-slate-300 mb-0.5 font-medium whitespace-nowrap">한국투자증권 AppKey</label>
           <input id="inputAppKey" type="password" placeholder="발급받은 AppKey 입력 (선택)" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 outline-none focus:border-cyan-500 font-mono">
         </div>
         <div>
-          <label class="block text-[10px] text-slate-300 mb-0.5 font-medium">한국투자증권 AppSecret</label>
+          <label class="block text-[10px] text-slate-300 mb-0.5 font-medium whitespace-nowrap">한국투자증권 AppSecret</label>
           <input id="inputAppSecret" type="password" placeholder="발급받은 AppSecret 입력 (선택)" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 outline-none focus:border-cyan-500 font-mono">
         </div>
       </div>
 
-      <div class="flex items-center justify-between pt-1">
-        <button onclick="resetEngineKeys()" class="text-[11px] text-rose-400 hover:underline">키 초기화 (공개망 복귀)</button>
-        <div class="flex items-center gap-2">
-          <button onclick="closeDualEngineModal()" class="px-3 py-1 rounded bg-slate-800 text-slate-300 text-xs">닫기</button>
-          <button onclick="saveEngineKeys()" class="px-3 py-1 rounded bg-cyan-500 text-white font-semibold text-xs shadow">저장</button>
+      <div class="flex items-center justify-between pt-1 whitespace-nowrap">
+        <button onclick="resetEngineKeys()" class="text-[11px] text-rose-400 hover:underline whitespace-nowrap">키 초기화 (공개망 복귀)</button>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button onclick="closeDualEngineModal()" class="px-3 py-1 rounded bg-slate-800 text-slate-300 text-xs whitespace-nowrap">닫기</button>
+          <button onclick="saveEngineKeys()" class="px-3 py-1 rounded bg-cyan-500 text-white font-semibold text-xs shadow whitespace-nowrap">저장</button>
         </div>
       </div>
     </div>
@@ -403,12 +471,12 @@
   <!-- Sector TOP 10 Stocks Modal -->
   <div id="sectorTop10Modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-3">
     <div class="max-w-md w-full bg-slate-900 border border-slate-700 rounded-xl p-4 shadow-2xl max-h-[85vh] flex flex-col">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-        <div>
-          <h3 id="sectorModalTitle" class="text-sm font-semibold text-white">섹터 TOP 10</h3>
-          <span id="sectorModalDesc" class="text-[10px] text-slate-400">6개월 누적 급등 릴레이</span>
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800 whitespace-nowrap">
+        <div class="min-w-0">
+          <h3 id="sectorModalTitle" class="text-sm font-semibold text-white truncate whitespace-nowrap">섹터 TOP 10</h3>
+          <span id="sectorModalDesc" class="text-[10px] text-slate-400 truncate block whitespace-nowrap">6개월 누적 급등 릴레이</span>
         </div>
-        <button onclick="closeSectorTop10Modal()" class="text-slate-400 hover:text-white">✕</button>
+        <button onclick="closeSectorTop10Modal()" class="text-slate-400 hover:text-white flex-shrink-0 pl-2">✕</button>
       </div>
       <div id="sectorModalList" class="flex-1 overflow-y-auto py-2 space-y-1.5 no-scrollbar text-xs">
         <!-- Dynamically injected -->
@@ -443,8 +511,8 @@
     return 'text-slate-400';
   }
 
-  /* Global Indices State: Intraday Session Progress Simulation (Max 36 time slots in a trading day) */
-  const MAX_INTRADAY_SLOTS = 36;
+  /* Global Indices State: 1-Day (정규장 전체 100%) 범위 중 현재까지 소요된 시간만큼만 트렌드 생성 */
+  const TOTAL_DAY_SLOTS = 48; // 1일 전체 장 운영 시간(0% 시작 ~ 100% 마감)
   const LIVE_INDICES = {
     dji: { 
       name: "다우존스", 
@@ -452,7 +520,8 @@
       price: 51232, 
       rate: 0.10, 
       isFloat: false, 
-      history: [51180, 51190, 51175, 51200, 51215, 51205, 51220, 51210, 51230, 51225, 51240, 51235, 51220, 51215, 51228, 51235, 51242, 51238, 51245, 51232] 
+      // 1일 전체 48슬롯 중 현재 소요된 시간(28슬롯, 약 58%)까지만 실시간 생성
+      history: [51180, 51190, 51175, 51200, 51215, 51205, 51220, 51210, 51230, 51225, 51240, 51235, 51220, 51215, 51228, 51235, 51242, 51238, 51245, 51232, 51236, 51240, 51235, 51230, 51234, 51238, 51230, 51232] 
     },
     ixic: { 
       name: "나스닥", 
@@ -460,7 +529,7 @@
       price: 27173, 
       rate: -1.33, 
       isFloat: false, 
-      history: [27540, 27500, 27460, 27420, 27380, 27350, 27310, 27280, 27260, 27240, 27210, 27190, 27210, 27220, 27195, 27180, 27190, 27175, 27168, 27173] 
+      history: [27540, 27500, 27460, 27420, 27380, 27350, 27310, 27280, 27260, 27240, 27210, 27190, 27210, 27220, 27195, 27180, 27190, 27175, 27168, 27173, 27170, 27165, 27172, 27178, 27170, 27169, 27171, 27173] 
     },
     spx: { 
       name: "S&P 500", 
@@ -468,7 +537,7 @@
       price: 7765.4, 
       rate: -0.47, 
       isFloat: true, 
-      history: [7802.1, 7798.5, 7792.0, 7788.4, 7783.1, 7779.0, 7775.2, 7772.0, 7769.5, 7767.8, 7765.0, 7768.2, 7770.1, 7766.5, 7764.2, 7766.0, 7767.1, 7764.8, 7763.9, 7765.4] 
+      history: [7802.1, 7798.5, 7792.0, 7788.4, 7783.1, 7779.0, 7775.2, 7772.0, 7769.5, 7767.8, 7765.0, 7768.2, 7770.1, 7766.5, 7764.2, 7766.0, 7767.1, 7764.8, 7763.9, 7765.4, 7764.9, 7765.1, 7765.8, 7765.0, 7764.8, 7765.2, 7765.5, 7765.4] 
     },
     krw: { 
       name: "원/달러", 
@@ -476,7 +545,7 @@
       price: 1342.6, 
       rate: -0.10, 
       isFloat: true, 
-      history: [1344.2, 1344.0, 1343.8, 1343.7, 1343.5, 1343.3, 1343.1, 1343.0, 1342.9, 1342.8, 1342.7, 1342.8, 1342.9, 1342.7, 1342.6, 1342.5, 1342.6, 1342.7, 1342.5, 1342.6] 
+      history: [1344.2, 1344.0, 1343.8, 1343.7, 1343.5, 1343.3, 1343.1, 1343.0, 1342.9, 1342.8, 1342.7, 1342.8, 1342.9, 1342.7, 1342.6, 1342.5, 1342.6, 1342.7, 1342.5, 1342.6, 1342.7, 1342.8, 1342.6, 1342.5, 1342.6, 1342.7, 1342.5, 1342.6] 
     },
     nq: { 
       name: "나스닥 선물", 
@@ -484,7 +553,7 @@
       price: 31133, 
       rate: 0.53, 
       isFloat: false, 
-      history: [30970, 30990, 31010, 31030, 31050, 31040, 31065, 31080, 31095, 31110, 31100, 31115, 31125, 31120, 31135, 31140, 31130, 31145, 31140, 31133] 
+      history: [30970, 30990, 31010, 31030, 31050, 31040, 31065, 31080, 31095, 31110, 31100, 31115, 31125, 31120, 31135, 31140, 31130, 31145, 31140, 31133, 31138, 31142, 31135, 31130, 31134, 31137, 31132, 31133] 
     }
   };
 
@@ -499,88 +568,88 @@
     { name: "K-방산수주", return6M: 48.7, topStock: "현대로템", count: 8, isPredicted: true, pType: "lime" }
   ];
 
-  /* 80 Top KOSPI Stocks Complete Dataset */
+  /* 80 Top KOSPI Stocks Complete Dataset with Trend, Momentum & Financial Factors */
   const KOSPI_80_DATA = [
-    { rank: 1, name: "삼성전자", code: "005930", price: 81400, rate: 2.15, sector: "반도체", quantScore: 88, rsi: 38.4, disparity: 97.8, supplyScore: 88, foreignFlow: 1420, instFlow: 2150 },
-    { rank: 2, name: "SK하이닉스", code: "000660", price: 231500, rate: 3.42, sector: "반도체", quantScore: 92, rsi: 44.1, disparity: 99.2, supplyScore: 94, foreignFlow: 980, instFlow: 1240 },
-    { rank: 3, name: "LG에너지솔루션", code: "373220", price: 385000, rate: -0.65, sector: "2차전지", quantScore: 71, rsi: 41.2, disparity: 95.3, supplyScore: 68, foreignFlow: -120, instFlow: 310 },
-    { rank: 4, name: "삼성바이오로직스", code: "207940", price: 982000, rate: 1.13, sector: "바이오", quantScore: 86, rsi: 52.6, disparity: 101.4, supplyScore: 82, foreignFlow: 450, instFlow: 620 },
-    { rank: 5, name: "현대차", code: "005380", price: 258000, rate: 0.78, sector: "자동차", quantScore: 83, rsi: 48.9, disparity: 98.6, supplyScore: 79, foreignFlow: 310, instFlow: 540 },
-    { rank: 6, name: "삼성전자우", code: "005935", price: 64200, rate: 1.58, sector: "반도체", quantScore: 80, rsi: 39.8, disparity: 98.1, supplyScore: 76, foreignFlow: 210, instFlow: 180 },
-    { rank: 7, name: "기아", code: "000270", price: 118400, rate: 0.94, sector: "자동차", quantScore: 81, rsi: 47.3, disparity: 99.0, supplyScore: 78, foreignFlow: 240, instFlow: 380 },
-    { rank: 8, name: "셀트리온", code: "068270", price: 196400, rate: 1.87, sector: "바이오", quantScore: 85, rsi: 51.1, disparity: 100.8, supplyScore: 84, foreignFlow: 390, instFlow: 470 },
-    { rank: 9, name: "KB금융", code: "105560", price: 89400, rate: 1.25, sector: "금융", quantScore: 89, rsi: 54.2, disparity: 102.1, supplyScore: 87, foreignFlow: 510, instFlow: 720 },
-    { rank: 10, name: "신한지주", code: "055550", price: 54800, rate: 0.92, sector: "금융", quantScore: 84, rsi: 52.0, disparity: 101.5, supplyScore: 81, foreignFlow: 280, instFlow: 430 },
-    { rank: 11, name: "POSCO홀딩스", code: "005490", price: 365000, rate: -0.82, sector: "철강", quantScore: 74, rsi: 37.6, disparity: 94.9, supplyScore: 70, foreignFlow: -80, instFlow: 190 },
-    { rank: 12, name: "NAVER", code: "035420", price: 174200, rate: 2.11, sector: "플랫폼", quantScore: 82, rsi: 49.8, disparity: 100.2, supplyScore: 79, foreignFlow: 340, instFlow: 260 },
-    { rank: 13, name: "삼성SDI", code: "006400", price: 342000, rate: -1.16, sector: "2차전지", quantScore: 69, rsi: 36.2, disparity: 93.8, supplyScore: 65, foreignFlow: -150, instFlow: 80 },
-    { rank: 14, name: "현대모비스", code: "012330", price: 234500, rate: 0.64, sector: "자동차", quantScore: 77, rsi: 46.5, disparity: 98.4, supplyScore: 75, foreignFlow: 110, instFlow: 190 },
-    { rank: 15, name: "하나금융지주", code: "086790", price: 62700, rate: 1.13, sector: "금융", quantScore: 85, rsi: 53.7, disparity: 101.9, supplyScore: 83, foreignFlow: 310, instFlow: 410 },
-    { rank: 16, name: "삼성물산", code: "028260", price: 148200, rate: 0.47, sector: "지주", quantScore: 79, rsi: 48.1, disparity: 99.1, supplyScore: 77, foreignFlow: 130, instFlow: 220 },
-    { rank: 17, name: "카카오", code: "035720", price: 41200, rate: 1.48, sector: "플랫폼", quantScore: 73, rsi: 43.6, disparity: 97.4, supplyScore: 71, foreignFlow: 90, instFlow: 140 },
-    { rank: 18, name: "한화에어로스페이스", code: "012450", price: 332000, rate: 4.24, sector: "방산/중공업", quantScore: 94, rsi: 62.4, disparity: 105.8, supplyScore: 96, foreignFlow: 840, instFlow: 970 },
-    { rank: 19, name: "메리츠금융지주", code: "138040", price: 92100, rate: 0.88, sector: "금융", quantScore: 87, rsi: 55.4, disparity: 102.5, supplyScore: 85, foreignFlow: 290, instFlow: 360 },
-    { rank: 20, name: "LG화학", code: "051910", price: 318000, rate: -0.78, sector: "화학", quantScore: 72, rsi: 38.9, disparity: 95.2, supplyScore: 68, foreignFlow: -90, instFlow: 130 },
-    { rank: 21, name: "HD현대중공업", code: "329180", price: 198000, rate: 3.12, sector: "방산/중공업", quantScore: 91, rsi: 59.8, disparity: 104.2, supplyScore: 90, foreignFlow: 420, instFlow: 610 },
-    { rank: 22, name: "크래프톤", code: "259960", price: 326000, rate: 2.35, sector: "게임", quantScore: 84, rsi: 54.1, disparity: 102.0, supplyScore: 82, foreignFlow: 260, instFlow: 330 },
-    { rank: 23, name: "삼성생명", code: "032830", price: 98500, rate: 0.51, sector: "금융", quantScore: 78, rsi: 47.9, disparity: 99.4, supplyScore: 76, foreignFlow: 80, instFlow: 140 },
-    { rank: 24, name: "LG전자", code: "066570", price: 101200, rate: 1.10, sector: "전자", quantScore: 79, rsi: 45.8, disparity: 98.7, supplyScore: 77, foreignFlow: 150, instFlow: 210 },
-    { rank: 25, name: "포스코퓨처엠", code: "003670", price: 214000, rate: -1.38, sector: "2차전지", quantScore: 68, rsi: 35.8, disparity: 93.4, supplyScore: 64, foreignFlow: -110, instFlow: 60 },
-    { rank: 26, name: "고려아연", code: "010130", price: 684000, rate: 1.64, sector: "비철금속", quantScore: 82, rsi: 50.4, disparity: 100.9, supplyScore: 80, foreignFlow: 190, instFlow: 240 },
-    { rank: 27, name: "한국전력", code: "015760", price: 21850, rate: 0.69, sector: "유틸리티", quantScore: 76, rsi: 46.2, disparity: 98.9, supplyScore: 74, foreignFlow: 70, instFlow: 130 },
-    { rank: 28, name: "KT&G", code: "033780", price: 108500, rate: 0.46, sector: "소비재", quantScore: 83, rsi: 51.3, disparity: 100.5, supplyScore: 81, foreignFlow: 210, instFlow: 290 },
-    { rank: 29, name: "삼성화재", code: "000810", price: 374000, rate: 0.81, sector: "금융", quantScore: 85, rsi: 52.8, disparity: 101.3, supplyScore: 83, foreignFlow: 180, instFlow: 260 },
-    { rank: 30, name: "SK이노베이션", code: "096770", price: 118200, rate: -0.51, sector: "정유", quantScore: 71, rsi: 39.4, disparity: 96.1, supplyScore: 69, foreignFlow: -40, instFlow: 90 },
-    { rank: 31, name: "HD한국조선해양", code: "009540", price: 184500, rate: 2.79, sector: "방산/중공업", quantScore: 92, rsi: 58.7, disparity: 103.8, supplyScore: 91, foreignFlow: 380, instFlow: 510 },
-    { rank: 32, name: "기업은행", code: "024110", price: 14750, rate: 0.68, sector: "금융", quantScore: 82, rsi: 50.1, disparity: 100.4, supplyScore: 80, foreignFlow: 140, instFlow: 190 },
-    { rank: 33, name: "SK텔레콤", code: "017670", price: 56200, rate: 0.36, sector: "통신", quantScore: 80, rsi: 48.7, disparity: 99.8, supplyScore: 78, foreignFlow: 110, instFlow: 160 },
-    { rank: 34, name: "두산에너빌리티", code: "034020", price: 20450, rate: 2.51, sector: "원전/기계", quantScore: 87, rsi: 56.4, disparity: 102.8, supplyScore: 86, foreignFlow: 310, instFlow: 440 },
-    { rank: 35, name: "우리금융지주", code: "316140", price: 15850, rate: 0.96, sector: "금융", quantScore: 84, rsi: 51.9, disparity: 101.1, supplyScore: 82, foreignFlow: 190, instFlow: 270 },
-    { rank: 36, name: "카카오뱅크", code: "323410", price: 21950, rate: 1.15, sector: "인터넷은행", quantScore: 75, rsi: 44.8, disparity: 98.2, supplyScore: 73, foreignFlow: 60, instFlow: 110 },
-    { rank: 37, name: "한온시스템", code: "018880", price: 4210, rate: -0.24, sector: "자동차부품", quantScore: 68, rsi: 37.1, disparity: 94.6, supplyScore: 65, foreignFlow: -30, instFlow: 40 },
-    { rank: 38, name: "현대로템", code: "064350", price: 56800, rate: 3.84, sector: "방산/중공업", quantScore: 93, rsi: 61.5, disparity: 105.1, supplyScore: 95, foreignFlow: 460, instFlow: 580 },
-    { rank: 39, name: "하이브", code: "352820", price: 178000, rate: 1.71, sector: "엔터", quantScore: 79, rsi: 48.3, disparity: 99.5, supplyScore: 78, foreignFlow: 140, instFlow: 190 },
-    { rank: 40, name: "KT", code: "030200", price: 41800, rate: 0.48, sector: "통신", quantScore: 81, rsi: 49.6, disparity: 100.1, supplyScore: 79, foreignFlow: 90, instFlow: 150 },
-    { rank: 41, name: "LG", code: "003550", price: 81200, rate: 0.37, sector: "지주", quantScore: 78, rsi: 46.9, disparity: 98.8, supplyScore: 76, foreignFlow: 70, instFlow: 120 },
-    { rank: 42, name: "에코프로머티", code: "450080", price: 74500, rate: -1.72, sector: "2차전지", quantScore: 67, rsi: 34.2, disparity: 92.5, supplyScore: 63, foreignFlow: -80, instFlow: 30 },
-    { rank: 43, name: "대한항공", code: "003490", price: 23600, rate: 0.85, sector: "항공", quantScore: 77, rsi: 47.4, disparity: 99.3, supplyScore: 75, foreignFlow: 80, instFlow: 110 },
-    { rank: 44, name: "S-Oil", code: "010950", price: 67400, rate: -0.44, sector: "정유", quantScore: 73, rsi: 41.6, disparity: 97.2, supplyScore: 71, foreignFlow: -20, instFlow: 70 },
-    { rank: 45, name: "한국항공우주", code: "047810", price: 54600, rate: 2.44, sector: "방산/중공업", quantScore: 89, rsi: 57.2, disparity: 103.1, supplyScore: 88, foreignFlow: 270, instFlow: 360 },
-    { rank: 46, name: "삼성에스디에스", code: "018260", price: 147800, rate: 1.09, sector: "IT서비스", quantScore: 80, rsi: 49.1, disparity: 99.9, supplyScore: 78, foreignFlow: 120, instFlow: 170 },
-    { rank: 47, name: "한화오션", code: "042660", price: 34200, rate: 2.86, sector: "방산/중공업", quantScore: 90, rsi: 58.1, disparity: 103.5, supplyScore: 89, foreignFlow: 290, instFlow: 390 },
-    { rank: 48, name: "미래에셋증권", code: "006800", price: 8740, rate: 0.81, sector: "증권", quantScore: 82, rsi: 50.8, disparity: 100.7, supplyScore: 80, foreignFlow: 110, instFlow: 160 },
-    { rank: 49, name: "맥쿼리인프라", code: "088980", price: 12150, rate: 0.16, sector: "인프라", quantScore: 80, rsi: 48.5, disparity: 99.7, supplyScore: 77, foreignFlow: 50, instFlow: 90 },
-    { rank: 50, name: "현대글로비스", code: "086280", price: 124800, rate: 1.22, sector: "물류", quantScore: 83, rsi: 51.5, disparity: 100.9, supplyScore: 81, foreignFlow: 160, instFlow: 230 },
-    { rank: 51, name: "한화시스템", code: "272210", price: 19450, rate: 2.91, sector: "방산/중공업", quantScore: 89, rsi: 57.8, disparity: 103.2, supplyScore: 88, foreignFlow: 180, instFlow: 240 },
-    { rank: 52, name: "LS ELECTRIC", code: "010120", price: 154000, rate: 3.36, sector: "전력인프라", quantScore: 92, rsi: 59.4, disparity: 104.5, supplyScore: 93, foreignFlow: 310, instFlow: 420 },
-    { rank: 53, name: "HD현대일렉트릭", code: "267260", price: 312000, rate: 3.65, sector: "전력인프라", quantScore: 93, rsi: 60.8, disparity: 105.2, supplyScore: 94, foreignFlow: 370, instFlow: 490 },
-    { rank: 54, name: "알테오젠", code: "196170", price: 378000, rate: 4.13, sector: "바이오", quantScore: 94, rsi: 63.1, disparity: 106.4, supplyScore: 95, foreignFlow: 490, instFlow: 620 },
-    { rank: 55, name: "삼양식품", code: "003230", price: 542000, rate: 2.65, sector: "식품", quantScore: 88, rsi: 56.2, disparity: 102.7, supplyScore: 87, foreignFlow: 210, instFlow: 290 },
-    { rank: 56, name: "LIG넥스원", code: "079550", price: 218000, rate: 3.81, sector: "방산/중공업", quantScore: 93, rsi: 61.2, disparity: 104.9, supplyScore: 94, foreignFlow: 340, instFlow: 430 },
-    { rank: 57, name: "DB손해보험", code: "005830", price: 112400, rate: 0.99, sector: "금융", quantScore: 85, rsi: 52.3, disparity: 101.4, supplyScore: 83, foreignFlow: 150, instFlow: 210 },
-    { rank: 58, name: "HMM", code: "011200", price: 18250, rate: 1.39, sector: "해운", quantScore: 80, rsi: 49.3, disparity: 99.8, supplyScore: 78, foreignFlow: 120, instFlow: 160 },
-    { rank: 59, name: "CJ제일제당", code: "097950", price: 341000, rate: 0.59, sector: "식품", quantScore: 78, rsi: 47.1, disparity: 99.0, supplyScore: 76, foreignFlow: 80, instFlow: 120 },
-    { rank: 60, name: "엔씨소프트", code: "036570", price: 214500, rate: 1.42, sector: "게임", quantScore: 76, rsi: 45.9, disparity: 98.3, supplyScore: 74, foreignFlow: 90, instFlow: 130 },
-    { rank: 61, name: "현대제철", code: "004020", price: 28400, rate: -0.35, sector: "철강", quantScore: 72, rsi: 39.1, disparity: 95.7, supplyScore: 69, foreignFlow: -30, instFlow: 60 },
-    { rank: 62, name: "금양", code: "001570", price: 48900, rate: -2.40, sector: "2차전지", quantScore: 65, rsi: 33.1, disparity: 91.2, supplyScore: 61, foreignFlow: -90, instFlow: 20 },
-    { rank: 63, name: "코스맥스", code: "192820", price: 138500, rate: 1.84, sector: "화장품", quantScore: 82, rsi: 51.0, disparity: 100.6, supplyScore: 81, foreignFlow: 130, instFlow: 170 },
-    { rank: 64, name: "아모레퍼시픽", code: "090430", price: 142000, rate: 1.28, sector: "화장품", quantScore: 80, rsi: 49.7, disparity: 99.9, supplyScore: 79, foreignFlow: 110, instFlow: 150 },
-    { rank: 65, name: "LG유플러스", code: "032640", price: 9840, rate: 0.20, sector: "통신", quantScore: 77, rsi: 46.8, disparity: 98.9, supplyScore: 75, foreignFlow: 40, instFlow: 70 },
-    { rank: 66, name: "두산밥캣", code: "241560", price: 44200, rate: 1.49, sector: "기계", quantScore: 81, rsi: 50.2, disparity: 100.3, supplyScore: 80, foreignFlow: 120, instFlow: 160 },
-    { rank: 67, name: "한미반도체", code: "042700", price: 124000, rate: 3.77, sector: "반도체", quantScore: 92, rsi: 60.1, disparity: 104.8, supplyScore: 93, foreignFlow: 320, instFlow: 410 },
-    { rank: 68, name: "이수페타시스", code: "007660", price: 46200, rate: 3.47, sector: "IT부품", quantScore: 91, rsi: 59.2, disparity: 104.1, supplyScore: 91, foreignFlow: 240, instFlow: 310 },
-    { rank: 69, name: "포스코인터내셔널", code: "047050", price: 58900, rate: 1.55, sector: "상사/에너지", quantScore: 83, rsi: 51.8, disparity: 101.0, supplyScore: 82, foreignFlow: 150, instFlow: 200 },
-    { rank: 70, name: "팬오션", code: "028670", price: 4120, rate: 0.73, sector: "해운", quantScore: 76, rsi: 46.0, disparity: 98.5, supplyScore: 74, foreignFlow: 50, instFlow: 80 },
-    { rank: 71, name: "씨에스윈드", code: "112610", price: 56400, rate: 1.99, sector: "신재생", quantScore: 81, rsi: 51.4, disparity: 100.7, supplyScore: 80, foreignFlow: 110, instFlow: 160 },
-    { rank: 72, name: "키움증권", code: "039490", price: 128500, rate: 0.94, sector: "금융", quantScore: 83, rsi: 52.1, disparity: 101.2, supplyScore: 82, foreignFlow: 130, instFlow: 170 },
-    { rank: 73, name: "현대건설", code: "000720", price: 31400, rate: 0.64, sector: "건설", quantScore: 75, rsi: 45.2, disparity: 98.1, supplyScore: 73, foreignFlow: 60, instFlow: 90 },
-    { rank: 74, name: "유한양행", code: "000100", price: 139000, rate: 2.81, sector: "바이오", quantScore: 90, rsi: 58.4, disparity: 103.7, supplyScore: 89, foreignFlow: 260, instFlow: 340 },
-    { rank: 75, name: "넷마블", code: "251270", price: 58200, rate: 1.22, sector: "게임", quantScore: 78, rsi: 48.0, disparity: 99.4, supplyScore: 77, foreignFlow: 80, instFlow: 120 },
-    { rank: 76, name: "GS", code: "078930", price: 47800, rate: 0.42, sector: "지주", quantScore: 77, rsi: 46.7, disparity: 98.8, supplyScore: 75, foreignFlow: 50, instFlow: 80 },
-    { rank: 77, name: "GS리테일", code: "007070", price: 21900, rate: 0.23, sector: "유통", quantScore: 75, rsi: 45.1, disparity: 98.0, supplyScore: 73, foreignFlow: 30, instFlow: 50 },
-    { rank: 78, name: "현대오토에버", code: "307950", price: 162000, rate: 1.57, sector: "IT서비스", quantScore: 82, rsi: 51.3, disparity: 100.8, supplyScore: 81, foreignFlow: 120, instFlow: 160 },
-    { rank: 79, name: "두산", code: "000150", price: 194000, rate: 2.65, sector: "지주", quantScore: 88, rsi: 56.9, disparity: 103.0, supplyScore: 87, foreignFlow: 190, instFlow: 250 },
-    { rank: 80, name: "에스원", code: "012750", price: 62400, rate: 0.16, sector: "보안서비스", quantScore: 76, rsi: 46.3, disparity: 98.6, supplyScore: 74, foreignFlow: 40, instFlow: 60 }
+    { rank: 1, name: "삼성전자", code: "005930", price: 81400, rate: 2.15, sector: "반도체", quantScore: 89, rsi: 48.4, disparity: 98.8, supplyScore: 88, foreignFlow: 1420, instFlow: 2150, per: 13.8, pbr: 1.25, roe: 13.2, debtRatio: 26.4, trendState: "골든크로스", trendScore: 86, valScore: 88 },
+    { rank: 2, name: "SK하이닉스", code: "000660", price: 231500, rate: 3.42, sector: "반도체", quantScore: 94, rsi: 56.1, disparity: 101.2, supplyScore: 94, foreignFlow: 980, instFlow: 1240, per: 9.4, pbr: 1.82, roe: 24.6, debtRatio: 42.1, trendState: "강력정배열", trendScore: 96, valScore: 90 },
+    { rank: 3, name: "LG에너지솔루션", code: "373220", price: 385000, rate: -0.65, sector: "2차전지", quantScore: 70, rsi: 41.2, disparity: 95.3, supplyScore: 68, foreignFlow: -120, instFlow: 310, per: 68.2, pbr: 4.10, roe: 6.8, debtRatio: 78.4, trendState: "역배열반등", trendScore: 65, valScore: 62 },
+    { rank: 4, name: "삼성바이오로직스", code: "207940", price: 982000, rate: 1.13, sector: "바이오", quantScore: 88, rsi: 52.6, disparity: 101.4, supplyScore: 82, foreignFlow: 450, instFlow: 620, per: 58.4, pbr: 4.80, roe: 10.4, debtRatio: 58.2, trendState: "신고가도전", trendScore: 91, valScore: 74 },
+    { rank: 5, name: "현대차", code: "005380", price: 258000, rate: 0.78, sector: "자동차", quantScore: 91, rsi: 48.9, disparity: 98.6, supplyScore: 79, foreignFlow: 310, instFlow: 540, per: 5.4, pbr: 0.65, roe: 14.8, debtRatio: 52.3, trendState: "가치정배열", trendScore: 88, valScore: 96 },
+    { rank: 6, name: "삼성전자우", code: "005935", price: 64200, rate: 1.58, sector: "반도체", quantScore: 83, rsi: 45.8, disparity: 98.1, supplyScore: 76, foreignFlow: 210, instFlow: 180, per: 11.2, pbr: 1.05, roe: 13.2, debtRatio: 26.4, trendState: "안정수렴", trendScore: 82, valScore: 89 },
+    { rank: 7, name: "기아", code: "000270", price: 118400, rate: 0.94, sector: "자동차", quantScore: 92, rsi: 49.3, disparity: 99.0, supplyScore: 78, foreignFlow: 240, instFlow: 380, per: 4.8, pbr: 0.82, roe: 19.5, debtRatio: 48.7, trendState: "신고가근접", trendScore: 89, valScore: 97 },
+    { rank: 8, name: "셀트리온", code: "068270", price: 196400, rate: 1.87, sector: "바이오", quantScore: 86, rsi: 51.1, disparity: 100.8, supplyScore: 84, foreignFlow: 390, instFlow: 470, per: 39.2, pbr: 3.12, roe: 8.9, debtRatio: 34.1, trendState: "정배열전환", trendScore: 85, valScore: 76 },
+    { rank: 9, name: "KB금융", code: "105560", price: 89400, rate: 1.25, sector: "금융", quantScore: 93, rsi: 54.2, disparity: 102.1, supplyScore: 87, foreignFlow: 510, instFlow: 720, per: 5.8, pbr: 0.49, roe: 10.8, debtRatio: 38.6, trendState: "신고가돌파", trendScore: 94, valScore: 95 },
+    { rank: 10, name: "신한지주", code: "055550", price: 54800, rate: 0.92, sector: "금융", quantScore: 89, rsi: 52.0, disparity: 101.5, supplyScore: 81, foreignFlow: 280, instFlow: 430, per: 5.6, pbr: 0.46, roe: 9.8, debtRatio: 41.2, trendState: "상승추세", trendScore: 88, valScore: 94 },
+    { rank: 11, name: "POSCO홀딩스", code: "005490", price: 365000, rate: -0.82, sector: "철강", quantScore: 75, rsi: 37.6, disparity: 94.9, supplyScore: 70, foreignFlow: -80, instFlow: 190, per: 15.2, pbr: 0.61, roe: 4.8, debtRatio: 64.2, trendState: "바닥다지기", trendScore: 71, valScore: 82 },
+    { rank: 12, name: "NAVER", code: "035420", price: 174200, rate: 2.11, sector: "플랫폼", quantScore: 84, rsi: 49.8, disparity: 100.2, supplyScore: 79, foreignFlow: 340, instFlow: 260, per: 18.4, pbr: 1.15, roe: 8.6, debtRatio: 32.8, trendState: "반등모멘텀", trendScore: 83, valScore: 83 },
+    { rank: 13, name: "삼성SDI", code: "006400", price: 342000, rate: -1.16, sector: "2차전지", quantScore: 68, rsi: 36.2, disparity: 93.8, supplyScore: 65, foreignFlow: -150, instFlow: 80, per: 24.5, pbr: 1.28, roe: 7.2, debtRatio: 82.5, trendState: "하락지속", trendScore: 62, valScore: 73 },
+    { rank: 14, name: "현대모비스", code: "012330", price: 234500, rate: 0.64, sector: "자동차", quantScore: 82, rsi: 46.5, disparity: 98.4, supplyScore: 75, foreignFlow: 110, instFlow: 190, per: 6.2, pbr: 0.48, roe: 8.8, debtRatio: 44.1, trendState: "박스권횡보", trendScore: 78, valScore: 92 },
+    { rank: 15, name: "하나금융지주", code: "086790", price: 62700, rate: 1.13, sector: "금융", quantScore: 90, rsi: 53.7, disparity: 101.9, supplyScore: 83, foreignFlow: 310, instFlow: 410, per: 4.9, pbr: 0.42, roe: 10.4, debtRatio: 40.5, trendState: "강력정배열", trendScore: 92, valScore: 96 },
+    { rank: 16, name: "삼성물산", code: "028260", price: 148200, rate: 0.47, sector: "지주", quantScore: 81, rsi: 48.1, disparity: 99.1, supplyScore: 77, foreignFlow: 130, instFlow: 220, per: 10.4, pbr: 0.72, roe: 7.5, debtRatio: 51.2, trendState: "안정수렴", trendScore: 80, valScore: 87 },
+    { rank: 17, name: "카카오", code: "035720", price: 41200, rate: 1.48, sector: "플랫폼", quantScore: 72, rsi: 43.6, disparity: 97.4, supplyScore: 71, foreignFlow: 90, instFlow: 140, per: 42.1, pbr: 1.45, roe: 3.4, debtRatio: 65.4, trendState: "바닥모색", trendScore: 70, valScore: 68 },
+    { rank: 18, name: "한화에어로스페이스", code: "012450", price: 332000, rate: 4.24, sector: "방산/중공업", quantScore: 97, rsi: 62.4, disparity: 105.8, supplyScore: 96, foreignFlow: 840, instFlow: 970, per: 16.5, pbr: 2.45, roe: 19.8, debtRatio: 88.4, trendState: "역대최고가", trendScore: 99, valScore: 84 },
+    { rank: 19, name: "메리츠금융지주", code: "138040", price: 92100, rate: 0.88, sector: "금융", quantScore: 92, rsi: 55.4, disparity: 102.5, supplyScore: 85, foreignFlow: 290, instFlow: 360, per: 7.1, pbr: 1.15, roe: 28.5, debtRatio: 36.4, trendState: "우상향추세", trendScore: 93, valScore: 91 },
+    { rank: 20, name: "LG화학", code: "051910", price: 318000, rate: -0.78, sector: "화학", quantScore: 72, rsi: 38.9, disparity: 95.2, supplyScore: 68, foreignFlow: -90, instFlow: 130, per: 28.4, pbr: 0.78, roe: 4.1, debtRatio: 86.2, trendState: "하락추세", trendScore: 68, valScore: 74 },
+    { rank: 21, name: "HD현대중공업", code: "329180", price: 198000, rate: 3.12, sector: "방산/중공업", quantScore: 94, rsi: 59.8, disparity: 104.2, supplyScore: 90, foreignFlow: 420, instFlow: 610, per: 26.2, pbr: 2.10, roe: 12.4, debtRatio: 112.5, trendState: "신고가돌파", trendScore: 96, valScore: 80 },
+    { rank: 22, name: "크래프톤", code: "259960", price: 326000, rate: 2.35, sector: "게임", quantScore: 89, rsi: 54.1, disparity: 102.0, supplyScore: 82, foreignFlow: 260, instFlow: 330, per: 14.8, pbr: 2.20, roe: 17.6, debtRatio: 18.2, trendState: "신고가도전", trendScore: 91, valScore: 87 },
+    { rank: 23, name: "삼성생명", code: "032830", price: 98500, rate: 0.51, sector: "금융", quantScore: 83, rsi: 47.9, disparity: 99.4, supplyScore: 76, foreignFlow: 80, instFlow: 140, per: 8.9, pbr: 0.45, roe: 6.8, debtRatio: 44.5, trendState: "박스권", trendScore: 80, valScore: 91 },
+    { rank: 24, name: "LG전자", code: "066570", price: 101200, rate: 1.10, sector: "전자", quantScore: 82, rsi: 45.8, disparity: 98.7, supplyScore: 77, foreignFlow: 150, instFlow: 210, per: 11.8, pbr: 0.81, roe: 9.4, debtRatio: 72.4, trendState: "바닥반등", trendScore: 81, valScore: 89 },
+    { rank: 25, name: "포스코퓨처엠", code: "003670", price: 214000, rate: -1.38, sector: "2차전지", quantScore: 66, rsi: 35.8, disparity: 93.4, supplyScore: 64, foreignFlow: -110, instFlow: 60, per: 95.0, pbr: 4.80, roe: 3.1, debtRatio: 94.6, trendState: "역배열", trendScore: 61, valScore: 58 },
+    { rank: 26, name: "고려아연", code: "010130", price: 684000, rate: 1.64, sector: "비철금속", quantScore: 85, rsi: 50.4, disparity: 100.9, supplyScore: 80, foreignFlow: 190, instFlow: 240, per: 17.5, pbr: 1.45, roe: 8.9, debtRatio: 28.5, trendState: "추세우상향", trendScore: 86, valScore: 86 },
+    { rank: 27, name: "한국전력", code: "015760", price: 21850, rate: 0.69, sector: "유틸리티", quantScore: 79, rsi: 46.2, disparity: 98.9, supplyScore: 74, foreignFlow: 70, instFlow: 130, per: 6.4, pbr: 0.38, roe: 7.2, debtRatio: 280.0, trendState: "턴어라운드", trendScore: 79, valScore: 78 },
+    { rank: 28, name: "KT&G", code: "033780", price: 108500, rate: 0.46, sector: "소비재", quantScore: 88, rsi: 51.3, disparity: 100.5, supplyScore: 81, foreignFlow: 210, instFlow: 290, per: 11.2, pbr: 1.10, roe: 11.8, debtRatio: 22.4, trendState: "신고가유지", trendScore: 89, valScore: 92 },
+    { rank: 29, name: "삼성화재", code: "000810", price: 374000, rate: 0.81, sector: "금융", quantScore: 90, rsi: 52.8, disparity: 101.3, supplyScore: 83, foreignFlow: 180, instFlow: 260, per: 7.4, pbr: 0.82, roe: 15.2, debtRatio: 38.2, trendState: "정배열", trendScore: 90, valScore: 93 },
+    { rank: 30, name: "SK이노베이션", code: "096770", price: 118200, rate: -0.51, sector: "정유", quantScore: 70, rsi: 39.4, disparity: 96.1, supplyScore: 69, foreignFlow: -40, instFlow: 90, per: 18.5, pbr: 0.52, roe: 3.5, debtRatio: 124.0, trendState: "바닥모색", trendScore: 68, valScore: 75 },
+    { rank: 31, name: "HD한국조선해양", code: "009540", price: 184500, rate: 2.79, sector: "방산/중공업", quantScore: 95, rsi: 58.7, disparity: 103.8, supplyScore: 91, foreignFlow: 380, instFlow: 510, per: 18.2, pbr: 1.45, roe: 11.5, debtRatio: 92.4, trendState: "역대급수주", trendScore: 97, valScore: 86 },
+    { rank: 32, name: "기업은행", code: "024110", price: 14750, rate: 0.68, sector: "금융", quantScore: 87, rsi: 50.1, disparity: 100.4, supplyScore: 80, foreignFlow: 140, instFlow: 190, per: 3.6, pbr: 0.35, roe: 9.6, debtRatio: 39.8, trendState: "고배당수렴", trendScore: 84, valScore: 98 },
+    { rank: 33, name: "SK텔레콤", code: "017670", price: 56200, rate: 0.36, sector: "통신", quantScore: 84, rsi: 48.7, disparity: 99.8, supplyScore: 78, foreignFlow: 110, instFlow: 160, per: 9.8, pbr: 0.88, roe: 9.8, debtRatio: 84.5, trendState: "안정형", trendScore: 82, valScore: 90 },
+    { rank: 34, name: "두산에너빌리티", code: "034020", price: 20450, rate: 2.51, sector: "원전/기계", quantScore: 89, rsi: 56.4, disparity: 102.8, supplyScore: 86, foreignFlow: 310, instFlow: 440, per: 38.0, pbr: 1.62, roe: 5.4, debtRatio: 118.0, trendState: "원전모멘텀", trendScore: 93, valScore: 76 },
+    { rank: 35, name: "우리금융지주", code: "316140", price: 15850, rate: 0.96, sector: "금융", quantScore: 88, rsi: 51.9, disparity: 101.1, supplyScore: 82, foreignFlow: 190, instFlow: 270, per: 3.8, pbr: 0.34, roe: 9.2, debtRatio: 42.0, trendState: "정배열", trendScore: 88, valScore: 97 },
+    { rank: 36, name: "카카오뱅크", code: "323410", price: 21950, rate: 1.15, sector: "인터넷은행", quantScore: 76, rsi: 44.8, disparity: 98.2, supplyScore: 73, foreignFlow: 60, instFlow: 110, per: 24.2, pbr: 1.65, roe: 7.2, debtRatio: 28.5, trendState: "바닥반등", trendScore: 77, valScore: 78 },
+    { rank: 37, name: "한온시스템", code: "018880", price: 4210, rate: -0.24, sector: "자동차부품", quantScore: 67, rsi: 37.1, disparity: 94.6, supplyScore: 65, foreignFlow: -30, instFlow: 40, per: 21.0, pbr: 0.85, roe: 4.2, debtRatio: 168.0, trendState: "역배열", trendScore: 63, valScore: 72 },
+    { rank: 38, name: "현대로템", code: "064350", price: 56800, rate: 3.84, sector: "방산/중공업", quantScore: 96, rsi: 61.5, disparity: 105.1, supplyScore: 95, foreignFlow: 460, instFlow: 580, per: 22.4, pbr: 3.10, roe: 18.2, debtRatio: 84.2, trendState: "역대최고가", trendScore: 98, valScore: 82 },
+    { rank: 39, name: "하이브", code: "352820", price: 178000, rate: 1.71, sector: "엔터", quantScore: 78, rsi: 48.3, disparity: 99.5, supplyScore: 78, foreignFlow: 140, instFlow: 190, per: 38.5, pbr: 2.30, roe: 6.8, debtRatio: 48.5, trendState: "반등국면", trendScore: 79, valScore: 74 },
+    { rank: 40, name: "KT", code: "030200", price: 41800, rate: 0.48, sector: "통신", quantScore: 86, rsi: 49.6, disparity: 100.1, supplyScore: 79, foreignFlow: 90, instFlow: 150, per: 7.8, pbr: 0.58, roe: 8.4, debtRatio: 88.0, trendState: "정배열", trendScore: 85, valScore: 93 },
+    { rank: 41, name: "LG", code: "003550", price: 81200, rate: 0.37, sector: "지주", quantScore: 81, rsi: 46.9, disparity: 98.8, supplyScore: 76, foreignFlow: 70, instFlow: 120, per: 8.2, pbr: 0.52, roe: 6.8, debtRatio: 24.2, trendState: "저평가횡보", trendScore: 78, valScore: 93 },
+    { rank: 42, name: "에코프로머티", code: "450080", price: 74500, rate: -1.72, sector: "2차전지", quantScore: 64, rsi: 34.2, disparity: 92.5, supplyScore: 63, foreignFlow: -80, instFlow: 30, per: 140.0, pbr: 6.20, roe: 2.1, debtRatio: 98.4, trendState: "하락추세", trendScore: 60, valScore: 52 },
+    { rank: 43, name: "대한항공", code: "003490", price: 23600, rate: 0.85, sector: "항공", quantScore: 82, rsi: 47.4, disparity: 99.3, supplyScore: 75, foreignFlow: 80, instFlow: 110, per: 6.8, pbr: 0.72, roe: 11.2, debtRatio: 182.0, trendState: "바닥반등", trendScore: 80, valScore: 88 },
+    { rank: 44, name: "S-Oil", code: "010950", price: 67400, rate: -0.44, sector: "정유", quantScore: 74, rsi: 41.6, disparity: 97.2, supplyScore: 71, foreignFlow: -20, instFlow: 70, per: 8.4, pbr: 0.75, roe: 9.8, debtRatio: 110.0, trendState: "유가연동", trendScore: 72, valScore: 86 },
+    { rank: 45, name: "한국항공우주", code: "047810", price: 54600, rate: 2.44, sector: "방산/중공업", quantScore: 91, rsi: 57.2, disparity: 103.1, supplyScore: 88, foreignFlow: 270, instFlow: 360, per: 24.5, pbr: 2.80, roe: 14.1, debtRatio: 98.0, trendState: "우상향추세", trendScore: 93, valScore: 81 },
+    { rank: 46, name: "삼성에스디에스", code: "018260", price: 147800, rate: 1.09, sector: "IT서비스", quantScore: 84, rsi: 49.1, disparity: 99.9, supplyScore: 78, foreignFlow: 120, instFlow: 170, per: 15.2, pbr: 1.25, roe: 9.2, debtRatio: 28.4, trendState: "클라우드모멘텀", trendScore: 84, valScore: 87 },
+    { rank: 47, name: "한화오션", code: "042660", price: 34200, rate: 2.86, sector: "방산/중공업", quantScore: 92, rsi: 58.1, disparity: 103.5, supplyScore: 89, foreignFlow: 290, instFlow: 390, per: 32.0, pbr: 2.65, roe: 9.8, debtRatio: 148.0, trendState: "신규수주", trendScore: 94, valScore: 79 },
+    { rank: 48, name: "미래에셋증권", code: "006800", price: 8740, rate: 0.81, sector: "증권", quantScore: 85, rsi: 50.8, disparity: 100.7, supplyScore: 80, foreignFlow: 110, instFlow: 160, per: 7.2, pbr: 0.44, roe: 7.4, debtRatio: 48.0, trendState: "밸류업수혜", trendScore: 84, valScore: 95 },
+    { rank: 49, name: "맥쿼리인프라", code: "088980", price: 12150, rate: 0.16, sector: "인프라", quantScore: 83, rsi: 48.5, disparity: 99.7, supplyScore: 77, foreignFlow: 50, instFlow: 90, per: 14.5, pbr: 1.05, roe: 7.8, debtRatio: 24.0, trendState: "배당안정", trendScore: 81, valScore: 91 },
+    { rank: 50, name: "현대글로비스", code: "086280", price: 124800, rate: 1.22, sector: "물류", quantScore: 88, rsi: 51.5, disparity: 100.9, supplyScore: 81, foreignFlow: 160, instFlow: 230, per: 6.8, pbr: 0.84, roe: 14.5, debtRatio: 54.0, trendState: "정배열", trendScore: 87, valScore: 94 },
+    { rank: 51, name: "한화시스템", code: "272210", price: 19450, rate: 2.91, sector: "방산/중공업", quantScore: 90, rsi: 57.8, disparity: 103.2, supplyScore: 88, foreignFlow: 180, instFlow: 240, per: 19.5, pbr: 1.75, roe: 9.6, debtRatio: 64.0, trendState: "방산수혜", trendScore: 91, valScore: 84 },
+    { rank: 52, name: "LS ELECTRIC", code: "010120", price: 154000, rate: 3.36, sector: "전력인프라", quantScore: 96, rsi: 59.4, disparity: 104.5, supplyScore: 93, foreignFlow: 310, instFlow: 420, per: 18.4, pbr: 2.95, roe: 18.5, debtRatio: 82.0, trendState: "전력망슈퍼사이클", trendScore: 98, valScore: 85 },
+    { rank: 53, name: "HD현대일렉트릭", code: "267260", price: 312000, rate: 3.65, sector: "전력인프라", quantScore: 97, rsi: 60.8, disparity: 105.2, supplyScore: 94, foreignFlow: 370, instFlow: 490, per: 21.0, pbr: 4.80, roe: 28.4, debtRatio: 95.0, trendState: "역대최고가", trendScore: 99, valScore: 83 },
+    { rank: 54, name: "알테오젠", code: "196170", price: 378000, rate: 4.13, sector: "바이오", quantScore: 95, rsi: 63.1, disparity: 106.4, supplyScore: 95, foreignFlow: 490, instFlow: 620, per: 85.0, pbr: 14.5, roe: 22.0, debtRatio: 38.0, trendState: "바이오주도주", trendScore: 99, valScore: 68 },
+    { rank: 55, name: "삼양식품", code: "003230", price: 542000, rate: 2.65, sector: "식품", quantScore: 93, rsi: 56.2, disparity: 102.7, supplyScore: 87, foreignFlow: 210, instFlow: 290, per: 17.8, pbr: 4.10, roe: 29.5, debtRatio: 68.0, trendState: "신고가유지", trendScore: 95, valScore: 86 },
+    { rank: 56, name: "LIG넥스원", code: "079550", price: 218000, rate: 3.81, sector: "방산/중공업", quantScore: 94, rsi: 61.2, disparity: 104.9, supplyScore: 94, foreignFlow: 340, instFlow: 430, per: 20.5, pbr: 3.20, roe: 17.8, debtRatio: 96.0, trendState: "천궁수출", trendScore: 97, valScore: 83 },
+    { rank: 57, name: "DB손해보험", code: "005830", price: 112400, rate: 0.99, sector: "금융", quantScore: 90, rsi: 52.3, disparity: 101.4, supplyScore: 83, foreignFlow: 150, instFlow: 210, per: 4.8, pbr: 0.85, roe: 19.8, debtRatio: 42.0, trendState: "정배열", trendScore: 89, valScore: 96 },
+    { rank: 58, name: "HMM", code: "011200", price: 18250, rate: 1.39, sector: "해운", quantScore: 82, rsi: 49.3, disparity: 99.8, supplyScore: 78, foreignFlow: 120, instFlow: 160, per: 5.2, pbr: 0.58, roe: 12.0, debtRatio: 26.0, trendState: "운임상승수혜", trendScore: 82, valScore: 94 },
+    { rank: 59, name: "CJ제일제당", code: "097950", price: 341000, rate: 0.59, sector: "식품", quantScore: 81, rsi: 47.1, disparity: 99.0, supplyScore: 76, foreignFlow: 80, instFlow: 120, per: 9.8, pbr: 0.72, roe: 7.9, debtRatio: 88.0, trendState: "바닥다지기", trendScore: 79, valScore: 89 },
+    { rank: 60, name: "엔씨소프트", code: "036570", price: 214500, rate: 1.42, sector: "게임", quantScore: 76, rsi: 45.9, disparity: 98.3, supplyScore: 74, foreignFlow: 90, instFlow: 130, per: 24.0, pbr: 1.40, roe: 5.8, debtRatio: 28.0, trendState: "신작기대감", trendScore: 77, valScore: 79 },
+    { rank: 61, name: "현대제철", code: "004020", price: 28400, rate: -0.35, sector: "철강", quantScore: 73, rsi: 39.1, disparity: 95.7, supplyScore: 69, foreignFlow: -30, instFlow: 60, per: 11.0, pbr: 0.24, roe: 2.4, debtRatio: 78.0, trendState: "극저PBR", trendScore: 68, valScore: 90 },
+    { rank: 62, name: "금양", code: "001570", price: 48900, rate: -2.40, sector: "2차전지", quantScore: 61, rsi: 33.1, disparity: 91.2, supplyScore: 61, foreignFlow: -90, instFlow: 20, per: 280.0, pbr: 12.0, roe: -4.2, debtRatio: 195.0, trendState: "역배열하락", trendScore: 54, valScore: 45 },
+    { rank: 63, name: "코스맥스", code: "192820", price: 138500, rate: 1.84, sector: "화장품", quantScore: 86, rsi: 51.0, disparity: 100.6, supplyScore: 81, foreignFlow: 130, instFlow: 170, per: 16.5, pbr: 2.15, roe: 14.8, debtRatio: 112.0, trendState: "K뷰티수출", trendScore: 88, valScore: 84 },
+    { rank: 64, name: "아모레퍼시픽", code: "090430", price: 142000, rate: 1.28, sector: "화장품", quantScore: 83, rsi: 49.7, disparity: 99.9, supplyScore: 79, foreignFlow: 110, instFlow: 150, per: 28.0, pbr: 1.65, roe: 6.4, debtRatio: 32.0, trendState: "북미확장", trendScore: 84, valScore: 81 },
+    { rank: 65, name: "LG유플러스", code: "032640", price: 9840, rate: 0.20, sector: "통신", quantScore: 81, rsi: 46.8, disparity: 98.9, supplyScore: 75, foreignFlow: 40, instFlow: 70, per: 7.4, pbr: 0.48, roe: 7.2, debtRatio: 124.0, trendState: "고배당박스", trendScore: 78, valScore: 92 },
+    { rank: 66, name: "두산밥캣", code: "241560", price: 44200, rate: 1.49, sector: "기계", quantScore: 86, rsi: 50.2, disparity: 100.3, supplyScore: 80, foreignFlow: 120, instFlow: 160, per: 6.2, pbr: 0.72, roe: 12.8, debtRatio: 48.0, trendState: "지배구조안정", trendScore: 85, valScore: 93 },
+    { rank: 67, name: "한미반도체", code: "042700", price: 124000, rate: 3.77, sector: "반도체", quantScore: 94, rsi: 60.1, disparity: 104.8, supplyScore: 93, foreignFlow: 320, instFlow: 410, per: 38.0, pbr: 9.80, roe: 29.0, debtRatio: 24.0, trendState: "HBM독점", trendScore: 97, valScore: 78 },
+    { rank: 68, name: "이수페타시스", code: "007660", price: 46200, rate: 3.47, sector: "IT부품", quantScore: 92, rsi: 59.2, disparity: 104.1, supplyScore: 91, foreignFlow: 240, instFlow: 310, per: 24.0, pbr: 5.40, roe: 26.5, debtRatio: 72.0, trendState: "MLB고성장", trendScore: 95, valScore: 80 },
+    { rank: 69, name: "포스코인터내셔널", code: "047050", price: 58900, rate: 1.55, sector: "상사/에너지", quantScore: 87, rsi: 51.8, disparity: 101.0, supplyScore: 82, foreignFlow: 150, instFlow: 200, per: 9.4, pbr: 1.15, roe: 13.4, debtRatio: 138.0, trendState: "에너지안보", trendScore: 88, valScore: 89 },
+    { rank: 70, name: "팬오션", code: "028670", price: 4120, rate: 0.73, sector: "해운", quantScore: 78, rsi: 46.0, disparity: 98.5, supplyScore: 74, foreignFlow: 50, instFlow: 80, per: 7.2, pbr: 0.44, roe: 6.8, debtRatio: 68.0, trendState: "벌크운임반등", trendScore: 78, valScore: 91 },
+    { rank: 71, name: "씨에스윈드", code: "112610", price: 56400, rate: 1.99, sector: "신재생", quantScore: 83, rsi: 51.4, disparity: 100.7, supplyScore: 80, foreignFlow: 110, instFlow: 160, per: 28.0, pbr: 2.10, roe: 8.5, debtRatio: 120.0, trendState: "해상풍력", trendScore: 85, valScore: 79 },
+    { rank: 72, name: "키움증권", code: "039490", price: 128500, rate: 0.94, sector: "금융", quantScore: 88, rsi: 52.1, disparity: 101.2, supplyScore: 82, foreignFlow: 130, instFlow: 170, per: 5.6, pbr: 0.62, roe: 12.0, debtRatio: 38.0, trendState: "정배열", trendScore: 87, valScore: 95 },
+    { rank: 73, name: "현대건설", code: "000720", price: 31400, rate: 0.64, sector: "건설", quantScore: 77, rsi: 45.2, disparity: 98.1, supplyScore: 73, foreignFlow: 60, instFlow: 90, per: 8.9, pbr: 0.41, roe: 5.1, debtRatio: 128.0, trendState: "원전수주기대", trendScore: 78, valScore: 88 },
+    { rank: 74, name: "유한양행", code: "000100", price: 139000, rate: 2.81, sector: "바이오", quantScore: 92, rsi: 58.4, disparity: 103.7, supplyScore: 89, foreignFlow: 260, instFlow: 340, per: 72.0, pbr: 4.80, roe: 7.2, debtRatio: 31.0, trendState: "렉라자FDA승인", trendScore: 96, valScore: 72 },
+    { rank: 75, name: "넷마블", code: "251270", price: 58200, rate: 1.22, sector: "게임", quantScore: 79, rsi: 48.0, disparity: 99.4, supplyScore: 77, foreignFlow: 80, instFlow: 120, per: 34.0, pbr: 1.10, roe: 3.8, debtRatio: 48.0, trendState: "흑자전환", trendScore: 81, valScore: 80 },
+    { rank: 76, name: "GS", code: "078930", price: 47800, rate: 0.42, sector: "지주", quantScore: 82, rsi: 46.7, disparity: 98.8, supplyScore: 75, foreignFlow: 50, instFlow: 80, per: 4.2, pbr: 0.32, roe: 8.5, debtRatio: 72.0, trendState: "극저평가", trendScore: 79, valScore: 97 },
+    { rank: 77, name: "GS리테일", code: "007070", price: 21900, rate: 0.23, sector: "유통", quantScore: 77, rsi: 45.1, disparity: 98.0, supplyScore: 73, foreignFlow: 30, instFlow: 50, per: 12.0, pbr: 0.58, roe: 5.4, debtRatio: 86.0, trendState: "바닥권", trendScore: 75, valScore: 87 },
+    { rank: 78, name: "현대오토에버", code: "307950", price: 162000, rate: 1.57, sector: "IT서비스", quantScore: 86, rsi: 51.3, disparity: 100.8, supplyScore: 81, foreignFlow: 120, instFlow: 160, per: 24.0, pbr: 2.80, roe: 12.5, debtRatio: 36.0, trendState: "SDV수혜", trendScore: 88, valScore: 83 },
+    { rank: 79, name: "두산", code: "000150", price: 194000, rate: 2.65, sector: "지주", quantScore: 91, rsi: 56.9, disparity: 103.0, supplyScore: 87, foreignFlow: 190, instFlow: 250, per: 14.5, pbr: 1.35, roe: 10.2, debtRatio: 92.0, trendState: "로보틱스지주", trendScore: 92, valScore: 86 },
+    { rank: 80, name: "에스원", code: "012750", price: 62400, rate: 0.16, sector: "보안서비스", quantScore: 81, rsi: 46.3, disparity: 98.6, supplyScore: 74, foreignFlow: 40, instFlow: 60, per: 13.8, pbr: 1.30, roe: 9.8, debtRatio: 18.0, trendState: "배당수렴", trendScore: 79, valScore: 89 }
   ];
 
   /* Active State Variables */
@@ -593,6 +662,70 @@
   let candleData80 = [];
   let crosshairPos = null;
 
+  /* Resizable Divider & Horizontal Pan State */
+  let priceChartRatio = 0.68; // Default: 68% Price Chart, 32% Volume Chart
+  let isDraggingDivider = false;
+  let isPanningChart = false;
+  let panStartX = 0;
+  let panStartOffset = 0;
+  let chartScrollOffset = 0; // 0 = latest data at right
+  let VISIBLE_CANDLE_COUNT = 90; // Default: High Density (90 Candles for broader context)
+  const TOTAL_CANDLE_HISTORY = 240; // Extended history buffer for deeper scroll analysis
+  let chartBgTheme = 'black'; // 'black' | 'white'
+
+  function toggleChartBgTheme() {
+    chartBgTheme = (chartBgTheme === 'black') ? 'white' : 'black';
+    const track = document.getElementById('chartThemeSwitchTrack');
+    const knob = document.getElementById('chartThemeSwitchKnob');
+    const txt = document.getElementById('chartThemeSwitchText');
+    const container = document.getElementById('chartCanvasContainer');
+
+    if (chartBgTheme === 'white') {
+      if (track) {
+        track.className = "relative inline-flex h-3.5 w-7 items-center rounded-full bg-cyan-500/20 border border-cyan-400 transition-colors duration-200";
+      }
+      if (knob) {
+        knob.className = "inline-block h-2.5 w-2.5 transform rounded-full bg-cyan-400 shadow transition-transform duration-200 translate-x-3.5";
+      }
+      if (txt) {
+        txt.textContent = "흰색";
+        txt.className = "text-cyan-300 text-[8px] font-semibold min-w-[18px]";
+      }
+      if (container) {
+        container.className = "relative w-full h-56 sm:h-64 bg-white rounded-lg border border-slate-300 overflow-hidden select-none transition-colors duration-200";
+      }
+    } else {
+      if (track) {
+        track.className = "relative inline-flex h-3.5 w-7 items-center rounded-full bg-slate-800 border border-slate-700 transition-colors duration-200";
+      }
+      if (knob) {
+        knob.className = "inline-block h-2.5 w-2.5 transform rounded-full bg-slate-300 transition-transform duration-200 translate-x-0.5";
+      }
+      if (txt) {
+        txt.textContent = "검정";
+        txt.className = "text-slate-300 text-[8px] font-medium min-w-[18px]";
+      }
+      if (container) {
+        container.className = "relative w-full h-56 sm:h-64 bg-slate-950 rounded-lg border border-slate-800 overflow-hidden select-none transition-colors duration-200";
+      }
+    }
+    draw80CandleCanvas();
+  }
+
+  function setCandleDensity(count) {
+    VISIBLE_CANDLE_COUNT = count;
+    [60, 90, 120].forEach(n => {
+      const btn = document.getElementById(`btnDensity${n}`);
+      if (!btn) return;
+      if (n === count) {
+        btn.className = "px-1 py-0.2 rounded text-[8px] bg-cyan-500 text-white font-semibold transition-colors";
+      } else {
+        btn.className = "px-1 py-0.2 rounded text-[8px] text-slate-400 hover:text-slate-200 transition-colors";
+      }
+    });
+    draw80CandleCanvas();
+  }
+
   function renderSectorStreakRelay() {
     const bar = document.getElementById('sectorStreakRelay');
     if (!bar) return;
@@ -604,37 +737,37 @@
         const badgeBg = isGold ? 'bg-amber-400 text-slate-950' : 'bg-lime-400 text-slate-950';
 
         return `
-          <div onclick="openSectorTop10Modal('${item.name}', ${item.return6M})" class="flex-shrink-0 w-36 sm:w-40 p-2 rounded-lg border ${cardBg} shadow-md cursor-pointer hover:scale-[1.02] transition-transform">
-            <div class="flex items-center justify-between">
-              <span class="text-[9px] px-1 py-0.2 rounded font-semibold uppercase ${badgeBg}">급등예상</span>
-              <span class="text-[10px] font-semibold font-num text-rose-400">+${item.return6M}%</span>
+          <div onclick="openSectorTop10Modal('${item.name}', ${item.return6M})" class="flex-shrink-0 w-36 sm:w-40 p-2 rounded-lg border ${cardBg} shadow-md cursor-pointer hover:scale-[1.02] transition-transform whitespace-nowrap">
+            <div class="flex items-center justify-between whitespace-nowrap">
+              <span class="text-[9px] px-1 py-0.2 rounded font-semibold uppercase ${badgeBg} whitespace-nowrap">급등예상</span>
+              <span class="text-[10px] font-semibold font-num text-rose-400 whitespace-nowrap">+${item.return6M}%</span>
             </div>
-            <div class="font-semibold text-xs text-white mt-1 truncate">${item.name}</div>
-            <div class="text-[10px] text-slate-300 flex items-center justify-between mt-0.5">
-              <span class="truncate">${item.topStock}</span>
-              <span class="font-num text-[9px] opacity-80">${item.count}종목</span>
+            <div class="font-semibold text-xs text-white mt-1 truncate whitespace-nowrap">${item.name}</div>
+            <div class="text-[10px] text-slate-300 flex items-center justify-between mt-0.5 whitespace-nowrap">
+              <span class="truncate whitespace-nowrap">${item.topStock}</span>
+              <span class="font-num text-[9px] opacity-80 pl-1 whitespace-nowrap">${item.count}종목</span>
             </div>
           </div>
         `;
       }
 
       return `
-        <div onclick="openSectorTop10Modal('${item.name}', ${item.return6M})" class="flex-shrink-0 w-32 sm:w-36 p-2 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-slate-700 cursor-pointer hover:scale-[1.02] transition-transform">
-          <div class="flex items-center justify-between text-[10px]">
+        <div onclick="openSectorTop10Modal('${item.name}', ${item.return6M})" class="flex-shrink-0 w-32 sm:w-36 p-2 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-slate-700 cursor-pointer hover:scale-[1.02] transition-transform whitespace-nowrap">
+          <div class="flex items-center justify-between text-[10px] whitespace-nowrap">
             <span class="text-slate-400 font-medium">6개월</span>
-            <span class="font-semibold font-num ${item.return6M >= 0 ? 'text-rose-400' : 'text-blue-400'}">${item.return6M >= 0 ? '+' : ''}${item.return6M}%</span>
+            <span class="font-semibold font-num ${item.return6M >= 0 ? 'text-rose-400' : 'text-blue-400'} whitespace-nowrap">${item.return6M >= 0 ? '+' : ''}${item.return6M}%</span>
           </div>
-          <div class="font-semibold text-xs text-slate-100 mt-1 truncate">${item.name}</div>
-          <div class="text-[10px] text-slate-400 flex items-center justify-between mt-0.5">
-            <span class="truncate">${item.topStock}</span>
-            <span class="font-num text-[9px] text-slate-500">${item.count}종목</span>
+          <div class="font-semibold text-xs text-slate-100 mt-1 truncate whitespace-nowrap">${item.name}</div>
+          <div class="text-[10px] text-slate-400 flex items-center justify-between mt-0.5 whitespace-nowrap">
+            <span class="truncate whitespace-nowrap">${item.topStock}</span>
+            <span class="font-num text-[9px] text-slate-500 pl-1 whitespace-nowrap">${item.count}종목</span>
           </div>
         </div>
       `;
     }).join('');
   }
 
-  /* Rendering Stock Cards according to filter & sort */
+  /* Rendering Stock Cards according to filter & sort (Single Line Guaranteed) */
   function renderStockRankings() {
     const container = document.getElementById('stockListContainer');
     if (!container) return;
@@ -649,6 +782,10 @@
       list.sort((a, b) => a.rank - b.rank);
     } else if (currentSortMode === 'quant') {
       list.sort((a, b) => b.quantScore - a.quantScore);
+    } else if (currentSortMode === 'trend') {
+      list.sort((a, b) => b.trendScore - a.trendScore);
+    } else if (currentSortMode === 'value') {
+      list.sort((a, b) => b.valScore - a.valScore);
     } else if (currentSortMode === 'rate') {
       list.sort((a, b) => b.rate - a.rate);
     } else if (currentSortMode === 'supply') {
@@ -658,46 +795,57 @@
     document.getElementById('stockCountBadge').textContent = `${list.length}개 종목`;
 
     container.innerHTML = list.map((st) => {
-      const isTop3Quant = st.quantScore >= 90;
+      const isTopQuant = st.quantScore >= 90;
       return `
-        <div onclick="openStockBottomSheet('${st.code}')" class="bg-slate-900/80 border border-slate-800/80 rounded-xl p-3 hover:border-slate-700 hover:bg-slate-900 transition-all cursor-pointer relative overflow-hidden">
+        <div onclick="openStockBottomSheet('${st.code}')" class="bg-slate-900/80 border border-slate-800/80 rounded-xl p-2.5 sm:p-3 hover:border-slate-700 hover:bg-slate-900 transition-all cursor-pointer relative overflow-hidden">
           
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-6 h-6 rounded-md bg-slate-800 text-slate-300 flex items-center justify-center text-[10px] font-semibold font-num">
+          <div class="flex items-center justify-between gap-2 whitespace-nowrap">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-6 h-6 rounded-md bg-slate-800 text-slate-300 flex items-center justify-center text-[10px] font-semibold font-num flex-shrink-0">
                 ${st.rank}
               </span>
-              <div>
-                <div class="flex items-center gap-1.5">
-                  <h4 class="text-xs sm:text-sm font-semibold text-slate-100">${st.name}</h4>
-                  <span class="text-[9px] text-slate-400 font-mono">${st.code}</span>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <h4 class="text-xs sm:text-sm font-semibold text-slate-100 truncate whitespace-nowrap">${st.name}</h4>
+                  <span class="text-[9px] text-slate-400 font-mono flex-shrink-0">${st.code}</span>
+                  <span class="text-[8px] px-1 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700/60 font-medium whitespace-nowrap">${st.trendState}</span>
                 </div>
-                <span class="text-[10px] text-slate-400 font-normal">${st.sector}</span>
+                <div class="flex items-center gap-1.5 text-[9px] text-slate-400 font-num truncate whitespace-nowrap">
+                  <span>PER <strong class="text-slate-300 font-normal">${st.per}배</strong></span>
+                  <span>·</span>
+                  <span>PBR <strong class="text-slate-300 font-normal">${st.pbr}</strong></span>
+                  <span>·</span>
+                  <span>ROE <strong class="${st.roe >= 15 ? 'text-rose-400' : 'text-slate-300'} font-normal">${st.roe}%</strong></span>
+                </div>
               </div>
             </div>
 
             <!-- Price & Rate -->
-            <div class="text-right">
-              <div id="stock-price-${st.code}" class="text-xs sm:text-sm font-semibold text-slate-100 font-num">
+            <div class="text-right flex-shrink-0 whitespace-nowrap">
+              <div id="stock-price-${st.code}" class="text-xs sm:text-sm font-semibold text-slate-100 font-num whitespace-nowrap">
                 ${formatKrw(st.price)}
               </div>
-              <div id="stock-rate-${st.code}" class="text-[11px] font-semibold font-num ${getRateColor(st.rate)}">
+              <div id="stock-rate-${st.code}" class="text-[11px] font-semibold font-num ${getRateColor(st.rate)} whitespace-nowrap">
                 ${formatRate(st.rate)}
               </div>
             </div>
           </div>
 
-          <!-- Indicators Bar -->
-          <div class="mt-2.5 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-400">
-            <div class="flex items-center gap-1">
-              <span class="text-slate-400">퀀트</span>
-              <span class="font-semibold font-num ${isTop3Quant ? 'text-amber-400' : 'text-cyan-400'}">${st.quantScore}점</span>
+          <!-- Indicators Bar (Single line with gap protection) -->
+          <div class="mt-2 pt-1.5 sm:mt-2.5 sm:pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-400 whitespace-nowrap gap-1">
+            <div class="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
+              <span class="text-slate-400">종합</span>
+              <span class="font-semibold font-num ${isTopQuant ? 'text-amber-400' : 'text-cyan-400'}">${st.quantScore}점</span>
             </div>
-            <div class="flex items-center gap-1">
-              <span class="text-slate-400">RSI</span>
-              <span class="font-medium font-num text-slate-200">${formatCommaNumber(st.rsi, 1)}</span>
+            <div class="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
+              <span class="text-slate-400">추세</span>
+              <span class="font-medium font-num text-emerald-400">${st.trendScore}점</span>
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
+              <span class="text-slate-400">가치</span>
+              <span class="font-medium font-num text-indigo-300">${st.valScore}점</span>
+            </div>
+            <div class="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
               <span class="text-slate-400">외+기</span>
               <span class="font-medium font-num ${st.foreignFlow + st.instFlow >= 0 ? 'text-rose-400' : 'text-blue-400'}">
                 ${formatCommaNumber(st.foreignFlow + st.instFlow, 0)}억
@@ -710,35 +858,23 @@
     }).join('');
   }
 
-  function setUniverse(max) {
-    currentUniverseMax = max;
-    const btn50 = document.getElementById('btnUni50');
-    const btn80 = document.getElementById('btnUni80');
-
-    if (max === 50) {
-      btn50.className = "px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all";
-      btn80.className = "px-2 py-0.5 rounded-md text-slate-400 hover:text-slate-200 transition-all";
-    } else {
-      btn80.className = "px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all";
-      btn50.className = "px-2 py-0.5 rounded-md text-slate-400 hover:text-slate-200 transition-all";
-    }
-    renderStockRankings();
-  }
-
   function setSortMode(mode) {
     currentSortMode = mode;
     const btns = {
       rank: document.getElementById('btnSortRank'),
       quant: document.getElementById('btnSortQuant'),
+      trend: document.getElementById('btnSortTrend'),
+      value: document.getElementById('btnSortValue'),
       rate: document.getElementById('btnSortRate'),
       supply: document.getElementById('btnSortSupply')
     };
 
     Object.keys(btns).forEach(k => {
+      if (!btns[k]) return;
       if (k === mode) {
-        btns[k].className = "px-2.5 py-1 rounded-md text-[11px] font-medium bg-cyan-500 text-white shadow-sm transition-all";
+        btns[k].className = "px-2.5 py-1 rounded-md text-[11px] font-medium bg-cyan-500 text-white shadow-sm transition-all whitespace-nowrap flex-shrink-0";
       } else {
-        btns[k].className = "px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all";
+        btns[k].className = "px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all whitespace-nowrap flex-shrink-0";
       }
     });
 
@@ -769,6 +905,16 @@
     document.getElementById('sheetForeignFlow').textContent = (stock.foreignFlow >= 0 ? '+' : '') + formatCommaNumber(stock.foreignFlow, 0) + '억';
     document.getElementById('sheetInstFlow').textContent = (stock.instFlow >= 0 ? '+' : '') + formatCommaNumber(stock.instFlow, 0) + '억';
 
+    // NEW: Financial & Fundamental Valuation Mapping
+    document.getElementById('sheetPer').textContent = `${stock.per}배`;
+    document.getElementById('sheetPbr').textContent = `${stock.pbr}배`;
+    document.getElementById('sheetRoe').textContent = `${stock.roe}%`;
+    document.getElementById('sheetDebtRatio').textContent = `${stock.debtRatio}%`;
+    document.getElementById('sheetTrendBadge').textContent = stock.trendState;
+
+    const valueGrade = stock.valScore >= 90 ? '🌟 초저평가 우량' : (stock.valScore >= 80 ? '저평가 적정' : '성장주 프리미엄');
+    document.getElementById('sheetValueGrade').textContent = valueGrade;
+
     syncTfControlUI();
     generate80CandleData(stock.price, chartTf);
     draw80CandleCanvas();
@@ -792,7 +938,13 @@
       supplyScore: 88,
       foreignFlow: 0,
       instFlow: 0,
-      isFloat: idx.isFloat
+      isFloat: idx.isFloat,
+      per: "-",
+      pbr: "-",
+      roe: "-",
+      debtRatio: "-",
+      trendState: "매크로지표",
+      valScore: 85
     };
 
     document.getElementById('sheetRank').textContent = `INDEX`;
@@ -808,6 +960,13 @@
     document.getElementById('sheetSupplyScore').textContent = '88점';
     document.getElementById('sheetForeignFlow').textContent = '글로벌 연동';
     document.getElementById('sheetInstFlow').textContent = '실시간 반영';
+
+    document.getElementById('sheetPer').textContent = '-';
+    document.getElementById('sheetPbr').textContent = '-';
+    document.getElementById('sheetRoe').textContent = '-';
+    document.getElementById('sheetDebtRatio').textContent = '-';
+    document.getElementById('sheetTrendBadge').textContent = '글로벌지수';
+    document.getElementById('sheetValueGrade').textContent = '매크로 기준선';
 
     switchChartTf('5M');
     document.getElementById('stockBottomSheet').classList.remove('hidden');
@@ -837,24 +996,24 @@
     if (isMinute) {
       if (select) {
         select.value = chartTf;
-        select.className = "appearance-none bg-cyan-950/70 text-cyan-300 border border-cyan-500 rounded px-2.5 py-1 pr-6 text-[10px] font-semibold outline-none transition-colors cursor-pointer";
+        select.className = "appearance-none bg-cyan-950/70 text-cyan-300 border border-cyan-500 rounded px-2 py-1 pr-5 text-[10px] font-semibold outline-none transition-colors cursor-pointer whitespace-nowrap";
       }
       Object.values(tfMap).forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.className = "px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors";
+        if (el) el.className = "px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors whitespace-nowrap";
       });
     } else {
       if (select) {
         select.selectedIndex = 0;
-        select.className = "appearance-none bg-slate-800 text-slate-300 border border-slate-700/80 rounded px-2.5 py-1 pr-6 text-[10px] font-medium outline-none focus:border-cyan-500 transition-colors cursor-pointer";
+        select.className = "appearance-none bg-slate-800 text-slate-300 border border-slate-700/80 rounded px-2 py-1 pr-5 text-[10px] font-medium outline-none focus:border-cyan-500 transition-colors cursor-pointer whitespace-nowrap";
       }
       Object.keys(tfMap).forEach(key => {
         const el = document.getElementById(tfMap[key]);
         if (!el) return;
         if (key === chartTf) {
-          el.className = "px-2 py-0.5 rounded text-[10px] font-medium bg-cyan-500 text-white transition-colors";
+          el.className = "px-2 py-0.5 rounded text-[10px] font-medium bg-cyan-500 text-white transition-colors whitespace-nowrap";
         } else {
-          el.className = "px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors";
+          el.className = "px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors whitespace-nowrap";
         }
       });
     }
@@ -876,18 +1035,23 @@
     const btn = document.getElementById('btnToggleVP');
     if (showVolumeProfile) {
       btnText.textContent = "매물대 ON";
-      btn.className = "px-2.5 py-0.5 rounded-full text-[10px] font-medium border border-cyan-500/70 text-cyan-300 bg-cyan-950/40 hover:bg-cyan-900/60 transition-colors flex items-center gap-1";
+      btn.className = "px-2 py-0.5 rounded-full text-[10px] font-medium border border-cyan-500/70 text-cyan-300 bg-cyan-950/40 hover:bg-cyan-900/60 transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap";
     } else {
       btnText.textContent = "매물대 OFF";
-      btn.className = "px-2.5 py-0.5 rounded-full text-[10px] font-medium border border-slate-700 text-slate-400 bg-slate-800/80 hover:bg-slate-700 transition-colors flex items-center gap-1";
+      btn.className = "px-2 py-0.5 rounded-full text-[10px] font-medium border border-slate-700 text-slate-400 bg-slate-800/80 hover:bg-slate-700 transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap";
     }
+    draw80CandleCanvas();
+  }
+
+  function resetChartScroll() {
+    chartScrollOffset = 0;
     draw80CandleCanvas();
   }
 
   function generate80CandleData(currentPrice, tf = chartTf) {
     const candles = [];
     let p = currentPrice;
-    const count = 80;
+    const count = TOTAL_CANDLE_HISTORY;
     const now = new Date();
 
     const minuteStepMap = {
@@ -902,28 +1066,28 @@
     for (let i = count - 1; i >= 0; i--) {
       let volatilityRatio = 0.018;
       let dateStr = '';
+      let candleDate = new Date();
 
       if (minuteStepMap[tf]) {
         const step = minuteStepMap[tf];
         volatilityRatio = step.volRatio;
-        const t = new Date(now.getTime() - i * step.mins * 60 * 1000);
-        const hh = String(t.getHours()).padStart(2, '0');
-        const mm = String(t.getMinutes()).padStart(2, '0');
+        candleDate = new Date(now.getTime() - i * step.mins * 60 * 1000);
+        const hh = String(candleDate.getHours()).padStart(2, '0');
+        const mm = String(candleDate.getMinutes()).padStart(2, '0');
         dateStr = `${hh}:${mm}`;
       } else if (tf === 'W') {
         volatilityRatio = 0.038;
-        const d = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
-        dateStr = `${d.getMonth() + 1}/${d.getDate()}주`;
+        candleDate = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+        dateStr = `${candleDate.getMonth() + 1}/${candleDate.getDate()}주`;
       } else if (tf === 'M') {
         volatilityRatio = 0.065;
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        dateStr = `${d.getFullYear().toString().slice(2)}/${d.getMonth() + 1}월`;
+        candleDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        dateStr = `${candleDate.getFullYear().toString().slice(2)}/${candleDate.getMonth() + 1}월`;
       } else {
-        // Daily (80일)
+        // Daily (일봉)
         volatilityRatio = 0.018;
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        dateStr = `${d.getMonth() + 1}/${d.getDate()}`;
+        candleDate = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+        dateStr = `${candleDate.getMonth() + 1}/${candleDate.getDate()}`;
       }
 
       const volatility = p * volatilityRatio;
@@ -936,10 +1100,11 @@
       const baseVol = minuteStepMap[tf] ? 35000 : 180000;
       const volume = Math.round(baseVol + Math.random() * (baseVol * 2.5));
 
-      candles.push({ open, high, low, close, volume, dateStr });
+      candles.push({ open, high, low, close, volume, dateStr, timestamp: candleDate.getTime(), dateObj: candleDate });
       p = open;
     }
     candleData80 = candles.reverse();
+    chartScrollOffset = 0; // Default to latest
   }
 
   function draw80CandleCanvas() {
@@ -958,12 +1123,34 @@
     const h = rect.height;
     ctx.clearRect(0, 0, w, h);
 
-    const len = candleData80.length;
+    const isWhite = (chartBgTheme === 'white');
+
+    // Background fill when in white mode
+    if (isWhite) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    // Calculate Visible Slice based on chartScrollOffset (pan position)
+    const maxOffset = Math.max(0, candleData80.length - VISIBLE_CANDLE_COUNT);
+    chartScrollOffset = Math.max(0, Math.min(maxOffset, chartScrollOffset));
+    const startIndex = candleData80.length - VISIBLE_CANDLE_COUNT - chartScrollOffset;
+    const visibleCandles = candleData80.slice(Math.max(0, startIndex), Math.max(0, startIndex) + VISIBLE_CANDLE_COUNT);
+    const len = visibleCandles.length;
+    if (len === 0) return;
+
+    // Resizable Divider Coordinates
+    const dividerY = h * priceChartRatio;
+    const candleChartH = dividerY - 6;
+    const volChartTop = dividerY + 10;
+    const volChartH = (h - volChartTop) - 16;
+    const volBaseY = h - 16;
+
     let minPrice = Infinity;
     let maxPrice = -Infinity;
     let maxVol = 0;
 
-    candleData80.forEach(c => {
+    visibleCandles.forEach(c => {
       if (c.low < minPrice) minPrice = c.low;
       if (c.high > maxPrice) maxPrice = c.high;
       if (c.volume > maxVol) maxVol = c.volume;
@@ -974,22 +1161,89 @@
     maxPrice += pricePadding;
     const priceRange = maxPrice - minPrice;
 
-    const candleChartH = h * 0.76;
-    const volChartH = h * 0.20;
-    const volBaseY = h - 6;
-
-    const getY = (price) => candleChartH - ((price - minPrice) / priceRange) * (candleChartH - 20) - 10;
+    const getY = (price) => candleChartH - ((price - minPrice) / priceRange) * (candleChartH - 22) - 10;
     const candleSlotW = w / len;
-    const candleW = Math.max(1.8, candleSlotW * 0.65);
+    // Slim, sleek candle design: minimal width with ample breathing room
+    const candleW = Math.max(1.2, candleSlotW * 0.52);
 
-    // 1. Calculate & Draw 60-Bin Gradient Heatmap Volume Profile
+    // 0. Subtle Horizontal Price Grid Lines for Quick Price Reading
+    ctx.save();
+    ctx.strokeStyle = isWhite ? 'rgba(203, 213, 225, 0.65)' : 'rgba(51, 65, 85, 0.28)';
+    ctx.lineWidth = 0.7;
+    ctx.setLineDash([2, 3]);
+    const gridStepCount = 4;
+    for (let g = 1; g <= gridStepCount; g++) {
+      const gridPrice = minPrice + (priceRange / (gridStepCount + 1)) * g;
+      const gridY = getY(gridPrice);
+      ctx.beginPath();
+      ctx.moveTo(0, gridY);
+      ctx.lineTo(w, gridY);
+      ctx.stroke();
+
+      // Right Side Mini Price Label
+      ctx.fillStyle = isWhite ? 'rgba(71, 85, 105, 0.75)' : 'rgba(148, 163, 184, 0.45)';
+      ctx.font = '8px Inter, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(formatCommaNumber(gridPrice, 0), w - 4, gridY - 2);
+    }
+    ctx.restore();
+
+    // 1. Draw 4-Hour Time Vertical Gridlines (좌우 스크롤 시 캔들과 함께 동적 이동)
+    const isMinute = ['1M', '3M', '5M', '10M', '30M', '60M'].includes(chartTf);
+    visibleCandles.forEach((c, idx) => {
+      const x = idx * candleSlotW + candleSlotW / 2;
+      let is4HourMark = false;
+      let labelText = '';
+
+      if (isMinute && c.dateObj) {
+        const hours = c.dateObj.getHours();
+        const mins = c.dateObj.getMinutes();
+        const stepMins = chartTf === '60M' ? 60 : (chartTf === '30M' ? 30 : 10);
+        if ((hours % 4 === 1 || hours % 4 === 0 || hours === 9 || hours === 13) && mins < stepMins) {
+          const prev = idx > 0 ? visibleCandles[idx - 1] : null;
+          if (!prev || prev.dateObj.getHours() !== hours) {
+            is4HourMark = true;
+            labelText = `${String(hours).padStart(2, '0')}:00 (4H)`;
+          }
+        }
+      } else {
+        if (idx % 15 === 0) {
+          is4HourMark = true;
+          labelText = c.dateStr;
+        }
+      }
+
+      if (is4HourMark) {
+        ctx.save();
+        ctx.strokeStyle = isWhite ? 'rgba(203, 213, 225, 0.75)' : 'rgba(51, 65, 85, 0.45)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, dividerY - 4);
+        ctx.moveTo(x, volChartTop);
+        ctx.lineTo(x, h - 14);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Time Label at Bottom
+        ctx.fillStyle = isWhite ? '#475569' : '#64748b';
+        ctx.font = '8px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(labelText, x, h - 4);
+        ctx.restore();
+      }
+    });
+
+    // 2. Calculate & Draw 60-Bin Gradient Heatmap Volume Profile
     let activeHoverBin = null;
     if (showVolumeProfile) {
       const binsCount = 60;
       const binStep = priceRange / binsCount;
       const volumeBins = new Array(binsCount).fill(0);
 
-      candleData80.forEach(c => {
+      visibleCandles.forEach(c => {
         const binIdx = Math.min(binsCount - 1, Math.max(0, Math.floor((c.close - minPrice) / binStep)));
         volumeBins[binIdx] += c.volume;
       });
@@ -1003,7 +1257,7 @@
         const binY = getY(binPrice);
         const barRatio = volumeBins[b] / maxBinVol;
         const barW = barRatio * maxBinBarW;
-        const barH = (priceRange / binsCount) / priceRange * (candleChartH - 20);
+        const barH = (priceRange / binsCount) / priceRange * (candleChartH - 22);
 
         const isHovered = crosshairPos && Math.abs(crosshairPos.y - binY) <= (barH + 2);
         if (isHovered) {
@@ -1013,12 +1267,11 @@
           };
         }
 
-        // Color Interpolation: Low Density = Cold Blue (59, 130, 246) -> High Density = Intense Rose/Red (244, 63, 94)
         const red = Math.round(59 + (244 - 59) * barRatio);
         const green = Math.round(130 + (63 - 130) * barRatio);
         const blue = Math.round(246 + (94 - 246) * barRatio);
         
-        const baseAlpha = 0.12 + barRatio * 0.28;
+        const baseAlpha = isWhite ? (0.16 + barRatio * 0.32) : (0.12 + barRatio * 0.28);
         const finalAlpha = isHovered ? Math.min(0.85, baseAlpha + 0.35) : baseAlpha;
 
         const barGrad = ctx.createLinearGradient(w - barW, 0, w, 0);
@@ -1030,17 +1283,17 @@
       }
     }
 
-    // 2. Draw Moving Averages (MA5, MA20, MA60)
+    // 3. Draw Moving Averages (MA5, MA20, MA60) on visible slice
     function drawMA(period, color) {
       ctx.beginPath();
       ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2;
+      ctx.lineWidth = 1.0;
       let started = false;
 
       for (let i = 0; i < len; i++) {
         if (i < period - 1) continue;
         let sum = 0;
-        for (let j = 0; j < period; j++) sum += candleData80[i - j].close;
+        for (let j = 0; j < period; j++) sum += visibleCandles[i - j].close;
         const ma = sum / period;
         const x = i * candleSlotW + candleSlotW / 2;
         const y = getY(ma);
@@ -1055,66 +1308,78 @@
       ctx.stroke();
     }
 
-    drawMA(5, '#fbbf24');   // MA5 (Amber)
-    drawMA(20, '#fb7185');  // MA20 (Rose)
-    drawMA(60, '#34d399');  // MA60 (Emerald)
+    drawMA(5, isWhite ? '#d97706' : '#fbbf24');   // MA5 (Amber)
+    drawMA(20, isWhite ? '#e11d48' : '#fb7185');  // MA20 (Rose)
+    drawMA(60, isWhite ? '#059669' : '#34d399');  // MA60 (Emerald)
 
-    // 3. Draw Candles and Volume Bars
-    candleData80.forEach((c, idx) => {
+    // 4. Draw Candles and Volume Bars (Refined Minimalist Style)
+    visibleCandles.forEach((c, idx) => {
       const x = idx * candleSlotW + candleSlotW / 2;
       const isUp = c.close >= c.open;
-      const candleColor = isUp ? '#fb7185' : '#60a5fa';
+      const candleColor = isUp ? (isWhite ? '#e11d48' : '#fb7185') : (isWhite ? '#2563eb' : '#60a5fa');
 
-      // Wick
+      // Slim Wick
       ctx.strokeStyle = candleColor;
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 0.8;
       ctx.beginPath();
       ctx.moveTo(x, getY(c.high));
       ctx.lineTo(x, getY(c.low));
       ctx.stroke();
 
-      // Body
+      // Sleek, Flat Body
       const openY = getY(c.open);
       const closeY = getY(c.close);
       const bodyTop = Math.min(openY, closeY);
-      const bodyH = Math.max(1.5, Math.abs(closeY - openY));
+      const bodyH = Math.max(1.2, Math.abs(closeY - openY));
 
       ctx.fillStyle = candleColor;
       ctx.fillRect(x - candleW / 2, bodyTop, candleW, bodyH);
 
-      // Volume Bar
-      const volBarH = (c.volume / maxVol) * volChartH;
-      ctx.fillStyle = isUp ? 'rgba(251, 113, 133, 0.4)' : 'rgba(96, 165, 250, 0.4)';
+      // Volume Bar (Aligned with Candle Width)
+      const volBarH = (c.volume / (maxVol || 1)) * Math.max(10, volChartH);
+      ctx.fillStyle = isUp 
+        ? (isWhite ? 'rgba(225, 29, 72, 0.45)' : 'rgba(251, 113, 133, 0.4)') 
+        : (isWhite ? 'rgba(37, 99, 235, 0.45)' : 'rgba(96, 165, 250, 0.4)');
       ctx.fillRect(x - candleW / 2, volBaseY - volBarH, candleW, volBarH);
     });
 
-    // 4. Mark 20-Candle Highest Peak Price in Tiny Text
-    const recent20Start = Math.max(0, len - 20);
-    let peak20Val = -Infinity;
-    let peak20Idx = recent20Start;
+    // 5. Distinct Interactive Resizable Divider Line & Handle
+    ctx.save();
+    ctx.strokeStyle = isDraggingDivider ? '#06b6d4' : (isWhite ? '#cbd5e1' : '#334155');
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, dividerY);
+    ctx.lineTo(w, dividerY);
+    ctx.stroke();
 
-    for (let k = recent20Start; k < len; k++) {
-      if (candleData80[k].high > peak20Val) {
-        peak20Val = candleData80[k].high;
-        peak20Idx = k;
-      }
+    // Center Drag Handle Pill
+    const pillW = 60;
+    const pillH = 12;
+    const pillX = w / 2 - pillW / 2;
+    const pillY = dividerY - pillH / 2;
+    ctx.fillStyle = isDraggingDivider ? '#0891b2' : (isWhite ? '#f1f5f9' : '#1e293b');
+    ctx.strokeStyle = isDraggingDivider ? '#22d3ee' : (isWhite ? '#cbd5e1' : '#475569');
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(pillX, pillY, pillW, pillH, 6);
+    } else {
+      ctx.rect(pillX, pillY, pillW, pillH);
     }
+    ctx.fill();
+    ctx.stroke();
 
-    if (peak20Val > 0) {
-      const peakX = peak20Idx * candleSlotW + candleSlotW / 2;
-      const peakY = getY(peak20Val) - 6;
+    ctx.fillStyle = isDraggingDivider ? '#ffffff' : (isWhite ? '#475569' : '#94a3b8');
+    ctx.font = '8px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('::: ↕ 조절 :::', w / 2, dividerY + 3);
+    ctx.restore();
 
-      ctx.font = '8px Inter, sans-serif';
-      ctx.fillStyle = '#f59e0b';
-      ctx.textAlign = 'center';
-      ctx.fillText(`▼ ${formatCommaNumber(peak20Val, 0)}`, peakX, peakY);
-    }
-
-    // 5. Crosshair (Horizontal & Vertical Tracking Lines)
+    // 6. Crosshair (Horizontal & Vertical Tracking Lines)
     if (crosshairPos) {
       const { x, y } = crosshairPos;
 
-      ctx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
+      ctx.strokeStyle = isWhite ? 'rgba(2, 132, 199, 0.75)' : 'rgba(6, 182, 212, 0.6)';
       ctx.lineWidth = 0.8;
       ctx.setLineDash([3, 3]);
 
@@ -1131,24 +1396,26 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Price Tag on Right
-      const crossPrice = minPrice + ((candleChartH - y - 10) / (candleChartH - 20)) * priceRange;
-      ctx.fillStyle = '#0e7490';
-      ctx.fillRect(w - 55, y - 8, 55, 16);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '9px Inter, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText(formatCommaNumber(crossPrice, 0), w - 4, y + 3.5);
+      // Price Tag on Right (Only when hovering price area)
+      if (y < dividerY) {
+        const crossPrice = minPrice + ((candleChartH - y - 10) / (candleChartH - 22)) * priceRange;
+        ctx.fillStyle = isWhite ? '#0284c7' : '#0e7490';
+        ctx.fillRect(w - 55, y - 8, 55, 16);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '9px Inter, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(formatCommaNumber(crossPrice, 0), w - 4, y + 3.5);
+      }
 
       // Date Tag on Bottom
       const hoverCandleIdx = Math.min(len - 1, Math.max(0, Math.floor(x / candleSlotW)));
-      const hoverCandle = candleData80[hoverCandleIdx];
+      const hoverCandle = visibleCandles[hoverCandleIdx];
       if (hoverCandle) {
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(x - 22, h - 14, 44, 14);
-        ctx.fillStyle = '#94a3b8';
+        ctx.fillStyle = isWhite ? '#e2e8f0' : '#1e293b';
+        ctx.fillRect(x - 24, h - 15, 48, 14);
+        ctx.fillStyle = isWhite ? '#334155' : '#94a3b8';
         ctx.textAlign = 'center';
-        ctx.fillText(hoverCandle.dateStr, x, h - 4);
+        ctx.fillText(hoverCandle.dateStr, x, h - 5);
 
         // Update HUD Box
         document.getElementById('hudOpen').textContent = formatCommaNumber(hoverCandle.open, 0);
@@ -1159,7 +1426,7 @@
       }
     }
 
-    // 6. Floating Badge for Volume Profile
+    // 7. Floating Badge for Volume Profile
     const vpBadge = document.getElementById('vpFloatingBadge');
     if (activeHoverBin && vpBadge) {
       vpBadge.textContent = `매물평균: ${formatCommaNumber(activeHoverBin.price, 0)}원 (${activeHoverBin.pct}%)`;
@@ -1173,30 +1440,122 @@
     const canvas = document.getElementById('candleChartCanvas');
     if (!canvas) return;
 
-    function handlePointerMove(e) {
+    function getCoords(e) {
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-      crosshairPos = {
+      return {
         x: Math.max(0, Math.min(rect.width, clientX - rect.left)),
-        y: Math.max(0, Math.min(rect.height, clientY - rect.top))
+        y: Math.max(0, Math.min(rect.height, clientY - rect.top)),
+        rawX: clientX,
+        rawY: clientY,
+        h: rect.height,
+        w: rect.width
       };
+    }
+
+    function handlePointerDown(e) {
+      const { x, y, h } = getCoords(e);
+      const dividerY = h * priceChartRatio;
+
+      // Touch / Click near divider (±12px range)
+      if (Math.abs(y - dividerY) <= 12) {
+        isDraggingDivider = true;
+        canvas.style.cursor = 'row-resize';
+      } else {
+        // Horizontal Pan on chart
+        isPanningChart = true;
+        panStartX = x;
+        panStartOffset = chartScrollOffset;
+        crosshairPos = { x, y };
+      }
+      draw80CandleCanvas();
+    }
+
+    function handlePointerMove(e) {
+      const { x, y, h, w } = getCoords(e);
+      const dividerY = h * priceChartRatio;
+
+      if (isDraggingDivider) {
+        // Clamp ratio between 35% and 82%
+        const newRatio = Math.max(0.35, Math.min(0.82, y / h));
+        priceChartRatio = newRatio;
+        draw80CandleCanvas();
+        return;
+      }
+
+      if (isPanningChart) {
+        const dx = x - panStartX;
+        const candleSlotW = w / VISIBLE_CANDLE_COUNT;
+        const candleDelta = Math.round(dx / candleSlotW);
+        const maxOffset = Math.max(0, candleData80.length - VISIBLE_CANDLE_COUNT);
+        chartScrollOffset = Math.max(0, Math.min(maxOffset, panStartOffset + candleDelta));
+        crosshairPos = { x, y };
+        draw80CandleCanvas();
+        return;
+      }
+
+      // Cursor hover hint on desktop
+      if (Math.abs(y - dividerY) <= 12) {
+        canvas.style.cursor = 'row-resize';
+      } else {
+        canvas.style.cursor = 'crosshair';
+      }
+
+      crosshairPos = { x, y };
+      draw80CandleCanvas();
+    }
+
+    function handlePointerUp() {
+      isDraggingDivider = false;
+      isPanningChart = false;
+      canvas.style.cursor = 'crosshair';
       draw80CandleCanvas();
     }
 
     function handlePointerLeave() {
+      isDraggingDivider = false;
+      isPanningChart = false;
       crosshairPos = null;
       draw80CandleCanvas();
     }
 
+    // 마우스 휠 스크롤 시 차트 캔들 시간축 동시 스크롤 연동
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      const step = Math.sign(delta) * 4;
+      const maxOffset = Math.max(0, candleData80.length - VISIBLE_CANDLE_COUNT);
+      chartScrollOffset = Math.max(0, Math.min(maxOffset, chartScrollOffset - step));
+      draw80CandleCanvas();
+    }, { passive: false });
+
+    canvas.addEventListener('mousedown', handlePointerDown);
     canvas.addEventListener('mousemove', handlePointerMove);
-    canvas.addEventListener('touchmove', handlePointerMove, { passive: true });
+    window.addEventListener('mouseup', handlePointerUp);
     canvas.addEventListener('mouseleave', handlePointerLeave);
-    canvas.addEventListener('touchend', handlePointerLeave);
+
+    canvas.addEventListener('touchstart', handlePointerDown, { passive: true });
+    canvas.addEventListener('touchmove', handlePointerMove, { passive: true });
+    window.addEventListener('touchend', handlePointerUp);
+    canvas.addEventListener('touchcancel', handlePointerUp);
+
+    // 키보드 좌우 방향키로도 차트 시간축 스크롤 지원
+    window.addEventListener('keydown', (e) => {
+      if (document.getElementById('stockBottomSheet').classList.contains('hidden')) return;
+      const maxOffset = Math.max(0, candleData80.length - VISIBLE_CANDLE_COUNT);
+      if (e.key === 'ArrowLeft') {
+        chartScrollOffset = Math.min(maxOffset, chartScrollOffset + 3);
+        draw80CandleCanvas();
+      } else if (e.key === 'ArrowRight') {
+        chartScrollOffset = Math.max(0, chartScrollOffset - 3);
+        draw80CandleCanvas();
+      }
+    });
   }
 
-  function generateIntradaySvgPath(history, maxSlots = MAX_INTRADAY_SLOTS) {
+  function generateIntradaySvgPath(item, totalSlots = TOTAL_DAY_SLOTS) {
+    const history = item.history;
     if (!history || history.length < 2) {
       return { 
         line: "M 0 16 L 30 16", 
@@ -1205,18 +1564,17 @@
         lastY: 16
       };
     }
-    const minVal = Math.min(...history);
-    const maxVal = Math.max(...history);
+
+    const minVal = Math.min(...history, item.base * 0.996);
+    const maxVal = Math.max(...history, item.base * 1.004);
     const range = (maxVal - minVal) || 1;
 
-    const pointsCount = Math.min(history.length, maxSlots);
-    const points = [];
-
-    for (let i = 0; i < pointsCount; i++) {
-      const x = (i / (maxSlots - 1)) * 100;
-      const y = 27 - ((history[i] - minVal) / range) * 22;
-      points.push({ x, y });
-    }
+    // 1일 전체 100% 폭 중 '현재까지 소요된 시간' 비율만큼만 X좌표를 계산하여 렌더링
+    const points = history.map((val, i) => {
+      const x = (i / (totalSlots - 1)) * 100;
+      const y = 27 - ((val - minVal) / range) * 22;
+      return { x, y };
+    });
 
     let lineD = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
     for (let i = 1; i < points.length; i++) {
@@ -1226,6 +1584,7 @@
       lineD += ` C ${midX} ${prev.y.toFixed(1)}, ${midX} ${curr.y.toFixed(1)}, ${curr.x.toFixed(1)} ${curr.y.toFixed(1)}`;
     }
 
+    // 소요된 현재 시점(lastPoint)에서 수직으로 내려와 채움 영역을 닫음 (우측 미래 영역은 여백으로 보존)
     const lastPoint = points[points.length - 1];
     const fillD = `${lineD} L ${lastPoint.x.toFixed(1)} 32 L 0 32 Z`;
 
@@ -1243,7 +1602,7 @@
     const dotEl = document.getElementById(`dot-idx-${k}`);
     if (!lineEl || !fillEl) return;
 
-    const { line, fill, lastX, lastY } = generateIntradaySvgPath(item.history, MAX_INTRADAY_SLOTS);
+    const { line, fill, lastX, lastY } = generateIntradaySvgPath(item, TOTAL_DAY_SLOTS);
     lineEl.setAttribute('d', line);
     fillEl.setAttribute('d', fill);
 
@@ -1287,15 +1646,15 @@
       const changePct = ((item.price - item.base) / item.base) * 100;
       item.rate = +(item.rate + (changePct * 0.1)).toFixed(2);
 
-      if (item.history.length < MAX_INTRADAY_SLOTS) {
-        if (Math.random() > 0.4) {
+      // 1일 전체 범위 내에서 장 진행 시간에 맞춰 점진적으로 다음 슬롯으로 전진
+      if (item.history.length < TOTAL_DAY_SLOTS) {
+        if (Math.random() > 0.6) {
           item.history.push(item.price);
         } else {
           item.history[item.history.length - 1] = item.price;
         }
       } else {
-        item.history.push(item.price);
-        item.history.shift();
+        item.history[item.history.length - 1] = item.price;
       }
 
       const priceEl = document.getElementById(`price-idx-${k}`);
@@ -1433,15 +1792,15 @@
 
     const listEl = document.getElementById('sectorModalList');
     listEl.innerHTML = fallbackList.map((st, i) => `
-      <div onclick="closeSectorTop10Modal(); openStockBottomSheet('${st.code}');" class="flex items-center justify-between p-2 rounded-lg bg-slate-950/70 border border-slate-800 hover:border-slate-700 cursor-pointer">
-        <div class="flex items-center gap-2">
-          <span class="w-5 h-5 rounded bg-slate-800 text-slate-400 flex items-center justify-center text-[10px] font-num">${i + 1}</span>
-          <span class="font-semibold text-slate-100">${st.name}</span>
-          <span class="text-[10px] text-slate-400 font-mono">${st.code}</span>
+      <div onclick="closeSectorTop10Modal(); openStockBottomSheet('${st.code}');" class="flex items-center justify-between p-2 rounded-lg bg-slate-950/70 border border-slate-800 hover:border-slate-700 cursor-pointer whitespace-nowrap">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="w-5 h-5 rounded bg-slate-800 text-slate-400 flex items-center justify-center text-[10px] font-num flex-shrink-0">${i + 1}</span>
+          <span class="font-semibold text-slate-100 truncate whitespace-nowrap">${st.name}</span>
+          <span class="text-[10px] text-slate-400 font-mono flex-shrink-0">${st.code}</span>
         </div>
-        <div class="text-right">
-          <div class="font-semibold font-num text-slate-200">${formatKrw(st.price)}</div>
-          <div class="text-[10px] font-semibold font-num ${getRateColor(st.rate)}">${formatRate(st.rate)}</div>
+        <div class="text-right flex-shrink-0 whitespace-nowrap pl-2">
+          <div class="font-semibold font-num text-slate-200 whitespace-nowrap">${formatKrw(st.price)}</div>
+          <div class="text-[10px] font-semibold font-num ${getRateColor(st.rate)} whitespace-nowrap">${formatRate(st.rate)}</div>
         </div>
       </div>
     `).join('');
