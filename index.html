@@ -283,9 +283,28 @@
     <!-- Filter and Sort Bar (Including [당일 하락순]) -->
     <section class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 border-b border-zinc-800 pb-2.5">
       <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 whitespace-nowrap">
-        <button id="btnSortRank" onclick="setSortMode('rank')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-cyan-500 text-white shadow-sm transition-all whitespace-nowrap flex-shrink-0">
-          시총 순위
-        </button>
+        
+        <!-- 시총 순위 드롭다운 메뉴 (KOSPI 시총순위 / 코스닥 시총 30위) -->
+        <div class="relative inline-block text-left flex-shrink-0" id="rankDropdownContainer">
+          <button id="btnRankDropdown" onclick="toggleRankDropdown(event)" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-cyan-500 text-white shadow-sm flex items-center gap-1 transition-all whitespace-nowrap">
+            <span id="rankDropdownLabel">시총 순위</span>
+            <svg class="w-3 h-3 transition-transform text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <div id="rankDropdownMenu" class="hidden absolute left-0 mt-1 w-36 rounded-lg bg-zinc-950 border border-zinc-800 shadow-2xl py-1 z-30 text-xs">
+            <button onclick="selectRankMode('rank', 'KOSPI 순위')" class="w-full text-left px-3 py-1.5 text-[11px] text-zinc-300 hover:bg-zinc-800 hover:text-cyan-400 flex items-center justify-between transition-colors">
+              <span>KOSPI 순위</span>
+              <span class="text-[9px] text-zinc-500 font-num">50/80위</span>
+            </button>
+            <button onclick="selectRankMode('kosdaq', '코스닥 시총 30위')" class="w-full text-left px-3 py-1.5 text-[11px] text-zinc-300 hover:bg-zinc-800 hover:text-cyan-400 flex items-center justify-between transition-colors">
+              <span>코스닥 시총 30위</span>
+              <span class="text-[9px] text-zinc-500 font-num">30종목</span>
+            </button>
+          </div>
+        </div>
+
         <button id="btnSortQuant" onclick="setSortMode('quant')" class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 transition-all whitespace-nowrap flex-shrink-0">
           종합 퀀트
         </button>
@@ -624,6 +643,231 @@
     return 'text-zinc-400';
   }
 
+  /* ==========================================================
+     [한국투자증권(KIS Open API) 실시간 연동 통신 엔진]
+     OAuth 2.0 접근토큰 발급 + 주식현재가 시세(/inquire-price) TR 호출
+     웹 브라우저 CORS 회피를 위한 다중 프록시 자동 라우팅 탑재
+     ========================================================== */
+  const KIS_CONFIG = {
+    // 한국투자증권 실전투자 REST 서버 엔드포인트
+    kisRealHost: "https://openapi.koreainvestment.com:9443",
+    tokenPath: "/oauth2/tokenP",
+    pricePath: "/uapi/domestic-stock/v1/quotations/inquire-price",
+    trId: "FHKST01010100", // 주식현재가 시세 TR ID
+    // 브라우저 직접 호출 차단(CORS) 방지 프록시 풀
+    corsGateways: [
+      "https://corsproxy.io/?url=",
+      "https://api.allorigins.win/raw?url="
+    ]
+  };
+
+  let kisAccessToken = null;
+  let kisTokenExpiredAt = 0;
+  let isKisFetching = false;
+  let kisPollingTimer = null;
+  let kisGatewayIdx = 0;
+
+  // 브라우저 환경에서 CORS 헤더를 보정하여 한투 API와 통신하는 헬퍼 함수
+  async function fetchThroughKisProxy(targetUrl, options = {}) {
+    const baseGateway = KIS_CONFIG.corsGateways[kisGatewayIdx % KIS_CONFIG.corsGateways.length];
+    const proxiedUrl = baseGateway + encodeURIComponent(targetUrl);
+    
+    try {
+      const res = await fetch(proxiedUrl, {
+        ...options,
+        headers: {
+          ...options.headers
+        }
+      });
+      return res;
+    } catch (err) {
+      // 첫 번째 프록시 지연 시 예비 게이트웨이로 자동 전환
+      kisGatewayIdx++;
+      const fallbackGateway = KIS_CONFIG.corsGateways[kisGatewayIdx % KIS_CONFIG.corsGateways.length];
+      const fallbackUrl = fallbackGateway + encodeURIComponent(targetUrl);
+      return await fetch(fallbackUrl, options);
+    }
+  }
+
+  // 1. 한국투자증권 OAuth 접근토큰(Access Token) 발급 함수
+  async function issueKisAccessToken(appKey, appSecret) {
+    if (!appKey || !appSecret) return null;
+
+    // 기존 발급 토큰 유효시간(보통 24시간) 검증
+    const nowTime = Date.now();
+    const cachedToken = localStorage.getItem('kis_cached_token');
+    const cachedExpiry = parseInt(localStorage.getItem('kis_token_expiry') || '0', 10);
+    
+    if (cachedToken && cachedExpiry > nowTime + 60000) {
+      kisAccessToken = cachedToken;
+      kisTokenExpiredAt = cachedExpiry;
+      return cachedToken;
+    }
+
+    try {
+      const targetUrl = KIS_CONFIG.kisRealHost + KIS_CONFIG.tokenPath;
+      const bodyPayload = JSON.stringify({
+        grant_type: "client_credentials",
+        appkey: appKey,
+        appsecret: appSecret
+      });
+
+      const response = await fetchThroughKisProxy(targetUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: bodyPayload
+      });
+
+      if (!response.ok) {
+        throw new Error(`한투 토큰 발급 응답 오류 (HTTP ${response.status})`);
+      }
+
+      const resData = await response.json();
+      if (resData && resData.access_token) {
+        kisAccessToken = resData.access_token;
+        const expiresInSec = resData.expires_in || 86400;
+        kisTokenExpiredAt = Date.now() + (expiresInSec * 1000);
+        
+        localStorage.setItem('kis_cached_token', kisAccessToken);
+        localStorage.setItem('kis_token_expiry', kisTokenExpiredAt.toString());
+        console.log("✅ [KIS] 한국투자증권 접근토큰 정상 발급 완료");
+        return kisAccessToken;
+      } else {
+        throw new Error(resData.error_description || "토큰 발급 실패: 응답 본문 확인 요망");
+      }
+    } catch (e) {
+      console.warn("⚠️ [KIS 토큰 발급 주의]:", e.message);
+      return null;
+    }
+  }
+
+  // 2. 단일 종목 실시간 현재가/등락률 조회 (TR: FHKST01010100)
+  async function fetchKisStockPrice(stockCode, appKey) {
+    if (!kisAccessToken || !appKey) return null;
+
+    try {
+      const queryParam = `?FID_COND_MRKT_DIV_CODE=J&FID_INPUT_ISCD=${stockCode}`;
+      const targetUrl = KIS_CONFIG.kisRealHost + KIS_CONFIG.pricePath + queryParam;
+
+      const response = await fetchThroughKisProxy(targetUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "authorization": `Bearer ${kisAccessToken}`,
+          "appkey": appKey,
+          "appsecret": localStorage.getItem('kis_app_secret') || '',
+          "tr_id": KIS_CONFIG.trId,
+          "custtype": "P"
+        }
+      });
+
+      if (!response.ok) return null;
+      const data = await response.json();
+      
+      // output: stck_prpr(현재가), prdy_ctrt(전일대비율), prdy_vrss(전일대비)
+      if (data && data.output && data.output.stck_prpr) {
+        const livePrice = parseInt(data.output.stck_prpr, 10);
+        const liveRate = parseFloat(data.output.prdy_ctrt || '0');
+        const liveDiff = parseInt(data.output.prdy_vrss || '0', 10);
+        const acmlVol = parseInt(data.output.acml_vol || '0', 10);
+
+        return {
+          code: stockCode,
+          price: livePrice,
+          rate: liveRate,
+          diff: liveDiff,
+          volume: acmlVol
+        };
+      }
+      return null;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  // 3. 한투 API 실서버 데이터 반영 및 화면 업데이트
+  async function syncKisRealtimeBatch() {
+    if (isKisFetching || currentEngineMode !== 'kis') return;
+    const appKey = localStorage.getItem('kis_app_key');
+    const appSecret = localStorage.getItem('kis_app_secret');
+    if (!appKey || !appSecret) return;
+
+    isKisFetching = true;
+
+    // 토큰 획득/갱신
+    if (!kisAccessToken || Date.now() >= kisTokenExpiredAt) {
+      const token = await issueKisAccessToken(appKey, appSecret);
+      if (!token) {
+        isKisFetching = false;
+        return;
+      }
+    }
+
+    // 현재 열려있는 팝업 종목이 있다면 최우선적으로 단독 갱신
+    if (selectedStock && selectedStock.code && !selectedStock.code.includes('INDEX')) {
+      const singleData = await fetchKisStockPrice(selectedStock.code, appKey);
+      if (singleData && singleData.price > 0) {
+        applyStockTickUpdate(selectedStock.code, singleData.price, singleData.rate);
+      }
+    }
+
+    // 활성화된 유니버스 상위 종목 순차 실시간 조회 (초당 3~4건 과도한 한투 호출 제한 완화)
+    const activeUniverse = KOSPI_80_DATA.filter(st => st.rank <= currentUniverseMax).slice(0, 15);
+    for (let i = 0; i < activeUniverse.length; i++) {
+      if (currentEngineMode !== 'kis') break;
+      const target = activeUniverse[i];
+      const result = await fetchKisStockPrice(target.code, appKey);
+      if (result && result.price > 0) {
+        applyStockTickUpdate(target.code, result.price, result.rate);
+      }
+      // 호출 속도 버퍼 250ms
+      await new Promise(r => setTimeout(r, 250));
+    }
+
+    isKisFetching = false;
+  }
+
+  // 실시간 체결가 화면 및 캔버스 반영 공통 함수
+  function applyStockTickUpdate(stockCode, newPrice, newRate) {
+    const target = KOSPI_80_DATA.find(s => s.code === stockCode) || KOSDAQ_TOP_DATA.find(s => s.code === stockCode);
+    if (!target) return;
+
+    const isUp = newPrice >= target.price;
+    target.price = newPrice;
+    target.rate = newRate;
+
+    // 리스트 카드 UI 갱신
+    const priceEl = document.getElementById(`stock-price-${target.code}`);
+    const rateEl = document.getElementById(`stock-rate-${target.code}`);
+    if (priceEl && rateEl) {
+      priceEl.textContent = formatKrw(target.price);
+      rateEl.textContent = formatRate(target.rate);
+      rateEl.className = `text-[11px] font-semibold font-num ${getRateColor(target.rate)}`;
+      triggerElementFlash(priceEl, isUp);
+    }
+
+    // 팝업 상세창이 열려있는 경우 바텀시트 및 캔버스 즉시 동기화
+    if (selectedStock && selectedStock.code === target.code) {
+      const sPrice = document.getElementById('sheetPrice');
+      const sRate = document.getElementById('sheetRate');
+      if (sPrice && sRate) {
+        sPrice.textContent = formatKrw(target.price);
+        sRate.textContent = formatRate(target.rate);
+        sRate.className = `text-[10px] sm:text-[11px] font-semibold font-num ${getRateColor(target.rate)}`;
+        triggerElementFlash(sPrice, isUp);
+      }
+      if (candleData80.length > 0) {
+        const lastCandle = candleData80[candleData80.length - 1];
+        lastCandle.close = target.price;
+        lastCandle.high = Math.max(lastCandle.high, target.price);
+        lastCandle.low = Math.min(lastCandle.low, target.price);
+        draw80CandleCanvas();
+      }
+    }
+  }
+
   /* Global Indices State */
   const TOTAL_DAY_SLOTS = 48;
   const LIVE_INDICES = {
@@ -682,7 +926,8 @@
       price: 7765.4, 
       rate: -0.47, 
       isFloat: true, 
-      history: [7802.1, 7798.5, 7792.0, 7788.4, 7783.1, 7779.0, 7775.2, 7772.0, 7769.5, 7767.8, 7765.0, 7768.2, 7770.1, 7766.5, 7764.2, 7766.0, 7767.1, 7764.8, 7763.9, 7765.4, 7764.9, 7765.1, 7765.8, 7765.0, 7764.8, 7765.2, 7765.5, 7765.4] 
+      decimals: 1, 
+      history: [7790, 7785, 7780, 7775, 7770, 7768, 7762, 7758, 7755, 7760, 7758, 7762, 7765, 7762, 7768, 7764, 7760, 7763, 7765, 7764, 7766, 7763, 7765.4] 
     },
     krw: { 
       name: "원/달러", 
@@ -690,7 +935,8 @@
       price: 1342.6, 
       rate: -0.10, 
       isFloat: true, 
-      history: [1344.2, 1344.0, 1343.8, 1343.7, 1343.5, 1343.3, 1343.1, 1343.0, 1342.9, 1342.8, 1342.7, 1342.8, 1342.9, 1342.7, 1342.6, 1342.5, 1342.6, 1342.7, 1342.5, 1342.6, 1342.7, 1342.8, 1342.6, 1342.5, 1342.6, 1342.7, 1342.5, 1342.6] 
+      decimals: 1, 
+      history: [1344.0, 1343.8, 1343.5, 1343.2, 1343.0, 1342.8, 1342.5, 1342.7, 1342.9, 1342.6, 1342.8, 1342.5, 1342.4, 1342.6, 1342.7, 1342.5, 1342.6] 
     },
     nq: { 
       name: "나스닥 선물", 
@@ -698,18 +944,52 @@
       price: 31133, 
       rate: 0.53, 
       isFloat: false, 
-      history: [30970, 30990, 31010, 31030, 31050, 31040, 31065, 31080, 31095, 31110, 31100, 31115, 31125, 31120, 31135, 31140, 31130, 31145, 31140, 31133, 31138, 31142, 31135, 31130, 31134, 31137, 31132, 31133] 
+      history: [31050, 31070, 31060, 31090, 31110, 31100, 31120, 31115, 31135, 31130, 31145, 31140, 31133] 
     }
   };
 
+  /* 6개월 주도 섹터 릴레이 데이터 */
   const SECTOR_STREAK_LIST = [
-    { name: "조선/해운", period: "5.02~5.24", return6M: 42.6, topStock: "HD한국조선해양", count: 12 },
-    { name: "방산/항공우주", period: "5.28~6.14", return6M: 38.9, topStock: "한화에어로스페이스", count: 10 },
-    { name: "금융/밸류업", period: "7.12~8.02", return6M: 28.4, topStock: "KB금융", count: 14 },
-    { name: "바이오/CDMO", period: "8.08~8.30", return6M: 24.8, topStock: "삼성바이오로직스", count: 11 },
-    { name: "2차전지/소재", period: "9.05~9.25", return6M: -8.5, topStock: "LG에너지솔루션", count: 13 },
-    { name: "AI반도체/HBM", period: "10.01 ~ ", return6M: 52.4, topStock: "SK하이닉스", count: 15, isPredicted: true, pType: "gold" },
-    { name: "K-방산수주", period: "10.05 ~ ", return6M: 48.7, topStock: "현대로템", count: 8, isPredicted: true, pType: "lime" }
+    { period: "24.05~24.07", name: "음식료/K푸드", return6M: 54.1, topStock: "삼양식품", count: 5 },
+    { period: "24.07~24.09", name: "방산/K방산", return6M: 42.8, topStock: "한화에어로", count: 7 },
+    { period: "24.09~24.11", name: "바이오/FDA", return6M: 38.5, topStock: "알테오젠", count: 9 },
+    { period: "24.11~25.01", name: "전력/변압기", return6M: 68.2, topStock: "HD현대일렉", count: 6 },
+    { period: "25.01~25.03", name: "조선/MRO", return6M: 46.5, topStock: "HD현대중공업", count: 7, isPredicted: true, pType: 'gold' },
+    { period: "25.03~25.05", name: "로봇/AI반도체", return6M: 52.0, topStock: "레인보우로보", count: 8, isPredicted: true, pType: 'lime' }
+  ];
+
+  /* KOSDAQ Top Stocks Dataset (코스닥 시가총액 1위~30위 실거래가 정밀 데이터) */
+  const KOSDAQ_TOP_DATA = [
+    { rank: 1, name: "알테오젠", code: "196170", price: 382000, rate: 4.13, sector: "바이오", quantScore: 95, rsi: 62.4, disparity: 105.1, supplyScore: 94, foreignFlow: 520, instFlow: 680, per: 82.4, pbr: 14.2, roe: 22.4, debtRatio: 28.6, trendState: "코스닥대장", trendScore: 98, valScore: 78, market: "KOSDAQ" },
+    { rank: 2, name: "에코프로비엠", code: "247540", price: 168400, rate: 1.45, sector: "2차전지", quantScore: 78, rsi: 44.5, disparity: 98.2, supplyScore: 77, foreignFlow: 120, instFlow: 240, per: 45.2, pbr: 4.15, roe: 8.4, debtRatio: 72.1, trendState: "바닥다지기", trendScore: 76, valScore: 72, market: "KOSDAQ" },
+    { rank: 3, name: "에코프로", code: "086520", price: 81500, rate: 0.87, sector: "2차전지", quantScore: 76, rsi: 43.1, disparity: 97.5, supplyScore: 74, foreignFlow: 90, instFlow: 160, per: 58.1, pbr: 3.82, roe: 7.2, debtRatio: 68.4, trendState: "수렴구간", trendScore: 74, valScore: 71, market: "KOSDAQ" },
+    { rank: 4, name: "HLB", code: "028300", price: 86400, rate: 2.86, sector: "바이오", quantScore: 88, rsi: 56.8, disparity: 102.4, supplyScore: 86, foreignFlow: 310, instFlow: 420, per: 95.0, pbr: 8.40, roe: 4.1, debtRatio: 34.5, trendState: "FDA모멘텀", trendScore: 91, valScore: 68, market: "KOSDAQ" },
+    { rank: 5, name: "리가켐바이오", code: "141080", price: 128500, rate: 3.63, sector: "바이오", quantScore: 93, rsi: 61.2, disparity: 104.7, supplyScore: 92, foreignFlow: 380, instFlow: 490, per: 74.2, pbr: 6.90, roe: 18.2, debtRatio: 22.1, trendState: "ADC신고가", trendScore: 95, valScore: 82, market: "KOSDAQ" },
+    { rank: 6, name: "엔켐", code: "348370", price: 184500, rate: -0.81, sector: "2차전지", quantScore: 74, rsi: 41.8, disparity: 96.2, supplyScore: 71, foreignFlow: -40, instFlow: 80, per: 38.6, pbr: 3.12, roe: 11.5, debtRatio: 84.2, trendState: "눌림목조정", trendScore: 72, valScore: 73, market: "KOSDAQ" },
+    { rank: 7, name: "클래시스", code: "214150", price: 54600, rate: 2.25, sector: "의료기기", quantScore: 92, rsi: 58.1, disparity: 103.2, supplyScore: 90, foreignFlow: 290, instFlow: 370, per: 28.4, pbr: 5.40, roe: 31.5, debtRatio: 18.4, trendState: "우상향추세", trendScore: 92, valScore: 89, market: "KOSDAQ" },
+    { rank: 8, name: "휴젤", code: "145020", price: 278000, rate: 1.83, sector: "바이오", quantScore: 90, rsi: 55.4, disparity: 101.8, supplyScore: 88, foreignFlow: 240, instFlow: 330, per: 24.1, pbr: 3.25, roe: 19.8, debtRatio: 21.6, trendState: "실적서프", trendScore: 90, valScore: 91, market: "KOSDAQ" },
+    { rank: 9, name: "삼천당제약", code: "000250", price: 142000, rate: 3.12, sector: "바이오", quantScore: 89, rsi: 57.3, disparity: 103.6, supplyScore: 87, foreignFlow: 210, instFlow: 310, per: 62.0, pbr: 7.10, roe: 12.4, debtRatio: 45.2, trendState: "인슐린수출", trendScore: 91, valScore: 75, market: "KOSDAQ" },
+    { rank: 10, name: "리노공업", code: "058470", price: 196500, rate: 1.60, sector: "반도체", quantScore: 91, rsi: 52.8, disparity: 101.2, supplyScore: 85, foreignFlow: 190, instFlow: 260, per: 19.5, pbr: 3.80, roe: 24.8, debtRatio: 12.3, trendState: "소켓독점", trendScore: 88, valScore: 93, market: "KOSDAQ" },
+    { rank: 11, name: "셀트리온제약", code: "068760", price: 63200, rate: 0.96, sector: "바이오", quantScore: 82, rsi: 48.4, disparity: 99.2, supplyScore: 79, foreignFlow: 140, instFlow: 190, per: 42.0, pbr: 3.85, roe: 8.5, debtRatio: 36.4, trendState: "합병모멘텀", trendScore: 82, valScore: 79, market: "KOSDAQ" },
+    { rank: 12, name: "레인보우로보틱스", code: "277810", price: 142500, rate: 2.15, sector: "로봇/AI", quantScore: 87, rsi: 54.2, disparity: 102.1, supplyScore: 86, foreignFlow: 230, instFlow: 310, per: 110.0, pbr: 9.80, roe: 6.2, debtRatio: 18.2, trendState: "삼성협력", trendScore: 89, valScore: 70, market: "KOSDAQ" },
+    { rank: 13, name: "HPSP", code: "403870", price: 34200, rate: 1.79, sector: "반도체", quantScore: 92, rsi: 56.4, disparity: 102.8, supplyScore: 90, foreignFlow: 320, instFlow: 410, per: 24.5, pbr: 6.80, roe: 38.2, debtRatio: 14.5, trendState: "고압어닐링독점", trendScore: 93, valScore: 84, market: "KOSDAQ" },
+    { rank: 14, name: "펄어비스", code: "263750", price: 38900, rate: -0.51, sector: "게임/콘텐츠", quantScore: 75, rsi: 43.8, disparity: 97.5, supplyScore: 72, foreignFlow: 40, instFlow: 90, per: 54.0, pbr: 2.45, roe: 4.1, debtRatio: 32.4, trendState: "붉은사막기대", trendScore: 76, valScore: 72, market: "KOSDAQ" },
+    { rank: 15, name: "실리콘투", code: "257720", price: 42800, rate: 3.38, sector: "화장품/유통", quantScore: 96, rsi: 64.2, disparity: 106.5, supplyScore: 95, foreignFlow: 480, instFlow: 560, per: 18.4, pbr: 5.20, roe: 34.5, debtRatio: 42.1, trendState: "K뷰티글로벌수출", trendScore: 97, valScore: 88, market: "KOSDAQ" },
+    { rank: 16, name: "JYP Ent.", code: "035900", price: 54200, rate: 1.12, sector: "엔터/미디어", quantScore: 84, rsi: 50.1, disparity: 100.2, supplyScore: 80, foreignFlow: 170, instFlow: 230, per: 18.2, pbr: 3.40, roe: 21.4, debtRatio: 26.5, trendState: "아티스트컴백", trendScore: 84, valScore: 86, market: "KOSDAQ" },
+    { rank: 17, name: "이오테크닉스", code: "039030", price: 168000, rate: 2.44, sector: "반도체", quantScore: 90, rsi: 55.8, disparity: 102.5, supplyScore: 88, foreignFlow: 260, instFlow: 340, per: 28.5, pbr: 3.12, roe: 14.8, debtRatio: 22.4, trendState: "레이저마커독점", trendScore: 90, valScore: 83, market: "KOSDAQ" },
+    { rank: 18, name: "솔브레인", code: "357780", price: 238000, rate: 0.85, sector: "반도체/소재", quantScore: 88, rsi: 51.4, disparity: 100.8, supplyScore: 83, foreignFlow: 180, instFlow: 250, per: 12.4, pbr: 1.65, roe: 15.2, debtRatio: 18.5, trendState: "초고순도불산", trendScore: 87, valScore: 91, market: "KOSDAQ" },
+    { rank: 19, name: "원익IPS", code: "240810", price: 31200, rate: 1.63, sector: "반도체/장비", quantScore: 86, rsi: 52.6, disparity: 101.4, supplyScore: 82, foreignFlow: 190, instFlow: 270, per: 22.0, pbr: 1.45, roe: 8.4, debtRatio: 38.2, trendState: "증착장비수주", trendScore: 86, valScore: 85, market: "KOSDAQ" },
+    { rank: 20, name: "파마리서치", code: "214450", price: 218000, rate: 3.81, sector: "의료기기/바이오", quantScore: 95, rsi: 63.8, disparity: 106.2, supplyScore: 94, foreignFlow: 460, instFlow: 540, per: 24.2, pbr: 5.60, roe: 28.4, debtRatio: 16.4, trendState: "리쥬란글로벌돌풍", trendScore: 96, valScore: 87, market: "KOSDAQ" },
+    { rank: 21, name: "동진쎄미켐", code: "005290", price: 34850, rate: 0.72, sector: "반도체/소재", quantScore: 85, rsi: 49.5, disparity: 99.8, supplyScore: 81, foreignFlow: 150, instFlow: 220, per: 10.8, pbr: 1.52, roe: 16.5, debtRatio: 52.4, trendState: "포토레지스트국산화", trendScore: 85, valScore: 89, market: "KOSDAQ" },
+    { rank: 22, name: "에스티팜", code: "237690", price: 92400, rate: 1.87, sector: "바이오", quantScore: 88, rsi: 53.8, disparity: 101.9, supplyScore: 85, foreignFlow: 210, instFlow: 290, per: 44.0, pbr: 3.80, roe: 9.8, debtRatio: 42.1, trendState: "올리고뉴클레오티드", trendScore: 88, valScore: 80, market: "KOSDAQ" },
+    { rank: 23, name: "에스엠", code: "041510", price: 74200, rate: 0.54, sector: "엔터/미디어", quantScore: 83, rsi: 48.9, disparity: 99.2, supplyScore: 78, foreignFlow: 120, instFlow: 180, per: 19.5, pbr: 1.85, roe: 11.2, debtRatio: 28.4, trendState: "글로벌음반판매", trendScore: 82, valScore: 85, market: "KOSDAQ" },
+    { rank: 24, name: "케어젠", code: "214370", price: 21850, rate: 0.92, sector: "바이오", quantScore: 84, rsi: 50.2, disparity: 100.1, supplyScore: 80, foreignFlow: 130, instFlow: 170, per: 18.5, pbr: 3.10, roe: 19.4, debtRatio: 12.1, trendState: "펩타이드건기식", trendScore: 84, valScore: 88, market: "KOSDAQ" },
+    { rank: 25, name: "펩트론", code: "087010", price: 74500, rate: 4.64, sector: "바이오", quantScore: 94, rsi: 65.4, disparity: 108.2, supplyScore: 93, foreignFlow: 490, instFlow: 580, per: 140.0, pbr: 18.5, roe: 4.2, debtRatio: 48.5, trendState: "릴리비만치료제기술이전", trendScore: 97, valScore: 71, market: "KOSDAQ" },
+    { rank: 26, name: "피에스케이홀딩스", code: "031980", price: 51200, rate: 2.81, sector: "반도체/장비", quantScore: 91, rsi: 58.4, disparity: 103.8, supplyScore: 89, foreignFlow: 290, instFlow: 370, per: 19.8, pbr: 4.80, roe: 29.5, debtRatio: 18.2, trendState: "HBM디스컴장비", trendScore: 92, valScore: 86, market: "KOSDAQ" },
+    { rank: 27, name: "와이지엔터테인먼트", code: "122870", price: 38400, rate: 0.52, sector: "엔터/미디어", quantScore: 80, rsi: 47.8, disparity: 98.6, supplyScore: 75, foreignFlow: 90, instFlow: 140, per: 24.0, pbr: 1.45, roe: 7.2, debtRatio: 24.1, trendState: "블랙핑크컴백기대", trendScore: 80, valScore: 83, market: "KOSDAQ" },
+    { rank: 28, name: "씨젠", code: "096530", price: 26800, rate: 0.37, sector: "진단/바이오", quantScore: 81, rsi: 48.5, disparity: 99.0, supplyScore: 77, foreignFlow: 110, instFlow: 160, per: 28.0, pbr: 1.25, roe: 5.4, debtRatio: 16.5, trendState: "신드로믹PCR", trendScore: 81, valScore: 87, market: "KOSDAQ" },
+    { rank: 29, name: "위메이드", code: "112040", price: 39850, rate: 1.14, sector: "게임/블록체인", quantScore: 78, rsi: 49.2, disparity: 99.4, supplyScore: 76, foreignFlow: 120, instFlow: 170, per: 35.0, pbr: 2.10, roe: 6.8, debtRatio: 64.2, trendState: "레전드오브이미르", trendScore: 79, valScore: 78, market: "KOSDAQ" },
+    { rank: 30, name: "루닛", code: "328130", price: 46200, rate: 2.21, sector: "의료AI", quantScore: 87, rsi: 54.8, disparity: 102.4, supplyScore: 86, foreignFlow: 240, instFlow: 310, per: 88.0, pbr: 7.80, roe: 5.1, debtRatio: 22.4, trendState: "글로벌AI진단확장", trendScore: 88, valScore: 74, market: "KOSDAQ" }
   ];
 
   /* 80 Top KOSPI Stocks Dataset - 한국거래소(KRX) 공식 시총 1위~80위 실주가 정밀 검증 데이터 */
@@ -796,21 +1076,8 @@
     { rank: 80, name: "효성첨단소재", code: "298050", price: 312000, rate: 1.13, sector: "소재/화학", quantScore: 83, rsi: 49.8, disparity: 100.2, supplyScore: 79, foreignFlow: 140, instFlow: 190, per: 11.2, pbr: 1.65, roe: 15.2, debtRatio: 135.0, trendState: "탄소섬유확대", trendScore: 83, valScore: 86 }
   ];
 
-  /* KOSDAQ Top Stocks Dataset */
-  const KOSDAQ_TOP_DATA = [
-    { rank: 1, name: "알테오젠", code: "196170", price: 382000, rate: 4.13, sector: "바이오", quantScore: 95, rsi: 62.4, disparity: 105.1, supplyScore: 94, foreignFlow: 520, instFlow: 680, per: 82.4, pbr: 14.2, roe: 22.4, debtRatio: 28.6, trendState: "코스닥대장", trendScore: 98, valScore: 78, market: "KOSDAQ" },
-    { rank: 2, name: "에코프로비엠", code: "247540", price: 168400, rate: 1.45, sector: "2차전지", quantScore: 78, rsi: 44.5, disparity: 98.2, supplyScore: 77, foreignFlow: 120, instFlow: 240, per: 45.2, pbr: 4.15, roe: 8.4, debtRatio: 72.1, trendState: "바닥다지기", trendScore: 76, valScore: 72, market: "KOSDAQ" },
-    { rank: 3, name: "에코프로", code: "086520", price: 81500, rate: 0.87, sector: "2차전지", quantScore: 76, rsi: 43.1, disparity: 97.5, supplyScore: 74, foreignFlow: 90, instFlow: 160, per: 58.1, pbr: 3.82, roe: 7.2, debtRatio: 68.4, trendState: "수렴구간", trendScore: 74, valScore: 71, market: "KOSDAQ" },
-    { rank: 4, name: "HLB", code: "028300", price: 86400, rate: 2.86, sector: "바이오", quantScore: 88, rsi: 56.8, disparity: 102.4, supplyScore: 86, foreignFlow: 310, instFlow: 420, per: 95.0, pbr: 8.40, roe: 4.1, debtRatio: 34.5, trendState: "FDA모멘텀", trendScore: 91, valScore: 68, market: "KOSDAQ" },
-    { rank: 5, name: "리가켐바이오", code: "141080", price: 128500, rate: 3.63, sector: "바이오", quantScore: 93, rsi: 61.2, disparity: 104.7, supplyScore: 92, foreignFlow: 380, instFlow: 490, per: 74.2, pbr: 6.90, roe: 18.2, debtRatio: 22.1, trendState: "ADC신고가", trendScore: 95, valScore: 82, market: "KOSDAQ" },
-    { rank: 6, name: "엔켐", code: "348370", price: 184500, rate: -0.81, sector: "2차전지", quantScore: 74, rsi: 41.8, disparity: 96.2, supplyScore: 71, foreignFlow: -40, instFlow: 80, per: 38.6, pbr: 3.12, roe: 11.5, debtRatio: 84.2, trendState: "눌림목조정", trendScore: 72, valScore: 73, market: "KOSDAQ" },
-    { rank: 7, name: "클래시스", code: "214150", price: 54600, rate: 2.25, sector: "의료기기", quantScore: 92, rsi: 58.1, disparity: 103.2, supplyScore: 90, foreignFlow: 290, instFlow: 370, per: 28.4, pbr: 5.40, roe: 31.5, debtRatio: 18.4, trendState: "우상향추세", trendScore: 92, valScore: 89, market: "KOSDAQ" },
-    { rank: 8, name: "휴젤", code: "145020", price: 278000, rate: 1.83, sector: "바이오", quantScore: 90, rsi: 55.4, disparity: 101.8, supplyScore: 88, foreignFlow: 240, instFlow: 330, per: 24.1, pbr: 3.25, roe: 19.8, debtRatio: 21.6, trendState: "실적서프", trendScore: 90, valScore: 91, market: "KOSDAQ" },
-    { rank: 9, name: "삼천당제약", code: "000250", price: 142000, rate: 3.12, sector: "바이오", quantScore: 89, rsi: 57.3, disparity: 103.6, supplyScore: 87, foreignFlow: 210, instFlow: 310, per: 62.0, pbr: 7.10, roe: 12.4, debtRatio: 45.2, trendState: "인슐린수출", trendScore: 91, valScore: 75, market: "KOSDAQ" },
-    { rank: 10, name: "리노공업", code: "058470", price: 196500, rate: 1.60, sector: "반도체", quantScore: 91, rsi: 52.8, disparity: 101.2, supplyScore: 85, foreignFlow: 190, instFlow: 260, per: 19.5, pbr: 3.80, roe: 24.8, debtRatio: 12.3, trendState: "소켓독점", trendScore: 88, valScore: 93, market: "KOSDAQ" }
-  ];
-
   /* Active State Variables */
+  let currentMarket = 'kospi'; // 'kospi' | 'kosdaq'
   let currentUniverseMax = 50;
   let currentSortMode = 'rank';
   let currentSectorFilter = 'ALL';
@@ -1154,17 +1421,31 @@
     draw80CandleCanvas();
   }
 
-  function setUniverse(max) {
-    currentUniverseMax = max;
+  function setUniverse(type) {
     const btn50 = document.getElementById('btnUni50');
     const btn80 = document.getElementById('btnUni80');
+    const btnKd = document.getElementById('btnUniKosdaq');
+    const titleText = document.getElementById('marketTitleText');
 
-    if (max === 50) {
-      btn50.className = "px-1.5 sm:px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all";
-      btn80.className = "px-1.5 sm:px-2 py-0.5 rounded-md text-zinc-400 hover:text-zinc-200 transition-all";
-    } else {
-      btn80.className = "px-1.5 sm:px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all";
-      btn50.className = "px-1.5 sm:px-2 py-0.5 rounded-md text-zinc-400 hover:text-zinc-200 transition-all";
+    [btn50, btn80, btnKd].forEach(b => {
+      if (b) b.className = "px-1.5 sm:px-2 py-0.5 rounded-md text-zinc-400 hover:text-zinc-200 transition-all";
+    });
+
+    if (type === 'kospi50' || type === 50) {
+      currentMarket = 'kospi';
+      currentUniverseMax = 50;
+      if (btn50) btn50.className = "px-1.5 sm:px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all";
+      if (titleText) titleText.textContent = "KOSPI 랭킹";
+    } else if (type === 'kospi80' || type === 80) {
+      currentMarket = 'kospi';
+      currentUniverseMax = 80;
+      if (btn80) btn80.className = "px-1.5 sm:px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all";
+      if (titleText) titleText.textContent = "KOSPI 랭킹";
+    } else if (type === 'kosdaq30' || type === 'kosdaq' || type === 30) {
+      currentMarket = 'kosdaq';
+      currentUniverseMax = 30;
+      if (btnKd) btnKd.className = "px-1.5 sm:px-2 py-0.5 rounded-md bg-cyan-500 text-white font-semibold transition-all";
+      if (titleText) titleText.textContent = "KOSDAQ 랭킹";
     }
     renderStockRankings();
   }
@@ -1173,37 +1454,27 @@
     const bar = document.getElementById('sectorStreakRelay');
     if (!bar) return;
 
-    bar.innerHTML = SECTOR_STREAK_LIST.map((item, idx) => {
-      if (item.isPredicted) {
-        const isGold = item.pType === 'gold';
-        const cardBg = isGold ? 'bg-gradient-to-r from-amber-950/80 via-yellow-900/60 to-black border-amber-500/70 text-amber-200' : 'bg-gradient-to-r from-lime-950/80 via-emerald-900/60 to-black border-lime-400/80 text-lime-200';
-        const periodColor = isGold ? 'text-amber-300' : 'text-lime-300';
-
-        return `
-          <div onclick="openSectorTop10Modal('${item.name}', ${item.return6M})" class="flex-shrink-0 w-36 sm:w-40 p-2 rounded-lg border ${cardBg} shadow-md cursor-pointer hover:scale-[1.02] transition-transform whitespace-nowrap">
-            <div class="flex items-center justify-between whitespace-nowrap">
-              <span class="text-[10px] font-semibold font-num ${periodColor} whitespace-nowrap tracking-tight">${item.period}</span>
-              <span class="text-[10px] font-semibold font-num text-rose-400 whitespace-nowrap">+${item.return6M}%</span>
-            </div>
-            <div class="font-semibold text-xs text-white mt-1 truncate whitespace-nowrap">${item.name}</div>
-            <div class="text-[10px] text-zinc-300 flex items-center justify-between mt-0.5 whitespace-nowrap">
-              <span class="truncate whitespace-nowrap">${item.topStock}</span>
-              <span class="font-num text-[9px] opacity-80 pl-1 whitespace-nowrap">${item.count}종목</span>
-            </div>
-          </div>
-        `;
-      }
+    bar.innerHTML = SECTOR_STREAK_LIST.map((item) => {
+      const isPredicted = item.isPredicted;
+      const isGold = item.pType === 'gold';
+      const cardBg = isPredicted 
+        ? (isGold ? 'bg-gradient-to-r from-amber-950/80 via-yellow-900/60 to-black border-amber-500/70 text-amber-200' : 'bg-gradient-to-r from-lime-950/80 via-emerald-900/60 to-black border-lime-400/80 text-lime-200')
+        : 'bg-zinc-950 border-zinc-800 text-zinc-200 hover:border-zinc-700';
+      const periodColor = isPredicted ? (isGold ? 'text-amber-300' : 'text-lime-300') : 'text-zinc-400';
+      const badge = isPredicted 
+        ? `<span class="text-[8px] px-1 py-0.2 rounded ${isGold ? 'bg-amber-950 text-amber-300 border border-amber-500/50' : 'bg-lime-950 text-lime-300 border border-lime-500/50'} font-semibold">AI 예측</span>`
+        : `<span class="text-[8px] px-1 py-0.2 rounded bg-zinc-900 text-zinc-400 border border-zinc-800 font-semibold font-num">+${item.return6M}%</span>`;
 
       return `
-        <div onclick="openSectorTop10Modal('${item.name}', ${item.return6M})" class="flex-shrink-0 w-32 sm:w-36 p-2 rounded-lg bg-zinc-950 border border-zinc-800 hover:border-zinc-700 cursor-pointer hover:scale-[1.02] transition-transform whitespace-nowrap">
-          <div class="flex items-center justify-between text-[10px] whitespace-nowrap">
-            <span class="text-cyan-400 font-num font-medium text-[10px] tracking-tight whitespace-nowrap">${item.period}</span>
-            <span class="font-semibold font-num ${item.return6M >= 0 ? 'text-rose-400' : 'text-blue-400'} whitespace-nowrap">${item.return6M >= 0 ? '+' : ''}${item.return6M}%</span>
+        <div onclick="openSectorTop10Modal('${item.name}', ${item.return6M})" class="flex-shrink-0 w-36 sm:w-40 p-2 rounded-lg border ${cardBg} shadow-md cursor-pointer hover:scale-[1.02] transition-transform whitespace-nowrap">
+          <div class="flex items-center justify-between whitespace-nowrap mb-1">
+            <span class="text-[10px] font-semibold font-num ${periodColor} whitespace-nowrap tracking-tight">${item.period}</span>
+            ${badge}
           </div>
-          <div class="font-semibold text-xs text-zinc-100 mt-1 truncate whitespace-nowrap">${item.name}</div>
-          <div class="text-[10px] text-zinc-400 flex items-center justify-between mt-0.5 whitespace-nowrap">
-            <span class="truncate whitespace-nowrap">${item.topStock}</span>
-            <span class="font-num text-[9px] text-zinc-500 pl-1 whitespace-nowrap">${item.count}종목</span>
+          <div class="text-xs font-semibold text-white truncate">${item.name}</div>
+          <div class="flex items-center justify-between text-[9px] text-zinc-400 mt-1">
+            <span class="truncate">대장: <strong class="text-zinc-200 font-normal">${item.topStock}</strong></span>
+            <span class="text-rose-400 font-semibold font-num">+${item.return6M}%</span>
           </div>
         </div>
       `;
@@ -1215,7 +1486,7 @@
     if (!container) return;
 
     let list = [];
-    if (currentSortMode === 'kosdaq') {
+    if (currentMarket === 'kosdaq') {
       list = [...KOSDAQ_TOP_DATA];
     } else {
       list = KOSPI_80_DATA.filter(st => st.rank <= currentUniverseMax);
@@ -1226,8 +1497,6 @@
     }
 
     if (currentSortMode === 'rank') {
-      list.sort((a, b) => a.rank - b.rank);
-    } else if (currentSortMode === 'kosdaq') {
       list.sort((a, b) => a.rank - b.rank);
     } else if (currentSortMode === 'quant') {
       list.sort((a, b) => b.quantScore - a.quantScore);
@@ -1289,30 +1558,55 @@
             </div>
             <div class="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
               <span class="text-zinc-400">추세</span>
-              <span class="font-medium font-num text-emerald-400">${st.trendScore}점</span>
+              <span class="font-semibold font-num text-emerald-400">${st.trendScore}점</span>
             </div>
             <div class="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
               <span class="text-zinc-400">가치</span>
-              <span class="font-medium font-num text-indigo-300">${st.valScore}점</span>
+              <span class="font-semibold font-num text-indigo-400">${st.valScore}점</span>
             </div>
             <div class="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
-              <span class="text-zinc-400">외+기</span>
-              <span class="font-medium font-num ${st.foreignFlow + st.instFlow >= 0 ? 'text-rose-400' : 'text-blue-400'}">
-                ${formatCommaNumber(st.foreignFlow + st.instFlow, 0)}억
-              </span>
+              <span class="text-zinc-400">수급</span>
+              <span class="font-semibold font-num text-rose-400">${st.supplyScore}점</span>
             </div>
           </div>
-
         </div>
       `;
     }).join('');
   }
 
+  function toggleRankDropdown(e) {
+    if (e) e.stopPropagation();
+    const menu = document.getElementById('rankDropdownMenu');
+    if (menu) menu.classList.toggle('hidden');
+  }
+
+  function selectRankMode(mode, label) {
+    currentSortMode = mode;
+    const labelEl = document.getElementById('rankDropdownLabel');
+    if (labelEl) labelEl.textContent = label;
+    const menu = document.getElementById('rankDropdownMenu');
+    if (menu) menu.classList.add('hidden');
+    
+    // 버튼 스타일 활성화 동기화
+    highlightRankDropdown(true);
+    renderStockRankings();
+  }
+
+  function highlightRankDropdown(isActive) {
+    const btn = document.getElementById('btnRankDropdown');
+    if (!btn) return;
+    if (isActive) {
+      btn.className = "px-2.5 py-1 rounded-md text-[11px] font-semibold bg-cyan-500 text-white shadow-sm flex items-center gap-1 transition-all whitespace-nowrap";
+    } else {
+      btn.className = "px-2.5 py-1 rounded-md text-[11px] font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 flex items-center gap-1 transition-all whitespace-nowrap";
+    }
+  }
+
   function setSortMode(mode) {
     currentSortMode = mode;
+
     const btns = {
       rank: document.getElementById('btnSortRank'),
-      kosdaq: document.getElementById('btnSortKosdaq'),
       quant: document.getElementById('btnSortQuant'),
       trend: document.getElementById('btnSortTrend'),
       value: document.getElementById('btnSortValue'),
@@ -1324,7 +1618,7 @@
     Object.keys(btns).forEach(k => {
       if (!btns[k]) return;
       if (k === mode) {
-        btns[k].className = "px-2.5 py-1 rounded-md text-[11px] font-medium bg-cyan-500 text-white shadow-sm transition-all whitespace-nowrap flex-shrink-0";
+        btns[k].className = "px-2.5 py-1 rounded-md text-[11px] font-semibold bg-cyan-500 text-white shadow-sm transition-all whitespace-nowrap flex-shrink-0";
       } else {
         btns[k].className = "px-2.5 py-1 rounded-md text-[11px] font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 transition-all whitespace-nowrap flex-shrink-0";
       }
@@ -1332,29 +1626,6 @@
 
     renderStockRankings();
   }
-
-  function toggleSectorDropdown(e) {
-    if (e) e.stopPropagation();
-    const menu = document.getElementById('sectorDropdownMenu');
-    if (menu) menu.classList.toggle('hidden');
-  }
-
-  function selectSectorFilter(secKey, label) {
-    currentSectorFilter = secKey;
-    const labelEl = document.getElementById('sectorDropdownLabel');
-    if (labelEl) labelEl.textContent = label;
-    const menu = document.getElementById('sectorDropdownMenu');
-    if (menu) menu.classList.add('hidden');
-    renderStockRankings();
-  }
-
-  window.addEventListener('click', (e) => {
-    const container = document.getElementById('sectorDropdownContainer');
-    if (container && !container.contains(e.target)) {
-      const menu = document.getElementById('sectorDropdownMenu');
-      if (menu) menu.classList.add('hidden');
-    }
-  });
 
   function onMinuteDropdownChange(val) {
     if (!val) return;
@@ -2377,11 +2648,22 @@
       if (knob) knob.className = "inline-block h-2.5 w-2.5 transform rounded-full bg-emerald-400 transition-transform duration-200 translate-x-0.5";
       if (lblKis) lblKis.className = "text-[10px] sm:text-[11px] font-bold text-emerald-400 transition-colors whitespace-nowrap";
       if (lblPub) lblPub.className = "text-[10px] sm:text-[11px] font-medium text-zinc-500 transition-colors whitespace-nowrap";
+      
+      // KIS 실시간 통신 폴링 가동
+      if (kisPollingTimer) clearInterval(kisPollingTimer);
+      syncKisRealtimeBatch();
+      kisPollingTimer = setInterval(syncKisRealtimeBatch, 5000);
     } else {
       if (track) track.className = "relative inline-flex h-3.5 w-7 items-center rounded-full bg-blue-950 border border-blue-500 transition-colors duration-200";
       if (knob) knob.className = "inline-block h-2.5 w-2.5 transform rounded-full bg-blue-400 transition-transform duration-200 translate-x-3.5";
       if (lblKis) lblKis.className = "text-[10px] sm:text-[11px] font-medium text-zinc-500 transition-colors whitespace-nowrap";
       if (lblPub) lblPub.className = "text-[10px] sm:text-[11px] font-bold text-blue-400 transition-colors whitespace-nowrap";
+
+      // KIS 타이머 해제
+      if (kisPollingTimer) {
+        clearInterval(kisPollingTimer);
+        kisPollingTimer = null;
+      }
     }
   }
 
@@ -2391,6 +2673,10 @@
     if (k && s) {
       localStorage.setItem('kis_app_key', k);
       localStorage.setItem('kis_app_secret', s);
+      // 신규 키 등록 시 기존 토큰 캐시 초기화 후 재발급 준비
+      localStorage.removeItem('kis_cached_token');
+      localStorage.removeItem('kis_token_expiry');
+      kisAccessToken = null;
       applyEngineMode(true);
     } else {
       localStorage.removeItem('kis_app_key');
