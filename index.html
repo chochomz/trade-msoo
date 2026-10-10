@@ -282,7 +282,7 @@
       </div>
     </section>
 
-    <!-- Filter and Sort Bar (Without KOSPI Rank Dropdown) -->
+    <!-- Filter and Sort Bar -->
     <section class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 border-b border-zinc-800 pb-2.5">
       <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 whitespace-nowrap">
         <button id="btnSortRank" onclick="setSortMode('rank')" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-cyan-500 text-white shadow-sm transition-all whitespace-nowrap flex-shrink-0">
@@ -587,7 +587,7 @@
   <!-- Firebase SDK & Cloud Functions Client Integration -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js";
 
@@ -611,7 +611,7 @@
       console.warn("Firebase Init Notice:", e);
     }
 
-    // Firebase Cloud Functions 백엔드 프록시 호출 함수 (AppKey/AppSecret 절대 비노출 보안 통신)
+    // Firebase Cloud Functions 백엔드 프록시 안전 호출 함수
     window.callFirebaseKisBackend = async function(action, payload) {
       try {
         if (!functions) throw new Error("Firebase Functions가 초기화되지 않았습니다.");
@@ -659,7 +659,7 @@
   }
 
   /* ==========================================================
-     [한국투자증권(KIS Open API) 연동 엔진 - 파이어베이스 서버리스 보안 프록시 통신]
+     [한국투자증권(KIS Open API) 연동 엔진 - Firebase Backend Proxy]
      ========================================================== */
   let isKisFetching = false;
   let kisPollingTimer = null;
@@ -676,8 +676,8 @@
       if (selectedStock && selectedStock.code && !selectedStock.code.includes('INDEX')) {
         try {
           const res = await window.callFirebaseKisBackend('inquirePrice', { appKey, appSecret, stockCode: selectedStock.code });
-          if (res && res.output && res.output.stck_prpr) {
-            applyStockTickUpdate(selectedStock.code, parseInt(res.output.stck_prpr, 10), parseFloat(res.output.prdy_ctrt || '0'));
+          if (res && res.price) {
+            applyStockTickUpdate(selectedStock.code, res.price, res.rate);
           }
         } catch (e) {
           console.warn("단일 종목 보안 서버 동기화 오류:", e);
@@ -692,8 +692,8 @@
         const target = activeUniverse[i];
         try {
           const res = await window.callFirebaseKisBackend('inquirePrice', { appKey, appSecret, stockCode: target.code });
-          if (res && res.output && res.output.stck_prpr) {
-            applyStockTickUpdate(target.code, parseInt(res.output.stck_prpr, 10), parseFloat(res.output.prdy_ctrt || '0'));
+          if (res && res.price) {
+            applyStockTickUpdate(target.code, res.price, res.rate);
           }
         } catch (err) {
           // 개별 종목 에러 무시
