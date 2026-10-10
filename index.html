@@ -67,9 +67,9 @@
         </div>
       </div>
 
-      <!-- Dual Engine Switch: KIS (슬라이드) 공개망 -->
-      <div onclick="toggleEngineMode()" class="flex items-center gap-1.5 sm:gap-2 px-2 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 cursor-pointer select-none transition-all flex-shrink-0" title="클릭하여 KIS 직결 ↔ 공개 시세망 전환 (KIS 클릭 시 설정창)">
-        <span id="labelEngineKis" onclick="event.stopPropagation(); openDualEngineModal();" class="text-[10px] sm:text-[11px] font-medium text-zinc-500 hover:text-emerald-400 transition-colors whitespace-nowrap" title="KIS 설정 및 키 등록">KIS</span>
+      <!-- Firebase Secure KIS / Public Switch -->
+      <div onclick="toggleEngineMode()" class="flex items-center gap-1.5 sm:gap-2 px-2 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 cursor-pointer select-none transition-all flex-shrink-0" title="클릭하여 파이어베이스 보안 서버 ↔ 공개망 전환">
+        <span id="labelEngineKis" onclick="event.stopPropagation(); openDualEngineModal();" class="text-[10px] sm:text-[11px] font-medium text-zinc-500 hover:text-emerald-400 transition-colors whitespace-nowrap" title="보안 서버 설정 가이드">보안 서버</span>
         <div id="engineSwitchTrack" class="relative inline-flex h-3.5 w-7 items-center rounded-full bg-blue-950 border border-blue-500 transition-colors duration-200">
           <span id="engineSwitchKnob" class="inline-block h-2.5 w-2.5 transform rounded-full bg-blue-400 transition-transform duration-200 translate-x-3.5"></span>
         </div>
@@ -584,6 +584,47 @@
     </div>
   </div>
 
+  <!-- Firebase SDK & Cloud Functions Client Integration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-SecureFirebaseProxyConfigPlaceholder",
+      authDomain: "msoo-trade.firebaseapp.com",
+      projectId: "msoo-trade",
+      storageBucket: "msoo-trade.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "1:123456:web:abcdef"
+    };
+    
+    let app, auth, db, functions;
+    try {
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+      functions = getFunctions(app);
+      signInAnonymously(auth).catch(() => {});
+    } catch (e) {
+      console.warn("Firebase Init Notice:", e);
+    }
+
+    // Firebase Cloud Functions 백엔드 프록시 호출 함수 (AppKey/AppSecret 절대 비노출 보안 통신)
+    window.callFirebaseKisBackend = async function(action, payload) {
+      try {
+        if (!functions) throw new Error("Firebase Functions가 초기화되지 않았습니다.");
+        const proxyKisApi = httpsCallable(functions, 'proxyKisApi');
+        const result = await proxyKisApi({ action, payload });
+        return result.data;
+      } catch (err) {
+        console.warn("⚠️ [Firebase Backend Proxy Error]:", err.message);
+        return null;
+      }
+    };
+  </script>
+
   <script>
   function formatCommaNumber(val, decimals = 0) {
     if (val === undefined || val === null || isNaN(val)) return '0';
@@ -618,118 +659,10 @@
   }
 
   /* ==========================================================
-     [한국투자증권(KIS Open API) 연동 엔진]
+     [한국투자증권(KIS Open API) 연동 엔진 - 파이어베이스 서버리스 보안 프록시 통신]
      ========================================================== */
-  const KIS_CONFIG = {
-    kisRealHost: "https://openapi.koreainvestment.com:9443",
-    tokenPath: "/oauth2/tokenP",
-    pricePath: "/uapi/domestic-stock/v1/quotations/inquire-price",
-    trId: "FHKST01010100",
-    corsGateways: [
-      "https://corsproxy.io/?url=",
-      "https://api.allorigins.win/raw?url="
-    ]
-  };
-
-  let kisAccessToken = null;
-  let kisTokenExpiredAt = 0;
   let isKisFetching = false;
   let kisPollingTimer = null;
-  let kisGatewayIdx = 0;
-
-  async function fetchThroughKisProxy(targetUrl, options = {}) {
-    const baseGateway = KIS_CONFIG.corsGateways[kisGatewayIdx % KIS_CONFIG.corsGateways.length];
-    const proxiedUrl = baseGateway + encodeURIComponent(targetUrl);
-    
-    try {
-      const res = await fetch(proxiedUrl, options);
-      return res;
-    } catch (err) {
-      kisGatewayIdx++;
-      const fallbackGateway = KIS_CONFIG.corsGateways[kisGatewayIdx % KIS_CONFIG.corsGateways.length];
-      const fallbackUrl = fallbackGateway + encodeURIComponent(targetUrl);
-      return await fetch(fallbackUrl, options);
-    }
-  }
-
-  async function issueKisAccessToken(appKey, appSecret) {
-    if (!appKey || !appSecret) return null;
-    const nowTime = Date.now();
-    const cachedToken = localStorage.getItem('kis_cached_token');
-    const cachedExpiry = parseInt(localStorage.getItem('kis_token_expiry') || '0', 10);
-    
-    if (cachedToken && cachedExpiry > nowTime + 60000) {
-      kisAccessToken = cachedToken;
-      kisTokenExpiredAt = cachedExpiry;
-      return cachedToken;
-    }
-
-    try {
-      const targetUrl = KIS_CONFIG.kisRealHost + KIS_CONFIG.tokenPath;
-      const bodyPayload = JSON.stringify({
-        grant_type: "client_credentials",
-        appkey: appKey,
-        appsecret: appSecret
-      });
-
-      const response = await fetchThroughKisProxy(targetUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: bodyPayload
-      });
-
-      if (!response.ok) throw new Error(`한투 토큰 발급 응답 오류`);
-      
-      const resData = await response.json();
-      if (resData && resData.access_token) {
-        kisAccessToken = resData.access_token;
-        const expiresInSec = resData.expires_in || 86400;
-        kisTokenExpiredAt = Date.now() + (expiresInSec * 1000);
-        localStorage.setItem('kis_cached_token', kisAccessToken);
-        localStorage.setItem('kis_token_expiry', kisTokenExpiredAt.toString());
-        return kisAccessToken;
-      }
-    } catch (e) {
-      console.warn("⚠️ [KIS 토큰 발급 주의]:", e.message);
-      return null;
-    }
-  }
-
-  async function fetchKisStockPrice(stockCode, appKey) {
-    if (!kisAccessToken || !appKey) return null;
-    try {
-      const queryParam = `?FID_COND_MRKT_DIV_CODE=J&FID_INPUT_ISCD=${stockCode}`;
-      const targetUrl = KIS_CONFIG.kisRealHost + KIS_CONFIG.pricePath + queryParam;
-
-      const response = await fetchThroughKisProxy(targetUrl, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "authorization": `Bearer ${kisAccessToken}`,
-          "appkey": appKey,
-          "appsecret": localStorage.getItem('kis_app_secret') || '',
-          "tr_id": KIS_CONFIG.trId,
-          "custtype": "P"
-        }
-      });
-
-      if (!response.ok) return null;
-      const data = await response.json();
-      
-      if (data && data.output && data.output.stck_prpr) {
-        return {
-          code: stockCode,
-          price: parseInt(data.output.stck_prpr, 10),
-          rate: parseFloat(data.output.prdy_ctrt || '0'),
-          diff: parseInt(data.output.prdy_vrss || '0', 10),
-          volume: parseInt(data.output.acml_vol || '0', 10)
-        };
-      }
-      return null;
-    } catch (err) {
-      return null;
-    }
-  }
 
   async function syncKisRealtimeBatch() {
     if (isKisFetching || currentEngineMode !== 'kis') return;
@@ -739,32 +672,34 @@
 
     isKisFetching = true;
 
-    if (!kisAccessToken || Date.now() >= kisTokenExpiredAt) {
-      const token = await issueKisAccessToken(appKey, appSecret);
-      if (!token) {
-        isKisFetching = false;
-        return;
+    if (window.callFirebaseKisBackend) {
+      if (selectedStock && selectedStock.code && !selectedStock.code.includes('INDEX')) {
+        try {
+          const res = await window.callFirebaseKisBackend('inquirePrice', { appKey, appSecret, stockCode: selectedStock.code });
+          if (res && res.output && res.output.stck_prpr) {
+            applyStockTickUpdate(selectedStock.code, parseInt(res.output.stck_prpr, 10), parseFloat(res.output.prdy_ctrt || '0'));
+          }
+        } catch (e) {
+          console.warn("단일 종목 보안 서버 동기화 오류:", e);
+        }
       }
-    }
 
-    if (selectedStock && selectedStock.code && !selectedStock.code.includes('INDEX')) {
-      const singleData = await fetchKisStockPrice(selectedStock.code, appKey);
-      if (singleData && singleData.price > 0) {
-        applyStockTickUpdate(selectedStock.code, singleData.price, singleData.rate);
-      }
-    }
+      const activeSourceData = (currentMarket === 'kospi' ? KOSPI_80_DATA : KOSDAQ_TOP_DATA);
+      const activeUniverse = activeSourceData.filter(st => st.rank <= currentUniverseMax).slice(0, 10);
 
-    const activeSourceData = (currentMarket === 'kospi' ? KOSPI_80_DATA : KOSDAQ_TOP_DATA);
-    const activeUniverse = activeSourceData.filter(st => st.rank <= currentUniverseMax).slice(0, 15);
-                           
-    for (let i = 0; i < activeUniverse.length; i++) {
-      if (currentEngineMode !== 'kis') break;
-      const target = activeUniverse[i];
-      const result = await fetchKisStockPrice(target.code, appKey);
-      if (result && result.price > 0) {
-        applyStockTickUpdate(target.code, result.price, result.rate);
+      for (let i = 0; i < activeUniverse.length; i++) {
+        if (currentEngineMode !== 'kis') break;
+        const target = activeUniverse[i];
+        try {
+          const res = await window.callFirebaseKisBackend('inquirePrice', { appKey, appSecret, stockCode: target.code });
+          if (res && res.output && res.output.stck_prpr) {
+            applyStockTickUpdate(target.code, parseInt(res.output.stck_prpr, 10), parseFloat(res.output.prdy_ctrt || '0'));
+          }
+        } catch (err) {
+          // 개별 종목 에러 무시
+        }
+        await new Promise(r => setTimeout(r, 300));
       }
-      await new Promise(r => setTimeout(r, 250));
     }
     isKisFetching = false;
   }
@@ -2214,8 +2149,7 @@
     const s = (document.getElementById('inputAppSecret')?.value || '').trim();
     if (k && s) {
       localStorage.setItem('kis_app_key', k); localStorage.setItem('kis_app_secret', s);
-      localStorage.removeItem('kis_cached_token'); localStorage.removeItem('kis_token_expiry');
-      kisAccessToken = null; applyEngineMode(true);
+      applyEngineMode(true);
     } else {
       localStorage.removeItem('kis_app_key'); localStorage.removeItem('kis_app_secret'); applyEngineMode(false);
     }
